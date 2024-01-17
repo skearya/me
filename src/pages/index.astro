@@ -1,0 +1,86 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="><>">
+	<div id="fishContainer" class="overflow-hidden absolute w-full h-full">
+	</div>
+</Layout>
+
+<script>
+	const colors = {
+		white: "#FFFFFF",
+		blue: "#497EE9",
+		cyan: "#5CD8E6",
+		pink: "#D56CC3",
+	};
+
+	const fish = document.getElementById("fishContainer")!;
+	let lastTime = performance.now();
+	let interval = performance.now();
+	let fishSpawned = 0;
+
+	requestAnimationFrame(animate);
+
+	function animate(time: number) {
+		if ((time - interval) / 1000 > 1) {
+			const span = document.createElement("span");
+
+			Object.assign(span.style, {
+				position: "absolute",
+				top: `${randomIntFromInterval(1, 100)}%`,
+				left: "0px",
+				fontSize: `${randomIntFromInterval(12, 36)}px`,
+				opacity: "0",
+			});
+
+			const random = Math.random();
+
+			if (random < 0.7) {
+				span.textContent = "><>";
+				span.style.color =
+					fishSpawned % 10 == 0 ? colors.pink : colors.white;
+
+				fishSpawned += 1;
+			} else if (random < 0.85) {
+				span.textContent = "~";
+				span.style.color = colors.blue;
+			} else {
+				span.textContent = "ᵒ";
+				span.style.color = colors.cyan;
+			}
+
+			span.classList.add("fish");
+			fish.appendChild(span);
+
+			interval = performance.now();
+		}
+
+		const elapsed = time - lastTime;
+
+		for (let i = 0; i < fish.children.length; i++) {
+			const currentFish = fish.children[i] as HTMLSpanElement;
+
+			let newPos = parseFloat(currentFish.style.left.slice(0, -2)) + 0.1;
+			let newOpacity =
+				parseFloat(currentFish.style.opacity) + elapsed / 10000;
+
+			if (newPos <= window.innerWidth) {
+				currentFish.style.left = `${newPos + elapsed / 10}px`;
+			} else {
+				currentFish.remove();
+			}
+
+			if (newOpacity <= 100) {
+				currentFish.style.opacity = `${newOpacity}`;
+			}
+		}
+
+		lastTime = time;
+		requestAnimationFrame(animate);
+	}
+
+	function randomIntFromInterval(min: number, max: number) {
+		return Math.floor(Math.random() * (max - min + 1) + min);
+	}
+</script>
