@@ -35,6 +35,16 @@ import Layout from "../layouts/Layout.astro";
 			/>
 			<label for="ltr only">LTR only</label>
 		</div>
+		<div class="flex items-center justify-between gap-3">
+			<input
+				type="checkbox"
+				class="setting"
+				name="variable speed"
+				autocomplete="off"
+				checked
+			/>
+			<label for="variable speed">Variable speed</label>
+		</div>
 	</div>
 </Layout>
 
@@ -57,6 +67,7 @@ import Layout from "../layouts/Layout.astro";
 
 	let spawnTime = 1000;
 	let disableRtl = false;
+	let variableSpeed = true;
 
 	settingsToggle.addEventListener("click", () => {
 		settingsContent.classList.toggle("hidden");
@@ -68,10 +79,13 @@ import Layout from "../layouts/Layout.astro";
 
 			switch (name) {
 				case "spawn rate":
-					spawnTime = Number(setting.value);
+					spawnTime = parseInt(setting.value);
 					break;
 				case "ltr only":
 					disableRtl = Boolean(setting.checked);
+					break;
+				case "variable speed":
+					variableSpeed = Boolean(setting.checked);
 					break;
 			}
 		});
@@ -112,6 +126,7 @@ import Layout from "../layouts/Layout.astro";
 			});
 
 			span.dataset.ltr = `${ltr}`;
+			span.dataset.variableSpeed = `${Math.random()}`;
 			span.classList.add("fish");
 			fish.appendChild(span);
 
@@ -124,6 +139,9 @@ import Layout from "../layouts/Layout.astro";
 			const currentFish = fish.children[i] as HTMLSpanElement;
 			const direction =
 				currentFish.dataset.ltr === "true" ? "left" : "right";
+			const speed = variableSpeed
+				? Number(currentFish.dataset.variableSpeed!)
+				: 1;
 
 			let newPos =
 				parseFloat(currentFish.style[direction].slice(0, -2)) + 0.1;
@@ -132,7 +150,8 @@ import Layout from "../layouts/Layout.astro";
 				elapsed / window.innerWidth;
 
 			if (newPos <= window.innerWidth) {
-				currentFish.style[direction] = `${newPos + elapsed / 10}px`;
+				currentFish.style[direction] =
+					`${newPos + (elapsed / 10) * speed}px`;
 			} else {
 				currentFish.remove();
 			}
