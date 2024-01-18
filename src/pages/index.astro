@@ -3,7 +3,38 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="><>">
-	<div id="fishContainer" class="overflow-hidden absolute w-full h-full">
+	<div id="fishContainer" class="absolute h-full w-full overflow-hidden">
+	</div>
+	<button
+		id="settingsToggle"
+		class="absolute right-5 top-5 text-xl opacity-50 transition-opacity hover:opacity-100"
+	>
+		settings
+	</button>
+	<div
+		id="settingsContent"
+		class="absolute right-5 top-14 hidden w-64 space-y-2 rounded bg-stone-800 p-3"
+	>
+		<div class="flex items-center justify-between gap-3">
+			<input
+				type="number"
+				class="setting w-12 rounded bg-stone-900
+				[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+				name="spawn rate"
+				autocomplete="off"
+				value="1000"
+			/>
+			<label for="spawn rate">Spawn rate (ms)</label>
+		</div>
+		<div class="flex items-center justify-between gap-3">
+			<input
+				type="checkbox"
+				class="setting"
+				name="ltr only"
+				autocomplete="off"
+			/>
+			<label for="ltr only">LTR only</label>
+		</div>
 	</div>
 </Layout>
 
@@ -15,30 +46,48 @@ import Layout from "../layouts/Layout.astro";
 		pink: "#D56CC3",
 	};
 
+	const settingsToggle = document.getElementById("settingsToggle")!;
+	const settingsContent = document.getElementById("settingsContent")!;
+	const settings = document.querySelectorAll("input.setting")!;
 	const fish = document.getElementById("fishContainer")!;
+
 	let lastTime = performance.now();
 	let interval = performance.now();
 	let fishSpawned = 0;
 
+	let spawnTime = 1000;
+	let disableRtl = false;
+
+	settingsToggle.addEventListener("click", () => {
+		settingsContent.classList.toggle("hidden");
+	});
+
+	(settings as NodeListOf<HTMLInputElement>).forEach((setting) => {
+		setting.addEventListener("change", () => {
+			const name = setting.getAttribute("name")!;
+
+			switch (name) {
+				case "spawn rate":
+					spawnTime = Number(setting.value);
+					break;
+				case "ltr only":
+					disableRtl = Boolean(setting.checked);
+					break;
+			}
+		});
+	});
+
 	requestAnimationFrame(animate);
 
 	function animate(time: number) {
-		if ((time - interval) / 1000 > 1) {
+		if ((time - interval) / spawnTime > 1) {
 			const span = document.createElement("span");
 
-			Object.assign(span.style, {
-				position: "absolute",
-				whiteSpace: "nowrap",
-				top: `${randomIntFromInterval(1, 100)}%`,
-				left: "0px",
-				fontSize: `${randomIntFromInterval(12, 36)}px`,
-				opacity: "0",
-			});
-
 			const random = Math.random();
+			let ltr = disableRtl ? true : Math.random() < 0.5;
 
 			if (random < 0.7) {
-				span.textContent = "><>";
+				span.textContent = ltr ? "><>" : "<><";
 				span.style.color =
 					fishSpawned % 10 == 0 ? colors.pink : colors.white;
 
@@ -46,11 +95,23 @@ import Layout from "../layouts/Layout.astro";
 			} else if (random < 0.85) {
 				span.textContent = "~";
 				span.style.color = colors.blue;
+				ltr = true;
 			} else {
 				span.textContent = "ᵒ";
 				span.style.color = colors.cyan;
+				ltr = true;
 			}
 
+			Object.assign(span.style, {
+				position: "absolute",
+				whiteSpace: "nowrap",
+				top: `${randomIntFromInterval(1, 100)}%`,
+				fontSize: `${randomIntFromInterval(12, 36)}px`,
+				opacity: "0",
+				[ltr ? "left" : "right"]: "0px",
+			});
+
+			span.dataset.ltr = `${ltr}`;
 			span.classList.add("fish");
 			fish.appendChild(span);
 
@@ -61,14 +122,17 @@ import Layout from "../layouts/Layout.astro";
 
 		for (let i = 0; i < fish.children.length; i++) {
 			const currentFish = fish.children[i] as HTMLSpanElement;
+			const direction =
+				currentFish.dataset.ltr === "true" ? "left" : "right";
 
-			let newPos = parseFloat(currentFish.style.left.slice(0, -2)) + 0.1;
+			let newPos =
+				parseFloat(currentFish.style[direction].slice(0, -2)) + 0.1;
 			let newOpacity =
 				parseFloat(currentFish.style.opacity) +
 				elapsed / window.innerWidth;
 
 			if (newPos <= window.innerWidth) {
-				currentFish.style.left = `${newPos + elapsed / 10}px`;
+				currentFish.style[direction] = `${newPos + elapsed / 10}px`;
 			} else {
 				currentFish.remove();
 			}
