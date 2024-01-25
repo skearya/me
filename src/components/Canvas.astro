@@ -1,0 +1,41 @@
+<canvas id="canvas"></canvas>
+
+<script>
+	const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
+
+	const ctx = canvas.getContext("2d")!;
+
+	let spawnTime = performance.now();
+	let lastTime = 0;
+	let fishes: Array<{ x: number; y: number }> = [];
+
+	function animate(time: number) {
+		if ((time - spawnTime) / 1000 > 1) {
+			fishes.push({ x: 0, y: randomIntFromInterval(0, canvas.height) });
+			spawnTime = performance.now();
+		}
+
+		const delta = time - lastTime;
+
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+		for (let i = 0; i < fishes.length; i++) {
+			ctx.font = "30px PT Sans";
+			ctx.fillStyle = "white";
+			ctx.fillText("><>", fishes[i]!.x, fishes[i]!.y);
+
+			fishes[i]!.x += delta / 10;
+		}
+
+		lastTime = time;
+		requestAnimationFrame(animate);
+	}
+
+	requestAnimationFrame(animate);
+
+	function randomIntFromInterval(min: number, max: number) {
+		return Math.floor(Math.random() * (max - min + 1) + min);
+	}
+</script>
