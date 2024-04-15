@@ -1,0 +1,91 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Lanyard from "../components/Lanyard.astro";
+
+const socials = [
+	{
+		name: "GitHub",
+		icon: "socials/github.png",
+		site: "https://github.com/skearya",
+		color: "rgba(49, 120, 198, 0.125)",
+	},
+	{
+		name: "Spotify",
+		icon: "socials/spotify.png",
+		site: "https://open.spotify.com/user/srz3wg23iyukf5vxpa74i37to",
+		color: "rgba(66, 184, 131, 0.125)",
+	},
+	{
+		name: "Steam",
+		icon: "socials/steam.png",
+		site: "https://steamcommunity.com/id/skeary",
+		color: "rgba(49, 120, 198, 0.125)",
+	},
+	{
+		name: "MyAnimeList",
+		icon: "socials/mal.ico",
+		site: "https://myanimelist.net/profile/skeary",
+		color: "rgba(97, 218, 251, 0.125)",
+	},
+	{
+		name: "ScoreSaber",
+		icon: "socials/scoresaber.ico",
+		site: "https://scoresaber.com/u/76561198365846923",
+		color: "rgba(255, 202, 40, 0.125)",
+	},
+	{
+		name: "BeatSaver",
+		icon: "socials/beatsaver.ico",
+		site: "https://beatsaver.com/profile/4284546",
+		color: "rgba(207, 100, 154, 0.063)",
+	},
+];
+---
+
+<Layout title="me">
+	<main class="mx-auto w-full max-w-[42rem] p-4 pt-10">
+		<div class="flex flex-col justify-between gap-6 sm:flex-row">
+			<div>
+				<h1 class="mb-6 text-4xl">about me</h1>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+					Nullam ullamcorper congue nisi, nec aliquam diam varius
+					pretium. In et lorem felis. Aenean arcu quam, semper id ante
+					et, lobortis sollicitudin sapien. Cras condimentum eu felis
+					faucibus ullamcorper. Curabitur laoreet mauris eu efficitur
+					efficitur. Ut molestie eleifend nunc. Nulla facilisi.
+					Vestibulum consequat arcu at ipsum porttitor, eget maximus
+					dolor luctus. Mauris at metus venenatis, rutrum purus in,
+					laoreet magna.
+				</p>
+			</div>
+			<Lanyard />
+		</div>
+		<div
+			class="mt-6 grid grid-cols-1 gap-4 text-gray-300 sm:grid-cols-2 md:grid-cols-3"
+		>
+			{
+				socials.map((social) => (
+					<a
+						href={social.site}
+						style={`background-color: ${social.color};`}
+						class="flex items-center justify-start gap-3 rounded-lg border border-moonlightIndigo border-opacity-0 p-3 transition-colors hover:border-opacity-100"
+					>
+						<div
+							class="rounded-md p-2"
+							style={`background-color: ${social.color};`}
+						>
+							<img
+								width="25px"
+								height="25px"
+								src={social.icon}
+								alt={social.name}
+							/>
+						</div>
+						<h2>{social.name}</h2>
+					</a>
+				))
+			}
+		</div>
+	</main>
+</Layout>

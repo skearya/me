@@ -1,0 +1,49 @@
+---
+import type { LanyardResponse } from "./lanyardTypes";
+
+const USER_ID = 681208628350418977n;
+
+const res = await fetch(`https://api.lanyard.rest/v1/users/${USER_ID}`);
+const { success, data }: LanyardResponse = await res.json();
+
+function statusToColor(status: "online" | "idle" | "dnd" | "offline"): string {
+	if (status === "online") return "#22a559";
+	if (status === "idle") return "#E8ca5e";
+	if (status === "dnd") return "#f23f43";
+	return "#83858f";
+}
+---
+
+{
+	success && (
+		<section class="flex h-min min-w-36 flex-col overflow-hidden rounded-lg border border-moonlightFocusHigh bg-[#232428]">
+			<div
+				style="background-image: linear-gradient(180deg, #aa465e 65%, #232428 35%);"
+				class="flex w-full justify-center pt-2"
+			>
+				<div class="relative w-max">
+					<img
+						class="h-28 w-28 rounded-full border-[5px] border-[#232428]"
+						src={`https://api.lanyard.rest/${USER_ID}.png`}
+						alt="profile picture"
+					/>
+					<div
+						style={`background-color: ${statusToColor(data.discord_status)}`}
+						class={`absolute bottom-1 right-1 h-7 w-7 rounded-full border-[5px] border-[#232428]`}
+					/>
+				</div>
+			</div>
+			<div class="flex flex-row gap-2 p-2 sm:flex-col">
+				<div class="flex w-full items-center justify-center rounded-lg border bg-[#111214] py-2">
+					<h1 class="font-medium">{`${data.discord_user.username}`}</h1>
+				</div>
+				<a
+					class="block w-full rounded-lg border bg-[#417e4c] py-2 text-center font-medium transition-colors hover:bg-green-600"
+					href={`https://discord.com/users/${USER_ID}`}
+				>
+					add me
+				</a>
+			</div>
+		</section>
+	)
+}
