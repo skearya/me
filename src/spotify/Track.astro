@@ -1,0 +1,40 @@
+---
+interface Props {
+	trackId: string;
+}
+
+import type { TrackEntity } from "./types/track";
+
+const track: TrackEntity = await import(`./tracks/${Astro.props.trackId}.json`);
+---
+
+<section class="overflow-hidden rounded-lg border">
+	<div
+		style=`background: linear-gradient(200deg, ${track.coverArt.extractedColors.colorDark.hex}, 70%, transparent)`
+	>
+		<div class="flex items-center justify-between p-4">
+			<div>
+				<h1 class="text-xl font-semibold">{track.name}</h1>
+				<h2>{track.artists.map((artist) => artist.name).join(", ")}</h2>
+				<a
+					class="text-sm text-green-300/65"
+					href={`https://open.spotify.com/track/${track.id}`}
+				>
+					open in spotify
+				</a>
+			</div>
+			<img
+				class="h-36 w-36 rounded-lg shadow-lg"
+				src={track.coverArt.sources[0]?.url}
+				alt="playlist thumbnail"
+			/>
+		</div>
+		<div class="p-4 pt-2">
+			<audio
+				class="w-full rounded-full border shadow-lg"
+				preload="none"
+				controls
+				src={track.audioPreview?.url}></audio>
+		</div>
+	</div>
+</section>

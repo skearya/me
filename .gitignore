@@ -19,3 +19,7 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+
+# spotify data generated at build
+src/spotify/playlists/*
+src/spotify/tracks/*
