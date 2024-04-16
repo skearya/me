@@ -1,8 +1,13 @@
 ---
-import type { PlaylistData } from "./types/playlist";
-import embedData from "./embedData.json";
+interface Props {
+	id: string;
+}
 
-const playlist = (embedData as PlaylistData).props.pageProps.state.data.entity;
+import type { PlaylistData } from "./types";
+// import embedData from "./embedData.json";
+const data = await import(`./playlists/${Astro.props.id}.json`);
+
+const playlist = (data as PlaylistData).props.pageProps.state.data.entity;
 ---
 
 <section class="rounded-lg border">
@@ -22,7 +27,7 @@ const playlist = (embedData as PlaylistData).props.pageProps.state.data.entity;
 			alt="playlist thumbnail"
 		/>
 	</div>
-	<div class="max-h-96 divide-y overflow-scroll">
+	<div class="max-h-96 divide-y overflow-y-scroll">
 		{
 			playlist.trackList.map((track, i) => (
 				<div class="p-4">
