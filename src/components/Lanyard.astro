@@ -1,12 +1,12 @@
 ---
-import type { LanyardResponse } from "./lanyardTypes";
+import type { LanyardData, LanyardResponse } from "./types/lanyard";
 
 const USER_ID = 681208628350418977n;
 
 const res = await fetch(`https://api.lanyard.rest/v1/users/${USER_ID}`);
 const { success, data }: LanyardResponse = await res.json();
 
-function statusToColor(status: "online" | "idle" | "dnd" | "offline"): string {
+function statusToColor(status: LanyardData["discord_status"]): string {
 	if (status === "online") return "#22a559";
 	if (status === "idle") return "#E8ca5e";
 	if (status === "dnd") return "#f23f43";
@@ -16,20 +16,21 @@ function statusToColor(status: "online" | "idle" | "dnd" | "offline"): string {
 
 {
 	success && (
-		<section class="flex h-min min-w-36 flex-col overflow-hidden rounded-lg border border-moonlightFocusHigh bg-[#232428]">
+		<section class="flex h-min min-w-36 flex-col overflow-hidden rounded-lg bg-[#232428]">
 			<div
 				style="background-image: linear-gradient(180deg, #aa465e 65%, #232428 35%);"
 				class="flex w-full justify-center pt-2"
 			>
-				<div class="relative w-max">
+				<div class="relative">
 					<img
-						class="h-28 w-28 rounded-full border-[5px] border-[#232428]"
+						class="h-28 w-28 rounded-full border-[4px] border-[#232428]"
 						src={`https://api.lanyard.rest/${USER_ID}.png`}
 						alt="profile picture"
 					/>
 					<div
+						class={`absolute bottom-1 right-1 h-7 w-7 rounded-full border-[4px] border-[#232428]`}
 						style={`background-color: ${statusToColor(data.discord_status)}`}
-						class={`absolute bottom-1 right-1 h-7 w-7 rounded-full border-[5px] border-[#232428]`}
+						title={data.discord_status}
 					/>
 				</div>
 			</div>

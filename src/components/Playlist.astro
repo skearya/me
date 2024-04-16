@@ -1,0 +1,53 @@
+---
+import type { PlaylistData } from "./types/playlist";
+import embedData from "./embedData.json";
+
+const playlist = (embedData as PlaylistData).props.pageProps.state.data.entity;
+---
+
+<section class="rounded-lg border">
+	<div
+		style=`background: linear-gradient(200deg, ${playlist.coverArt.extractedColors.colorDark.hex}, 70%, transparent)`
+		class="flex items-center justify-between border-b p-4"
+	>
+		<div>
+			<h1 class="text-xl font-semibold">{playlist.name}</h1>
+			<a href={`https://open.spotify.com/playlist/${playlist.id}`}>
+				open in spotify
+			</a>
+		</div>
+		<img
+			class="h-36 w-36 rounded-lg shadow-lg"
+			src={playlist.coverArt.sources[1]?.url}
+			alt="playlist thumbnail"
+		/>
+	</div>
+	<div class="max-h-96 divide-y overflow-scroll">
+		{
+			playlist.trackList.map((track, i) => (
+				<div class="p-4">
+					<div class="flex w-full justify-between">
+						<div>
+							<h1>{track.title}</h1>
+							<h2 class="text-sm text-moonlightText">
+								{track.subtitle}
+							</h2>
+						</div>
+						<h1>{i + 1}</h1>
+					</div>
+					<audio
+						class="mt-4 w-full rounded-full"
+						preload="none"
+						controls
+						src={track.audioPreview?.url}
+					/>
+				</div>
+			))
+		}
+		<div class="p-4">
+			<h1 class="text-center text-moonlightText">
+				there's more songs in the playlist on spotify :)
+			</h1>
+		</div>
+	</div>
+</section>
