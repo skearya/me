@@ -1,29 +1,32 @@
 ---
 interface Props {
-	id: string;
+	playlistId: string;
 }
 
-import type { PlaylistData } from "./types";
-// import embedData from "./embedData.json";
-const data = await import(`./playlists/${Astro.props.id}.json`);
+import type { PlaylistEntity } from "./types/playlist";
 
-const playlist = (data as PlaylistData).props.pageProps.state.data.entity;
+const playlist: PlaylistEntity = await import(
+	`./playlists/${Astro.props.playlistId}.json`
+);
 ---
 
-<section class="rounded-lg border">
+<section class="overflow-hidden rounded-lg border">
 	<div
 		style=`background: linear-gradient(200deg, ${playlist.coverArt.extractedColors.colorDark.hex}, 70%, transparent)`
-		class="flex items-center justify-between border-b p-4"
+		class="flex items-center justify-between overflow-hidden border-b p-4"
 	>
 		<div>
 			<h1 class="text-xl font-semibold">{playlist.name}</h1>
-			<a href={`https://open.spotify.com/playlist/${playlist.id}`}>
+			<a
+				class="text-sm text-green-300/65"
+				href={`https://open.spotify.com/playlist/${playlist.id}`}
+			>
 				open in spotify
 			</a>
 		</div>
 		<img
 			class="h-36 w-36 rounded-lg shadow-lg"
-			src={playlist.coverArt.sources[1]?.url}
+			src={playlist.coverArt.sources[0]?.url}
 			alt="playlist thumbnail"
 		/>
 	</div>

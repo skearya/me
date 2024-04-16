@@ -1,4 +1,4 @@
-export interface PlaylistData {
+export interface TrackEmbedData {
 	props: Props;
 	page: string;
 	query: Query;
@@ -28,9 +28,9 @@ export interface PageProps {
 
 export interface Config {
 	correlationId: string;
+	clientId: string;
 	strings: Strings;
 	locale: string;
-	clientId: string;
 }
 
 export interface Strings {
@@ -67,7 +67,7 @@ export interface Session {
 }
 
 export interface Data {
-	entity: Entity;
+	entity: TrackEntity;
 	embeded_entity_uri: string;
 	defaultAudioFileObject: DefaultAudioFileObject;
 	backgroundColor: string;
@@ -77,38 +77,30 @@ export interface DefaultAudioFileObject {
 	passthrough: string;
 }
 
-export interface Entity {
+export interface TrackEntity {
 	type: string;
 	name: string;
 	uri: string;
 	id: string;
 	title: string;
-	subtitle: string;
+	artists: Artist[];
 	coverArt: CoverArt;
-	releaseDate?: any;
+	releaseDate: ReleaseDate;
 	duration: number;
 	maxDuration: number;
 	isPlayable: boolean;
 	isExplicit: boolean;
+	audioPreview: AudioPreview;
 	hasVideo: boolean;
 	relatedEntityUri: string;
-	trackList: TrackList[];
-}
-
-export interface TrackList {
-	uri: string;
-	uid: string;
-	title: string;
-	subtitle: string;
-	isExplicit: boolean;
-	duration: number;
-	isPlayable: boolean;
-	audioPreview?: AudioPreview;
 }
 
 export interface AudioPreview {
-	format: string;
 	url: string;
+}
+
+export interface ReleaseDate {
+	isoString: string;
 }
 
 export interface CoverArt {
@@ -117,15 +109,21 @@ export interface CoverArt {
 }
 
 export interface Source {
-	height: number;
-	width: number;
 	url: string;
+	width: number;
+	height: number;
 }
 
 export interface ExtractedColors {
 	colorDark: ColorDark;
+	colorLight: ColorDark;
 }
 
 export interface ColorDark {
 	hex: string;
+}
+
+export interface Artist {
+	name: string;
+	uri: string;
 }
