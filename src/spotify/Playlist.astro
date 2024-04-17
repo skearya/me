@@ -4,10 +4,9 @@ interface Props {
 }
 
 import type { PlaylistEntity } from "./types/playlist";
+import playlists from "virtual:spotify-data/playlists";
 
-const playlist: PlaylistEntity = await import(
-	`./playlists/${Astro.props.playlistId}.json`
-);
+const playlist: PlaylistEntity = playlists[Astro.props.playlistId];
 ---
 
 <section class="overflow-hidden rounded-lg border">

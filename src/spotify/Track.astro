@@ -4,8 +4,9 @@ interface Props {
 }
 
 import type { TrackEntity } from "./types/track";
+import tracks from "virtual:spotify-data/tracks";
 
-const track: TrackEntity = await import(`./tracks/${Astro.props.trackId}.json`);
+const track: TrackEntity = tracks[Astro.props.trackId];
 ---
 
 <section class="overflow-hidden rounded-lg border">

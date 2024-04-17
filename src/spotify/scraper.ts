@@ -1,70 +1,101 @@
-import type { AstroIntegration, AstroIntegrationLogger } from "astro";
+import type { AstroIntegration } from "astro";
+import type { Plugin } from "vite";
 import type { PlaylistEntity, PlaylistEmbedData } from "./types/playlist";
 import type { TrackEntity, TrackEmbedData } from "./types/track";
-import { writeFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 
 const playlistIdRegex = /playlistId="[^"]*"/g;
 const trackIdRegex = /trackId="[^"]*"/g;
+const virtualModuleId = "virtual:spotify-data";
 
-const scraper: AstroIntegration = {
-	name: "spotify embed scraper",
-	hooks: {
-		"astro:build:start": onBuildStart,
-	},
-};
+const onConfigSetup: AstroIntegration["hooks"]["astro:config:setup"] = async ({
+	logger,
+	isRestart,
+	updateConfig,
+}) => {
+	if (isRestart) return;
 
-async function onBuildStart({ logger }: { logger: AstroIntegrationLogger }) {
-	const pages = import.meta.glob("../pages/*.astro", {
-		query: "?raw",
-	});
+	const pages = await readdir("./src/pages", { recursive: true });
 
-	for (const path in pages) {
-		const page = (await pages[path]!()) as any;
-		const content = page.default as string;
+	const trackData: Record<string, TrackEntity> = {};
+	const playlistData: Record<string, PlaylistEntity> = {};
 
-		const removeQuotes = (input: string) => input.split('"')[1]!;
+	for (const page of pages) {
+		const content = await readFile("./src/pages/" + page, {
+			encoding: "utf8",
+		});
 
-		const trackIds = (content.match(trackIdRegex) ?? []).map(removeQuotes);
-		const playlistIds = (content.match(playlistIdRegex) ?? []).map(
-			removeQuotes,
-		);
+		const items = collectIds(content);
 
-		for (const trackId of trackIds) {
+		for (const { type, id } of items) {
 			try {
-				const data = await scrapeData("track", trackId);
-				await writeFile(
-					`./src/spotify/tracks/${trackId}.json`,
-					JSON.stringify(data),
-				);
-				logger.info(`Scraped track: ${trackId}`);
-			} catch (error) {
-				logger.error(
-					`Failed to scrape track: ${trackId}, Error: ${error}`,
-				);
-			}
-		}
+				if (type === "track") {
+					trackData[id] = await scrapeData("track", id);
+				} else {
+					playlistData[id] = await scrapeData("playlist", id);
+				}
 
-		for (const playlistId of playlistIds) {
-			try {
-				const data = await scrapeData("playlist", playlistId);
-				await writeFile(
-					`./src/spotify/playlists/${playlistId}.json`,
-					JSON.stringify(data),
-				);
-				logger.info(`Scraped playlist: ${playlistId}`);
+				logger.info(`scraped ${id}`);
 			} catch (error) {
-				logger.error(
-					`Failed to scrape playlist: ${playlistId}, Error: ${error}`,
-				);
+				logger.error(`failed to scrape ${id}, ${error}`);
 			}
 		}
 	}
+
+	const vitePlugin: Plugin = {
+		name: "spotify-embed-scraper",
+		resolveId(id) {
+			if (id.startsWith(virtualModuleId)) {
+				return "\0" + id;
+			}
+
+			return undefined;
+		},
+		load(id) {
+			if (id.startsWith("\0" + virtualModuleId)) {
+				const type = id.split("/")[1] as "tracks" | "playlists";
+
+				if (type === "tracks") {
+					return `export default ${JSON.stringify(trackData)}`;
+				} else {
+					return `export default ${JSON.stringify(playlistData)}`;
+				}
+			}
+
+			return undefined;
+		},
+	};
+
+	updateConfig({
+		vite: {
+			plugins: [vitePlugin],
+		},
+	});
+};
+
+function collectIds(page: string): Array<{ type: string; id: string }> {
+	const ids = [];
+
+	const removeQuotes = (input: string) => input.split('"')[1]!;
+
+	ids.push(
+		...(page.match(trackIdRegex) ?? []).map((id) => {
+			return { type: "track", id: removeQuotes(id) };
+		}),
+	);
+	ids.push(
+		...(page.match(playlistIdRegex) ?? []).map((id) => {
+			return { type: "playlist", id: removeQuotes(id) };
+		}),
+	);
+
+	return ids;
 }
 
-async function scrapeData(
-	type: "track" | "playlist",
+async function scrapeData<T extends "track" | "playlist">(
+	type: T,
 	id: string,
-): Promise<TrackEntity | PlaylistEntity> {
+): Promise<T extends "track" ? TrackEntity : PlaylistEntity> {
 	const res = await fetch(`https://open.spotify.com/embed/${type}/${id}`, {
 		headers: {
 			"User-Agent":
@@ -90,7 +121,16 @@ async function scrapeData(
 	);
 
 	const data: TrackEmbedData | PlaylistEmbedData = JSON.parse(json);
-	return data.props.pageProps.state.data.entity;
+	return data.props.pageProps.state.data.entity as T extends "track"
+		? TrackEntity
+		: PlaylistEntity;
 }
+
+const scraper: AstroIntegration = {
+	name: "spotify-embed-scraper",
+	hooks: {
+		"astro:config:setup": onConfigSetup,
+	},
+};
 
 export default scraper;
