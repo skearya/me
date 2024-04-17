@@ -4,9 +4,6 @@ export default {
 	theme: {
 		extend: {
 			colors: {
-				// background: "#121629",
-				// border: "#6D7DCC",
-				// accent: "#A2D2FF",
 				// https://www.michaelandreuzza.com/vscode/sequoia/
 				moonlightBase: "#0F1014",
 				moonlightInterface: "#111216",

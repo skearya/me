@@ -16,27 +16,27 @@ function statusToColor(status: LanyardData["discord_status"]): string {
 
 {
 	success && (
-		<section class="flex h-min min-w-36 flex-col overflow-hidden rounded-lg bg-[#232428]">
+		<section class="flex h-min min-w-36 flex-col overflow-hidden rounded-lg border bg-moonlightFocusMedium">
 			<div
-				style="background-image: linear-gradient(180deg, #aa465e 65%, #232428 35%);"
+				style="background-image: linear-gradient(180deg, #aa465e 65%, #1A1B1F 35%);"
 				class="flex w-full justify-center pt-2"
 			>
 				<div class="relative">
 					<img
-						class="h-28 w-28 rounded-full border-[4px] border-[#232428]"
+						class="h-28 w-28 rounded-full border-[4px] border-moonlightFocusMedium"
 						src={`https://api.lanyard.rest/${USER_ID}.png`}
-						alt="profile picture"
+						alt="profile"
 					/>
 					<div
-						class={`absolute bottom-1 right-1 h-7 w-7 rounded-full border-[4px] border-[#232428]`}
+						class={`absolute bottom-1 right-1 h-7 w-7 rounded-full border-[4px] border-moonlightFocusMedium`}
 						style={`background-color: ${statusToColor(data.discord_status)}`}
 						title={data.discord_status}
 					/>
 				</div>
 			</div>
-			<div class="flex flex-row gap-2 p-2 sm:flex-col">
-				<div class="flex w-full items-center justify-center rounded-lg border bg-[#111214] py-2">
-					<h1 class="font-medium">{`${data.discord_user.username}`}</h1>
+			<div class="flex flex-col gap-2 p-2 pt-0">
+				<div class="flex w-full items-center justify-center rounded-lg py-1">
+					<h1>{`${data.discord_user.username}`}</h1>
 				</div>
 				<a
 					class="block w-full rounded-lg border bg-[#417e4c] py-2 text-center font-medium transition-colors hover:bg-green-600"
