@@ -51,10 +51,14 @@ const playlist: PlaylistEntity = playlists[Astro.props.playlistId];
 				</div>
 			))
 		}
-		<div class="p-4">
-			<h1 class="text-center text-moonlightText">
-				there's more songs in the playlist on spotify :)
-			</h1>
-		</div>
+		{
+			playlist.trackList.length >= 100 && (
+				<div class="p-4">
+					<h1 class="text-center text-moonlightText">
+						there's more songs in the playlist on spotify :&#41;
+					</h1>
+				</div>
+			)
+		}
 	</div>
 </section>
