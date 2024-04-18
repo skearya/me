@@ -1,6 +1,5 @@
-import { db } from "astro:db";
+import { db, tracks, playlists, playlistItems } from "astro:db";
 
-// https://astro.build/db/seed
-export default async function seed() {
-	// TODO
+export default async function () {
+	// todo
 }

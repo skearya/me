@@ -1,12 +1,39 @@
-import { defineDb, defineTable, column } from "astro:db";
+import { defineDb, defineTable, column, NOW } from "astro:db";
 
-const Comment = defineTable({
+const tracks = defineTable({
 	columns: {
-		author: column.text(),
-		body: column.text(),
+		id: column.text({ primaryKey: true }),
+		title: column.text(),
+		artist: column.text(),
+		coverUrl: column.text(),
+		audioPreview: column.text({ optional: true }),
+		color: column.text(),
+	},
+});
+
+const playlists = defineTable({
+	columns: {
+		id: column.text({ primaryKey: true }),
+		name: column.text(),
+		thumbnailUrl: column.text(),
+		color: column.text(),
+		lastUpdated: column.date({ default: NOW }),
+	},
+});
+
+const playlistItems = defineTable({
+	columns: {
+		playlistId: column.text({ references: () => playlists.columns.id }),
+		title: column.text(),
+		artist: column.text(),
+		audioPreview: column.text({ optional: true }),
 	},
 });
 
 export default defineDb({
-	tables: { Comment },
+	tables: {
+		tracks,
+		playlists,
+		playlistItems,
+	},
 });
