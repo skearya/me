@@ -16,8 +16,8 @@ const playlists = defineTable({
 		id: column.text({ primaryKey: true }),
 		name: column.text(),
 		thumbnailUrl: column.text(),
-		color: column.text(),
 		lastUpdated: column.date({ default: NOW }),
+		color: column.text(),
 	},
 });
 

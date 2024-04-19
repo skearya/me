@@ -3,15 +3,14 @@ interface Props {
 	playlistId: string;
 }
 
-import type { PlaylistEntity } from "./types/playlist";
-import playlists from "virtual:spotify-data/playlists";
+import { getPlaylist } from "./scrape";
 
-const playlist: PlaylistEntity = playlists[Astro.props.playlistId];
+const [playlist, items] = await getPlaylist(Astro.props.playlistId);
 ---
 
 <section class="overflow-hidden rounded-lg border">
 	<div
-		style=`background: linear-gradient(200deg, ${playlist.coverArt.extractedColors.colorDark.hex}, 70%, transparent)`
+		style=`background: linear-gradient(200deg, ${playlist.color}, 70%, transparent)`
 		class="flex items-center justify-between overflow-hidden border-b p-4"
 	>
 		<div>
@@ -25,40 +24,33 @@ const playlist: PlaylistEntity = playlists[Astro.props.playlistId];
 		</div>
 		<img
 			class="h-36 w-36 rounded-lg shadow-lg"
-			src={playlist.coverArt.sources[0]?.url}
+			src={playlist.thumbnailUrl}
 			alt="playlist thumbnail"
 		/>
 	</div>
 	<div class="max-h-96 divide-y overflow-y-scroll">
 		{
-			playlist.trackList.map((track, i) => (
+			items.map((track, i) => (
 				<div class="p-4">
 					<div class="flex w-full justify-between">
 						<div>
 							<h1>{track.title}</h1>
 							<h2 class="text-sm text-moonlightText">
-								{track.subtitle}
+								{track.artist}
 							</h2>
 						</div>
 						<h1>{i + 1}</h1>
 					</div>
-					<audio
-						class="mt-4 w-full rounded-full"
-						preload="none"
-						controls
-						src={track.audioPreview?.url}
-					/>
+					{track.audioPreview && (
+						<audio
+							class="mt-4 w-full rounded-full"
+							preload="none"
+							controls
+							src={track.audioPreview}
+						/>
+					)}
 				</div>
 			))
-		}
-		{
-			playlist.trackList.length >= 100 && (
-				<div class="p-4">
-					<h1 class="text-center text-moonlightText">
-						there's more songs in the playlist on spotify :&#41;
-					</h1>
-				</div>
-			)
 		}
 	</div>
 </section>

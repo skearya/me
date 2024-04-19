@@ -90,7 +90,7 @@ export interface TrackEntity {
 	maxDuration: number;
 	isPlayable: boolean;
 	isExplicit: boolean;
-	audioPreview: AudioPreview;
+	audioPreview?: AudioPreview;
 	hasVideo: boolean;
 	relatedEntityUri: string;
 }
