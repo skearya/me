@@ -1,11 +1,11 @@
 ---
 interface Props {
-	playlistId: string;
+	url: string;
 }
 
 import { getPlaylist } from "./scrape";
 
-const [playlist, items] = await getPlaylist(Astro.props.playlistId);
+const [playlist, items] = await getPlaylist(Astro.props.url);
 ---
 
 <section class="overflow-hidden rounded-lg border">

@@ -1,11 +1,11 @@
 ---
 interface Props {
-	trackId: string;
+	url: string;
 }
 
 import { getTrack } from "./scrape";
 
-const track = await getTrack(Astro.props.trackId);
+const track = await getTrack(Astro.props.url);
 ---
 
 <section class="overflow-hidden rounded-lg border">

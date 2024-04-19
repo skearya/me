@@ -2,7 +2,7 @@ import type { TrackEntity, TrackEmbedData } from "./types/track";
 import type { PlaylistEntity, PlaylistEmbedData } from "./types/playlist";
 import { db, playlists, playlistItems, eq, tracks } from "astro:db";
 
-export async function getTrack(id: string): Promise<{
+export async function getTrack(url: string): Promise<{
 	id: string;
 	title: string;
 	artist: string;
@@ -10,12 +10,14 @@ export async function getTrack(id: string): Promise<{
 	audioPreview: string | null;
 	color: string;
 }> {
+	const id = url.split("/").at(-1)!.split("?")[0]!;
+
 	const track = (await db.select().from(tracks).where(eq(tracks.id, id)))[0];
 
 	if (track) {
 		return track;
 	} else {
-		console.log(`embed-scraper: scraping ${id}`);
+		console.log(`embed-scraper: cache miss, scraping ${id}`);
 
 		const track = await scrapeItem("track", id).then((data) =>
 			mapTrackEmbed(data),
@@ -27,7 +29,7 @@ export async function getTrack(id: string): Promise<{
 	}
 }
 
-export async function getPlaylist(id: string): Promise<
+export async function getPlaylist(url: string): Promise<
 	[
 		{
 			id: string;
@@ -44,6 +46,8 @@ export async function getPlaylist(id: string): Promise<
 		}[],
 	]
 > {
+	const id = url.split("/").at(-1)!.split("?")[0]!;
+
 	const playlistData = await db
 		.select()
 		.from(playlists)
@@ -56,7 +60,7 @@ export async function getPlaylist(id: string): Promise<
 	if (playlist && !olderThanDay(playlist.lastUpdated)) {
 		return [playlist, items];
 	} else {
-		console.log(`embed-scraper: scraping ${id}`);
+		console.log(`embed-scraper: cache miss, scraping ${id}`);
 
 		const [playlist, items] = await scrapeItem("playlist", id).then(
 			(data) => mapPlaylistEmbed(data),
