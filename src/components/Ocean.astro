@@ -96,7 +96,15 @@
 					variableSpeed = Boolean(setting.checked);
 					break;
 				case "crash browser":
-					crashBrowserProbably = Boolean(setting.checked);
+					if (Boolean(setting.checked)) {
+						if (window.confirm("are you sure you want this")) {
+							crashBrowserProbably = true;
+						} else {
+							setting.checked = false;
+						}
+					} else {
+						crashBrowserProbably = false;
+					}
 					break;
 			}
 		});
