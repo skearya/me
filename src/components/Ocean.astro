@@ -1,20 +1,20 @@
 <>
-	<div id="fishContainer" class="relative h-screen w-screen overflow-hidden">
+	<div id="fishContainer" class="fixed h-screen w-screen overflow-hidden">
 	</div>
 	<button
 		id="settingsToggle"
-		class="absolute right-5 top-5 z-50 text-xl opacity-50 transition-opacity hover:opacity-100"
+		class="text-accent absolute bottom-5 right-5 z-50 text-lg opacity-50 transition-opacity hover:opacity-100"
 	>
 		settings
 	</button>
 	<div
 		id="settingsContent"
-		class="absolute right-5 top-14 z-50 hidden w-64 space-y-2 rounded bg-stone-800 p-3"
+		class="absolute bottom-16 right-5 z-50 hidden w-64 space-y-2 rounded-lg border p-3 backdrop-blur-md"
 	>
 		<div class="flex items-center justify-between gap-3">
 			<input
 				type="number"
-				class="setting w-12 rounded bg-stone-900
+				class="setting bg-moonlightBase w-12 rounded
                 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
 				name="spawn rate"
 				autocomplete="off"
@@ -42,7 +42,6 @@
 			<label for="variable speed">Variable speed</label>
 		</div>
 	</div>
-	<slot />
 </>
 
 <script>
