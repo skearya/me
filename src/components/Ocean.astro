@@ -14,7 +14,7 @@
 		<div class="flex items-center justify-between gap-3">
 			<input
 				type="number"
-				class="setting bg-moonlightBase w-12 rounded
+				class="setting w-12 rounded bg-moonlightBase
                 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
 				name="spawn rate"
 				autocomplete="off"
@@ -41,6 +41,17 @@
 			/>
 			<label for="variable speed">Variable speed</label>
 		</div>
+		<div class="flex items-center justify-between gap-3">
+			<input
+				type="checkbox"
+				class="setting"
+				name="crash browser"
+				autocomplete="off"
+			/>
+			<label for="crash browser" class="text-red-400">
+				Crash browser
+			</label>
+		</div>
 	</div>
 </>
 
@@ -64,6 +75,7 @@
 	let spawnTime = 1000;
 	let disableRtl = false;
 	let variableSpeed = true;
+	let crashBrowserProbably = false;
 
 	settingsToggle.addEventListener("click", () => {
 		settingsContent.classList.toggle("hidden");
@@ -83,50 +95,63 @@
 				case "variable speed":
 					variableSpeed = Boolean(setting.checked);
 					break;
+				case "crash browser":
+					crashBrowserProbably = Boolean(setting.checked);
+					break;
 			}
 		});
 	});
 
 	requestAnimationFrame(animate);
 
+	function spawnFish() {
+		const span = document.createElement("span");
+
+		const random = Math.random();
+		let ltr = disableRtl ? true : Math.random() < 0.5;
+
+		if (random < 0.7) {
+			span.textContent = ltr ? "><>" : "<><";
+			span.style.color =
+				fishSpawned % 10 == 0 ? colors.pink : colors.white;
+
+			fishSpawned += 1;
+		} else if (random < 0.85) {
+			span.textContent = "~";
+			span.style.color = colors.blue;
+			ltr = true;
+		} else {
+			span.textContent = "ᵒ";
+			span.style.color = colors.cyan;
+			ltr = true;
+		}
+
+		Object.assign(span.style, {
+			position: "absolute",
+			whiteSpace: "nowrap",
+			top: `${randomIntFromInterval(1, 100)}%`,
+			fontSize: `${randomIntFromInterval(12, 36)}px`,
+			opacity: "0",
+			[ltr ? "left" : "right"]: "0px",
+		});
+
+		span.dataset.ltr = `${ltr}`;
+		span.dataset.variableSpeed = `${Math.random()}`;
+		span.classList.add("fish");
+		fish.appendChild(span);
+
+		interval = performance.now();
+	}
+
 	function animate(time: number) {
 		if ((time - interval) / spawnTime > 1) {
-			const span = document.createElement("span");
+			spawnFish();
+		}
 
-			const random = Math.random();
-			let ltr = disableRtl ? true : Math.random() < 0.5;
-
-			if (random < 0.7) {
-				span.textContent = ltr ? "><>" : "<><";
-				span.style.color =
-					fishSpawned % 10 == 0 ? colors.pink : colors.white;
-
-				fishSpawned += 1;
-			} else if (random < 0.85) {
-				span.textContent = "~";
-				span.style.color = colors.blue;
-				ltr = true;
-			} else {
-				span.textContent = "ᵒ";
-				span.style.color = colors.cyan;
-				ltr = true;
+		if (crashBrowserProbably) {
+			for (let i = 0; i < 1000; i++) {
+				spawnFish();
 			}
-
-			Object.assign(span.style, {
-				position: "absolute",
-				whiteSpace: "nowrap",
-				top: `${randomIntFromInterval(1, 100)}%`,
-				fontSize: `${randomIntFromInterval(12, 36)}px`,
-				opacity: "0",
-				[ltr ? "left" : "right"]: "0px",
-			});
-
-			span.dataset.ltr = `${ltr}`;
-			span.dataset.variableSpeed = `${Math.random()}`;
-			span.classList.add("fish");
-			fish.appendChild(span);
-
-			interval = performance.now();
 		}
 
 		const elapsed = time - lastTime;
