@@ -29,7 +29,7 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 				alt="playlist thumbnail"
 			/>
 		</div>
-		<div class="max-h-96 divide-y overflow-y-scroll">
+		<div id="items" class="max-h-96 divide-y overflow-y-scroll">
 			{
 				items.map((track, i) => (
 					<div
@@ -54,24 +54,21 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 		</div>
 		<div
 			id="nowPlaying"
-			class="absolute bottom-0 flex w-full translate-y-full items-center justify-between gap-4 bg-moonlightIndigo p-4"
+			class="absolute bottom-0 flex w-full translate-y-full items-center justify-between gap-4 bg-moonlightIndigo p-4 text-moonlightBase"
 		>
 			<div class="min-w-0 flex-1 whitespace-nowrap">
 				<h1
 					id="title"
-					class="overflow-hidden text-ellipsis text-sm font-medium"
+					class="overflow-hidden text-ellipsis font-medium"
 				>
 				</h1>
-				<h2 id="artist" class="overflow-hidden text-ellipsis text-xs">
+				<h2 id="artist" class="overflow-hidden text-ellipsis text-sm">
 				</h2>
 			</div>
 			<div class="flex gap-4">
 				<button id="pause-play">
 					<img width="32" height="32" src="/pause.svg" />
 				</button>
-				<!-- <button id="next">
-					<img width="32" height="32" src="/skip.svg" />
-				</button> -->
 			</div>
 		</div>
 	</section>
@@ -92,10 +89,9 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 		}
 
 		connectedCallback() {
-			const audio = new Audio();
-			const nowPlaying = this.querySelector("#nowPlaying")!;
-
 			let open = false;
+
+			const audio = new Audio();
 
 			const pausePlayToggle: HTMLButtonElement =
 				this.querySelector("#pause-play")!;
@@ -115,7 +111,10 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 				pausePlayToggle.querySelector("img")!.src = "/dark-play.svg";
 			});
 
-			function playAudio(info: PlaylistItem) {
+			const nowPlaying: HTMLDivElement =
+				this.querySelector("#nowPlaying")!;
+
+			const playAudio = (info: PlaylistItem) => {
 				audio.src = info.audioPreview!;
 				audio.load();
 				audio.play();
@@ -125,14 +124,19 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 				pausePlayToggle.querySelector("img")!.src = "/pause.svg";
 
 				if (!open) {
+					(
+						this.querySelector("#items") as HTMLDivElement
+					).style.paddingBottom = `${nowPlaying.offsetHeight}px`;
+
 					nowPlaying.animate([{ transform: "translateY(0%)" }], {
 						duration: 600,
 						fill: "forwards",
 						easing: "cubic-bezier(0.33, 1, 0.68, 1)",
 					});
+
 					open = true;
 				}
-			}
+			};
 
 			const playlistItems: NodeListOf<HTMLDivElement> =
 				this.querySelectorAll(".playlist-item");
