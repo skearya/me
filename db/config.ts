@@ -23,6 +23,7 @@ const playlists = defineTable({
 
 const playlistItems = defineTable({
 	columns: {
+		id: column.text(),
 		playlistId: column.text({ references: () => playlists.columns.id }),
 		title: column.text(),
 		artist: column.text(),

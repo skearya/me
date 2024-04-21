@@ -39,6 +39,7 @@ export async function getPlaylist(url: string): Promise<
 			lastUpdated?: Date;
 		},
 		{
+			id: string;
 			playlistId: string;
 			title: string;
 			artist: string;
@@ -142,6 +143,7 @@ function mapPlaylistEmbed(playlist: PlaylistEntity): [
 		color: string;
 	},
 	{
+		id: string;
 		playlistId: string;
 		title: string;
 		artist: string;
@@ -157,6 +159,7 @@ function mapPlaylistEmbed(playlist: PlaylistEntity): [
 
 	const items = playlist.trackList.map((track) => {
 		return {
+			id: track.uri.split(":").at(-1)!,
 			playlistId: playlist.id,
 			title: track.title,
 			artist: track.subtitle,
