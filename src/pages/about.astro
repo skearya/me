@@ -50,17 +50,17 @@ const socials = [
 		<div class="flex flex-col justify-between gap-6 sm:flex-row">
 			<div>
 				<h1 class="mb-6 text-4xl">about me</h1>
-				<p>
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-					Nullam ullamcorper congue nisi, nec aliquam diam varius
-					pretium. In et lorem felis. Aenean arcu quam, semper id ante
-					et, lobortis sollicitudin sapien. Cras condimentum eu felis
-					faucibus ullamcorper. Curabitur laoreet mauris eu efficitur
-					efficitur. Ut molestie eleifend nunc. Nulla facilisi.
-					Vestibulum consequat arcu at ipsum porttitor, eget maximus
-					dolor luctus. Mauris at metus venenatis, rutrum purus in,
-					laoreet magna.
-				</p>
+				<!-- prettier-ignore -->
+				<ul class='list-inside list-[">_"] space-y-1'>
+					<li><a href="/projects">i build things</a></li>
+					<li><a href="https://www.youtube.com/playlist?list=PLkrjij_GoYXCkdI9ell14S8wasbAXG5W2">i teach things</a></li>
+					<li><a href="/cool-things">i like things</a></li>
+					<li>previously top 100 global in <a href="https://store.steampowered.com/app/620980/Beat_Saber/">beat saber</a></li>
+					<li><a href="https://www.rust-lang.org/">rust</a> fanatic</li>
+					<li>interested in <a href="https://gleam.run/">gleam</a> and <a href="https://elixir-lang.org/">elixir</a></li>
+					<li>high schooler</li>
+					<li>&lt;&gt;</li>
+				</ul>
 			</div>
 			<Lanyard />
 		</div>
@@ -97,3 +97,9 @@ const socials = [
 		</div>
 	</main>
 </Layout>
+
+<style>
+	li > a {
+		@apply text-moonlightBlue underline;
+	}
+</style>
