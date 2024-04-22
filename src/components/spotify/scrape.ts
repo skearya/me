@@ -100,7 +100,6 @@ async function scrapeItem<T extends "track" | "playlist">(
 			Pragma: "no-cache",
 			"Cache-Control": "no-cache",
 		},
-		cache: "no-store",
 		method: "GET",
 	});
 
