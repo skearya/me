@@ -51,6 +51,13 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 					</div>
 				))
 			}
+			{
+				items.length >= 100 && (
+					<div class="p-4 text-center text-moonlightText">
+						<h1>there's more songs on spotify :)</h1>
+					</div>
+				)
+			}
 		</div>
 		<div
 			id="nowPlaying"
