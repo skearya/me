@@ -47,7 +47,19 @@ const { title } = Astro.props;
 		font-variant-ligatures: none;
 		@apply bg-moonlightBase text-moonlightWhite;
 	}
+
 	* {
 		@apply border-moonlightWhite/10;
+	}
+
+	::-webkit-scrollbar {
+		@apply w-2;
+		@apply h-2;
+	}
+	::-webkit-scrollbar-track {
+		@apply !bg-moonlightFocusMedium;
+	}
+	::-webkit-scrollbar-thumb {
+		@apply rounded-sm !bg-moonlightWhite/30;
 	}
 </style>

@@ -29,53 +29,78 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 				alt="playlist thumbnail"
 			/>
 		</div>
-		<div id="items" class="max-h-96 divide-y overflow-y-scroll">
-			{
-				items.map((track, i) => (
-					<div
-						class="playlist-item flex w-full items-center justify-between gap-4 p-4"
-						data-info={JSON.stringify(track)}
-					>
-						{track.audioPreview && (
-							<button>
-								<img width="32" height="32" src="/play.svg" />
-							</button>
-						)}
-						<div class="w-full">
-							<h1>{track.title}</h1>
-							<h2 class="text-sm text-moonlightText">
-								{track.artist}
-							</h2>
+		<div class="flex max-h-96 flex-col">
+			<div id="items" class="divide-y overflow-y-scroll">
+				{
+					items.map((track, i) => (
+						<div
+							class="playlist-item flex w-full items-center justify-between gap-4 p-4"
+							data-info={JSON.stringify(track)}
+						>
+							{track.audioPreview && (
+								<button>
+									<img
+										width="32"
+										height="32"
+										src="/player/play.svg"
+										alt="play"
+									/>
+								</button>
+							)}
+							<div class="w-full">
+								<h1>{track.title}</h1>
+								<h2 class="text-sm text-moonlightText">
+									{track.artist}
+								</h2>
+							</div>
+							<h1 class="text-moonlightText">{i + 1}</h1>
 						</div>
-						<h1 class="text-moonlightText">{i + 1}</h1>
-					</div>
-				))
-			}
-			{
-				items.length >= 100 && (
-					<div class="p-4 text-center text-moonlightText">
-						<h1>there's more songs on spotify :)</h1>
-					</div>
-				)
-			}
-		</div>
-		<div
-			id="nowPlaying"
-			class="absolute bottom-0 flex w-full translate-y-full items-center justify-between gap-4 bg-moonlightIndigo p-4 text-moonlightBase"
-		>
-			<div class="min-w-0 flex-1 whitespace-nowrap">
-				<h1
-					id="title"
-					class="overflow-hidden text-ellipsis font-medium"
-				>
-				</h1>
-				<h2 id="artist" class="overflow-hidden text-ellipsis text-sm">
-				</h2>
+					))
+				}
+				{
+					items.length >= 100 && (
+						<div class="p-4 text-center text-moonlightText">
+							<h1>there's more songs on spotify :&rpar;</h1>
+						</div>
+					)
+				}
 			</div>
-			<div class="flex gap-4">
-				<button id="pause-play">
-					<img width="32" height="32" src="/pause.svg" />
-				</button>
+			<div id="now-playing" class="h-0 w-full opacity-0">
+				<div
+					style="background-image: linear-gradient(to right, rgba(197, 143, 255, 0.8) 0%, rgb(197, 143, 255) 0%)"
+					class="flex items-center justify-between gap-4 p-4 text-moonlightBase"
+				>
+					<div class="min-w-0 flex-1 whitespace-nowrap">
+						<h1
+							id="title"
+							class="overflow-hidden text-ellipsis font-medium"
+						>
+						</h1>
+						<h2
+							id="artist"
+							class="overflow-hidden text-ellipsis text-sm"
+						>
+						</h2>
+					</div>
+					<div class="flex items-center gap-4">
+						<button id="pause-play">
+							<img
+								width="32"
+								height="32"
+								src="/player/pause.svg"
+								alt="controls"
+							/>
+						</button>
+						<a id="link" target="_blank" aria-label="song link">
+							<img
+								width="28"
+								height="28"
+								src="/player/spotify.svg"
+								alt="spotify logo"
+							/>
+						</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -99,6 +124,7 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 			let open = false;
 
 			const audio = new Audio();
+			audio.volume = 0.5;
 
 			const pausePlayToggle: HTMLButtonElement =
 				this.querySelector("#pause-play")!;
@@ -106,43 +132,60 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 			pausePlayToggle.addEventListener("click", () => {
 				if (audio.paused) {
 					audio.play();
-					pausePlayToggle.querySelector("img")!.src = "/pause.svg";
+					pausePlayToggle.querySelector("img")!.src =
+						"/player/pause.svg";
 				} else {
 					audio.pause();
 					pausePlayToggle.querySelector("img")!.src =
-						"/dark-play.svg";
+						"/player/dark-play.svg";
 				}
 			});
 
 			audio.addEventListener("ended", () => {
-				pausePlayToggle.querySelector("img")!.src = "/dark-play.svg";
+				pausePlayToggle.querySelector("img")!.src =
+					"/player/dark-play.svg";
 			});
 
-			const nowPlaying: HTMLDivElement =
-				this.querySelector("#nowPlaying")!;
+			const nowPlaying = this.querySelector("#now-playing")!
+				.firstElementChild as HTMLDivElement;
+
+			const setBackground = (progress: number) => {
+				nowPlaying.style.backgroundImage = `linear-gradient(to right, rgba(197, 143, 255, 0.8) ${progress}%, rgb(197, 143, 255) ${progress}%)`;
+			};
+
+			audio.addEventListener("timeupdate", () => {
+				setBackground((audio.currentTime / audio.duration) * 100);
+			});
 
 			const playAudio = (info: PlaylistItem) => {
-				audio.src = info.audioPreview!;
-				audio.load();
-				audio.play();
-
+				setBackground(0);
 				nowPlaying.querySelector("#title")!.textContent = info.title;
 				nowPlaying.querySelector("#artist")!.textContent = info.artist;
-				pausePlayToggle.querySelector("img")!.src = "/pause.svg";
+				(nowPlaying.querySelector("#link") as HTMLAnchorElement).href =
+					`https://open.spotify.com/track/${info.id}`;
+				pausePlayToggle.querySelector("img")!.src = "/player/pause.svg";
 
 				if (!open) {
-					(
-						this.querySelector("#items") as HTMLDivElement
-					).style.paddingBottom = `${nowPlaying.offsetHeight}px`;
-
-					nowPlaying.animate([{ transform: "translateY(0%)" }], {
-						duration: 600,
-						fill: "forwards",
-						easing: "cubic-bezier(0.33, 1, 0.68, 1)",
-					});
+					nowPlaying.parentElement!.animate(
+						[
+							{
+								height: `${nowPlaying.offsetHeight}px`,
+								opacity: 1,
+							},
+						],
+						{
+							duration: 600,
+							fill: "forwards",
+							easing: "cubic-bezier(0.33, 1, 0.68, 1)",
+						}
+					);
 
 					open = true;
 				}
+
+				audio.src = info.audioPreview!;
+				audio.load();
+				audio.play();
 			};
 
 			const playlistItems: NodeListOf<HTMLDivElement> =
