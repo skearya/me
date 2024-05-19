@@ -33,10 +33,10 @@ const [animeList, mangaList] = await Promise.all([
 			<h1>manga</h1>
 		</button>
 	</div>
-	<div id="anime" class="max-h-[36rem] divide-y overflow-y-scroll">
+	<div id="anime" class="h-[34rem] divide-y overflow-y-scroll">
 		{animeList.map((anime) => <Item item={anime} />)}
 	</div>
-	<div id="manga" class="hidden max-h-[36rem] divide-y overflow-y-scroll">
+	<div id="manga" class="hidden h-[34rem] divide-y overflow-y-scroll">
 		{mangaList.map((manga) => <Item item={manga} />)}
 	</div>
 </section>

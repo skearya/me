@@ -16,12 +16,18 @@ const { item } = Astro.props;
 		<img
 			class="aspect-[11 / 16] border object-contain backdrop-blur"
 			width="100px"
+			height="140px"
 			src={item.thumbnailUrl}
 			loading="lazy"
 			alt="item cover"
 		/>
 		<div>
-			<h1>{item.title}</h1>
+			<a
+				href={`https://myanimelist.net/${(item as Anime)?.year ? "anime" : "manga"}/${item.id}`}
+				class="hover:text-moonlightIndigo"
+			>
+				{item.title}</a
+			>
 			{
 				(item as Anime)?.year && (
 					<h1 class="text-sm text-moonlightText">
