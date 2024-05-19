@@ -4,7 +4,7 @@ import { olderThanDay } from "../utils";
 import { db, animeList } from "astro:db";
 import { mangaList } from "astro:db";
 
-export async function getAnimeList(): Promise<
+export async function getAnimeList(MAL_CLIENT_ID: string): Promise<
 	{
 		id: number;
 		title: string;
@@ -29,7 +29,7 @@ export async function getAnimeList(): Promise<
 				}),
 			{
 				headers: {
-					"X-MAL-CLIENT-ID": import.meta.env.MAL_CLIENT_ID,
+					"X-MAL-CLIENT-ID": MAL_CLIENT_ID,
 				},
 			},
 		);
@@ -57,7 +57,7 @@ export async function getAnimeList(): Promise<
 	}
 }
 
-export async function getMangaList(): Promise<
+export async function getMangaList(MAL_CLIENT_ID: string): Promise<
 	{
 		id: number;
 		title: string;
@@ -81,7 +81,7 @@ export async function getMangaList(): Promise<
 				}),
 			{
 				headers: {
-					"X-MAL-CLIENT-ID": import.meta.env.MAL_CLIENT_ID,
+					"X-MAL-CLIENT-ID": MAL_CLIENT_ID,
 				},
 			},
 		);

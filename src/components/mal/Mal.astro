@@ -2,9 +2,19 @@
 import { getAnimeList, getMangaList } from "./lists";
 import Item from "./Item.astro";
 
+function getMalClientId(): string {
+	try {
+		return Astro.locals.runtime.env.MAL_CLIENT_ID;
+	} catch {
+		return import.meta.env.MAL_CLIENT_ID;
+	}
+}
+
+const MAL_CLIENT_ID = getMalClientId();
+
 const [animeList, mangaList] = await Promise.all([
-	getAnimeList(),
-	getMangaList(),
+	getAnimeList(MAL_CLIENT_ID),
+	getMangaList(MAL_CLIENT_ID),
 ]);
 ---
 
