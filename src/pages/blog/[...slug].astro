@@ -1,0 +1,42 @@
+---
+export const prerender = false;
+
+import BlogLayout from "../../layouts/BlogLayout.astro";
+import { getEntry } from "astro:content";
+import { getEnvVar } from "../../components/utils";
+
+if (Astro.request.method === "POST") {
+	try {
+		const data = await Astro.request.formData();
+
+		await fetch(getEnvVar(Astro, "DISCORD_WEBHOOK"), {
+			body: JSON.stringify({
+				username: `${data.get("contact") ?? "unknown"}: ${Astro.url.pathname}`,
+				content: data.get("message") ?? "no message!",
+			}),
+			headers: {
+				"Content-Type": "application/json",
+			},
+			method: "POST",
+		});
+
+		return Astro.redirect(Astro.url.pathname + "?submitted=true");
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+const { slug } = Astro.params;
+
+const entry = await getEntry("blog", slug!);
+
+if (entry === undefined) {
+	return Astro.redirect("/404");
+}
+
+const { Content } = await entry.render();
+---
+
+<BlogLayout {...entry.data}>
+	<Content />
+</BlogLayout>

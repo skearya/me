@@ -1,14 +1,14 @@
 ---
-import { getAnimeList, getMangaList } from "./lists";
-
-type Anime = Awaited<ReturnType<typeof getAnimeList>>[0];
-type Manga = Awaited<ReturnType<typeof getMangaList>>[0];
-
 interface Props {
-	item: Anime | Manga;
+	id: number;
+	title: string;
+	thumbnailUrl: string;
+	year?: number;
+	score: number;
+	finishDate: string | null;
 }
 
-const { item } = Astro.props;
+const { id, title, thumbnailUrl, year, score, finishDate } = Astro.props;
 ---
 
 <div class="flex justify-between">
@@ -17,34 +17,28 @@ const { item } = Astro.props;
 			class="aspect-[11 / 16] border object-contain backdrop-blur"
 			width="100px"
 			height="140px"
-			src={item.thumbnailUrl}
+			src={thumbnailUrl}
 			loading="lazy"
 			alt="item cover"
 		/>
 		<div>
 			<a
-				href={`https://myanimelist.net/${(item as Anime)?.year ? "anime" : "manga"}/${item.id}`}
+				href={`https://myanimelist.net/${year ? "anime" : "manga"}/${id}`}
 				class="hover:text-moonlightIndigo"
 			>
-				{item.title}</a
+				{title}</a
 			>
-			{
-				(item as Anime)?.year && (
-					<h1 class="text-sm text-moonlightText">
-						{(item as Anime)?.year}
-					</h1>
-				)
-			}
+			{year && <h1 class="text-sm text-moonlightText">{year}</h1>}
 		</div>
 	</div>
 	<div
-		style={`opacity: ${item.score * 10}%;`}
-		class:list={{ stars: item.score === 10 }}
+		style={`opacity: ${score * 10}%;`}
+		class:list={{ stars: score === 10 }}
 		class="relative flex flex-none items-center self-stretch overflow-hidden bg-moonlightIndigo p-4"
-		title={item.finishDate ? `rated on ${item.finishDate}` : undefined}
+		title={finishDate ? `rated on ${finishDate}` : undefined}
 	>
 		{
-			item.score === 10 && (
+			score === 10 && (
 				<>
 					<img
 						class="absolute -bottom-[10px] -left-[14px] rotate-12"
@@ -63,8 +57,8 @@ const { item } = Astro.props;
 				</>
 			)
 		}
-		<h1 class="min-w-6 text-center font-semibold tabular-nums text-black">
-			{item.score}
+		<h1 class="min-w-6 text-center font-semibold text-black">
+			{score}
 		</h1>
 	</div>
 </div>
