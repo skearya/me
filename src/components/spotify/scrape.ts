@@ -1,6 +1,9 @@
 import type { TrackEntity, TrackEmbedData } from "./types/track";
 import type { PlaylistEntity, PlaylistEmbedData } from "./types/playlist";
+import { olderThanDay } from "../utils";
 import { db, playlists, playlistItems, eq, tracks } from "astro:db";
+
+const getSpotifyId = (url: string) => url.split("/").at(-1)!.split("?")[0]!;
 
 export async function getTrack(url: string): Promise<{
 	id: string;
@@ -10,15 +13,13 @@ export async function getTrack(url: string): Promise<{
 	audioPreview: string | null;
 	color: string;
 }> {
-	const id = url.split("/").at(-1)!.split("?")[0]!;
+	const id = getSpotifyId(url);
 
 	const track = (await db.select().from(tracks).where(eq(tracks.id, id)))[0];
 
 	if (track) {
 		return track;
 	} else {
-		console.log(`embed-scraper: cache miss, scraping ${id}`);
-
 		const track = await scrapeItem("track", id).then((data) =>
 			mapTrackEmbed(data),
 		);
@@ -47,7 +48,7 @@ export async function getPlaylist(url: string): Promise<
 		}[],
 	]
 > {
-	const id = url.split("/").at(-1)!.split("?")[0]!;
+	const id = getSpotifyId(url);
 
 	const playlistData = await db
 		.select()
@@ -61,8 +62,6 @@ export async function getPlaylist(url: string): Promise<
 	if (playlist && !olderThanDay(playlist.lastUpdated)) {
 		return [playlist, items];
 	} else {
-		console.log(`embed-scraper: cache miss, scraping ${id}`);
-
 		const [playlist, items] = await scrapeItem("playlist", id).then(
 			(data) => mapPlaylistEmbed(data),
 		);
@@ -76,11 +75,6 @@ export async function getPlaylist(url: string): Promise<
 
 		return [playlist, items];
 	}
-}
-
-function olderThanDay(date: Date): boolean {
-	const dayAgo = new Date(new Date().getTime() - 1000 * 60 * 60 * 24);
-	return date <= dayAgo;
 }
 
 async function scrapeItem<T extends "track" | "playlist">(

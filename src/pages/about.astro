@@ -2,8 +2,9 @@
 export const prerender = false;
 
 import Layout from "../layouts/Layout.astro";
-import Lanyard from "../components/Lanyard.astro";
+import Lanyard from "../components/lanyard/Lanyard.astro";
 import Playlist from "../components/spotify/Playlist.astro";
+import Mal from "../components/mal/Mal.astro";
 
 const socials = [
 	{
@@ -13,22 +14,10 @@ const socials = [
 		color: "rgba(49, 120, 198, 0.125)",
 	},
 	{
-		name: "Spotify",
-		icon: "socials/spotify.png",
-		site: "https://open.spotify.com/user/srz3wg23iyukf5vxpa74i37to",
-		color: "rgba(66, 184, 131, 0.125)",
-	},
-	{
-		name: "Steam",
-		icon: "socials/steam.png",
-		site: "https://steamcommunity.com/id/skeary",
-		color: "rgba(49, 120, 198, 0.125)",
-	},
-	{
-		name: "MyAnimeList",
-		icon: "socials/mal.ico",
-		site: "https://myanimelist.net/profile/skeary",
-		color: "rgba(97, 218, 251, 0.125)",
+		name: "YouTube",
+		icon: "socials/youtube.svg",
+		site: "https://www.youtube.com/@skeary1666",
+		color: "rgba(252, 101, 117, 0.125)",
 	},
 	{
 		name: "ScoreSaber",
@@ -36,29 +25,21 @@ const socials = [
 		site: "https://scoresaber.com/u/76561198365846923",
 		color: "rgba(255, 202, 40, 0.125)",
 	},
-	{
-		name: "BeatSaver",
-		icon: "socials/beatsaver.ico",
-		site: "https://beatsaver.com/profile/4284546",
-		color: "rgba(207, 100, 154, 0.125)",
-	},
 ];
 ---
 
 <Layout title="me">
-	<main class="mx-auto w-full max-w-[42rem] p-4 py-10">
+	<main id="about" class="mx-auto w-full max-w-[42rem] p-4 py-10">
 		<div class="flex flex-col justify-between gap-6 sm:flex-row">
 			<div>
-				<h1 class="mb-6 text-4xl">about me</h1>
+				<h1 class="mb-6 text-4xl">me!</h1>
 				<!-- prettier-ignore -->
 				<ul class='list-inside list-[">_"] space-y-1'>
 					<li><a href="/projects">i build things</a></li>
 					<li><a href="https://www.youtube.com/playlist?list=PLkrjij_GoYXCkdI9ell14S8wasbAXG5W2">i teach things</a></li>
 					<li><a href="/cool-things">i like things</a></li>
 					<li>previously top 100 global in <a href="https://store.steampowered.com/app/620980/Beat_Saber/">beat saber</a></li>
-					<li><a href="https://www.rust-lang.org/">rust</a> fanatic</li>
-					<li>interested in <a href="https://gleam.run/">gleam</a> and <a href="https://elixir-lang.org/">elixir</a></li>
-					<li>high schooler</li>
+					<li>love code</li>
 					<li>&lt;&gt;</li>
 				</ul>
 			</div>
@@ -79,7 +60,8 @@ const socials = [
 							class="rounded-md p-2"
 						>
 							<img
-								class="h-[25px] w-[25px]"
+								height="25px"
+								width="25px"
 								src={social.icon}
 								alt={social.name}
 							/>
@@ -94,6 +76,10 @@ const socials = [
 			<Playlist
 				url="https://open.spotify.com/playlist/2m2lebj9Lg6Riwfyv7G9AD"
 			/>
+		</div>
+		<div class="mt-10">
+			<h1 class="mb-6 text-4xl">anime/manga list</h1>
+			<Mal />
 		</div>
 	</main>
 </Layout>

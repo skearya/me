@@ -1,0 +1,84 @@
+---
+import { getAnimeList, getMangaList } from "./lists";
+
+type Anime = Awaited<ReturnType<typeof getAnimeList>>[0];
+type Manga = Awaited<ReturnType<typeof getMangaList>>[0];
+
+interface Props {
+	item: Anime | Manga;
+}
+
+const { item } = Astro.props;
+---
+
+<div class="flex justify-between">
+	<div class="flex items-center gap-3 p-3">
+		<img
+			class="aspect-[11 / 16] border object-contain backdrop-blur"
+			width="100px"
+			src={item.thumbnailUrl}
+			loading="lazy"
+			alt="item cover"
+		/>
+		<div>
+			<h1>{item.title}</h1>
+			{
+				(item as Anime)?.year && (
+					<h1 class="text-sm text-moonlightText">
+						{(item as Anime)?.year}
+					</h1>
+				)
+			}
+		</div>
+	</div>
+	<div
+		style={`opacity: ${item.score * 10}%;`}
+		class:list={{ stars: item.score === 10 }}
+		class="relative flex flex-none items-center self-stretch overflow-hidden bg-moonlightIndigo p-4"
+		title={item.finishDate ? `rated on ${item.finishDate}` : undefined}
+	>
+		{
+			item.score === 10 && (
+				<>
+					<img
+						class="absolute -bottom-[10px] -left-[14px] rotate-12"
+						width="75px"
+						height="75px"
+						src="/star.svg"
+						alt="star"
+					/>
+					<img
+						class="absolute -right-[16px] -top-[12px] -rotate-12"
+						width="75px"
+						height="75px"
+						src="/star.svg"
+						alt="star"
+					/>
+				</>
+			)
+		}
+		<h1 class="min-w-6 text-center font-semibold tabular-nums text-black">
+			{item.score}
+		</h1>
+	</div>
+</div>
+
+<style>
+	.stars {
+		background-image: linear-gradient(
+			16deg,
+			rgb(197 143 255) 20%,
+			rgb(15, 16, 20) 21%,
+			rgb(15, 16, 20) 79%,
+			rgb(197 143 255) 80%,
+			rgb(197 143 255)
+		);
+		background-size: 100% 65px;
+		background-repeat: no-repeat;
+		background-position: center;
+	}
+
+	.stars > h1 {
+		@apply text-white;
+	}
+</style>

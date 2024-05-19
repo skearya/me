@@ -1,19 +1,16 @@
 ---
-import type { LanyardData, LanyardResponse } from "./types/lanyard";
+import type { LanyardData, LanyardResponse } from "./types";
 
 const USER_ID = 681208628350418977n;
 
 const lanyard = await getLanyard();
 
-async function getLanyard(): Promise<LanyardResponse | { success: false }> {
+async function getLanyard(): Promise<LanyardResponse | undefined> {
 	try {
 		const res = await fetch(`https://api.lanyard.rest/v1/users/${USER_ID}`);
-		const data: LanyardResponse = await res.json();
-		return data;
+		return await res.json();
 	} catch {
-		return {
-			success: false,
-		};
+		return undefined;
 	}
 }
 
@@ -26,7 +23,7 @@ function statusToColor(status: LanyardData["discord_status"]): string {
 ---
 
 {
-	lanyard.success && (
+	lanyard && (
 		<section class="flex h-min min-w-36 flex-col overflow-hidden rounded-lg border bg-moonlightFocusMedium">
 			<div
 				style="background-image: linear-gradient(180deg, #aa465e 65%, #1A1B1F 35%);"
@@ -34,7 +31,9 @@ function statusToColor(status: LanyardData["discord_status"]): string {
 			>
 				<div class="relative">
 					<img
-						class="h-28 w-28 rounded-full border-[4px] border-moonlightFocusMedium"
+						class="rounded-full border-[4px] border-moonlightFocusMedium"
+						height="112px"
+						width="112px"
 						src={`https://cdn.discordapp.com/avatars/${USER_ID}/${lanyard.data.discord_user.avatar}`}
 						alt="profile"
 					/>

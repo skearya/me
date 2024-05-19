@@ -1,15 +1,17 @@
-<>
-	<div id="fishContainer" class="fixed h-screen w-screen overflow-hidden">
-	</div>
+<section
+	class="relative flex h-[calc(100vh-75px)] w-screen items-center justify-center overflow-hidden border-b"
+>
+	<slot />
+	<div id="fish-container"></div>
 	<button
-		id="settingsToggle"
-		class="text-accent absolute bottom-5 right-5 z-50 text-lg opacity-50 transition-opacity hover:opacity-100"
+		id="settings-toggle"
+		class="text-accent absolute bottom-5 right-5 z-10 text-lg opacity-50 transition-opacity hover:opacity-100"
 	>
 		settings
 	</button>
 	<div
-		id="settingsContent"
-		class="absolute bottom-16 right-5 z-50 hidden w-64 space-y-2 rounded-lg border p-3 backdrop-blur-md"
+		id="settings-content"
+		class="absolute bottom-16 right-5 z-10 hidden w-64 space-y-2 rounded-lg border p-3 backdrop-blur-md"
 	>
 		<div class="flex items-center justify-between gap-3">
 			<input
@@ -53,7 +55,7 @@
 			</label>
 		</div>
 	</div>
-</>
+</section>
 
 <script>
 	const colors = {
@@ -63,10 +65,11 @@
 		pink: "#D56CC3",
 	};
 
-	const settingsToggle = document.getElementById("settingsToggle")!;
-	const settingsContent = document.getElementById("settingsContent")!;
-	const settings = document.querySelectorAll("input.setting")!;
-	const fish = document.getElementById("fishContainer")!;
+	const settingsToggle = document.getElementById("settings-toggle")!;
+	const settingsContent = document.getElementById("settings-content")!;
+	const settings =
+		document.querySelectorAll<HTMLInputElement>("input.setting")!;
+	const fish = document.getElementById("fish-container")!;
 
 	let lastTime = performance.now();
 	let interval = performance.now();
@@ -81,7 +84,7 @@
 		settingsContent.classList.toggle("hidden");
 	});
 
-	(settings as NodeListOf<HTMLInputElement>).forEach((setting) => {
+	settings.forEach((setting) => {
 		setting.addEventListener("change", () => {
 			const name = setting.getAttribute("name")!;
 

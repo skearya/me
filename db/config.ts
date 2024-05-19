@@ -31,10 +31,35 @@ const playlistItems = defineTable({
 	},
 });
 
+const animeList = defineTable({
+	columns: {
+		id: column.number(),
+		title: column.text(),
+		thumbnailUrl: column.text(),
+		year: column.number(),
+		score: column.number(),
+		finishDate: column.text({ optional: true }),
+		lastUpdated: column.date({ default: NOW }),
+	},
+});
+
+const mangaList = defineTable({
+	columns: {
+		id: column.number(),
+		title: column.text(),
+		thumbnailUrl: column.text(),
+		score: column.number(),
+		finishDate: column.text({ optional: true }),
+		lastUpdated: column.date({ default: NOW }),
+	},
+});
+
 export default defineDb({
 	tables: {
 		tracks,
 		playlists,
 		playlistItems,
+		animeList,
+		mangaList,
 	},
 });

@@ -24,7 +24,9 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 				</a>
 			</div>
 			<img
-				class="h-36 w-36 rounded-lg shadow-lg"
+				class="rounded-lg shadow-lg"
+				height="144px"
+				width="144px"
 				src={playlist.thumbnailUrl}
 				alt="playlist thumbnail"
 			/>

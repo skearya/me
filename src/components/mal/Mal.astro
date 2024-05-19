@@ -1,0 +1,58 @@
+---
+import { getAnimeList, getMangaList } from "./lists";
+import Item from "./Item.astro";
+
+const [animeList, mangaList] = await Promise.all([
+	getAnimeList(),
+	getMangaList(),
+]);
+---
+
+<section class="overflow-hidden rounded-lg border">
+	<div class="flex h-12 items-stretch justify-stretch divide-x border-b">
+		<button
+			id="anime-selector"
+			class="selected w-full hover:bg-moonlightFocusMedium"
+		>
+			<h1>anime</h1>
+		</button>
+		<button
+			id="manga-selector"
+			class="w-full hover:bg-moonlightFocusMedium"
+		>
+			<h1>manga</h1>
+		</button>
+	</div>
+	<div id="anime" class="max-h-[36rem] divide-y overflow-y-scroll">
+		{animeList.map((anime) => <Item item={anime} />)}
+	</div>
+	<div id="manga" class="hidden max-h-[36rem] divide-y overflow-y-scroll">
+		{mangaList.map((manga) => <Item item={manga} />)}
+	</div>
+</section>
+
+<style>
+	.selected {
+		@apply bg-moonlightFocusHigh;
+	}
+</style>
+
+<script>
+	const animeSelector = document.getElementById("anime-selector")!;
+	const mangaSelector = document.getElementById("manga-selector")!;
+	const anime = document.getElementById("anime")!;
+	const manga = document.getElementById("manga")!;
+
+	animeSelector.addEventListener("click", () => {
+		animeSelector.classList.add("selected");
+		mangaSelector.classList.remove("selected");
+		anime.classList.remove("hidden");
+		manga.classList.add("hidden");
+	});
+	mangaSelector.addEventListener("click", () => {
+		mangaSelector.classList.add("selected");
+		animeSelector.classList.remove("selected");
+		manga.classList.remove("hidden");
+		anime.classList.add("hidden");
+	});
+</script>
