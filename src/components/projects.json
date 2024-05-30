@@ -1,39 +1,82 @@
 [
     {
         "name": "brainless",
-        "description": "a \"brainfuck\" to x86-64 assembly compiler"
+        "description": "a \"brainfuck\" to x86-64 assembly compiler",
+        "stack": [
+            "rust"
+        ]
     },
     {
         "name": "skearything",
-        "description": "discord bot for stats on vc sessions and daily messages"
+        "description": "discord bot for stats on vc sessions and daily messages",
+        "stack": [
+            "rust",
+            "sqlite"
+        ]
     },
     {
         "name": "sift",
-        "description": "full-stack anime streaming site"
+        "description": "full-stack anime streaming site",
+        "stack": [
+            "typescript",
+            "sveltekit",
+            "prisma",
+            "tailwind"
+        ]
     },
     {
         "name": "ttt",
-        "description": "multiplayer tic tac toe"
+        "description": "multiplayer tic tac toe",
+        "stack": [
+            "typescript",
+            "socketio",
+            "sveltekit",
+            "tailwind"
+        ]
     },
     {
         "name": "skeary.me",
         "repo": "me",
-        "description": "this site!"
+        "description": "this site!",
+        "stack": [
+            "typescript",
+            "astro",
+            "tailwind"
+        ]
     },
     {
         "name": "center",
-        "description": "a tool to help get stuff done without distractions"
+        "description": "a tool to help get stuff done without distractions",
+        "stack": [
+            "javascript",
+            "electron",
+            "sveltekit",
+            "tailwind"
+        ]
     },
     {
         "name": "bsstats",
-        "description": "various beat saber stats"
+        "description": "various beat saber stats",
+        "stack": [
+            "javascript",
+            "tailwind"
+        ]
     },
     {
         "name": "startpages",
-        "description": "personal startpages"
+        "description": "personal startpages",
+        "stack": [
+            "javascript",
+            "sveltekit"
+        ]
     },
     {
         "name": "speedreader",
-        "description": "a minimal speedreader"
+        "description": "a minimal speedreader",
+        "stack": [
+            "javascript",
+            "vite",
+            "svelte"
+        ]
     }
 ]

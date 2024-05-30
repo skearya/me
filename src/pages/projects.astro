@@ -15,25 +15,39 @@ import projects from "../components/projects.json";
 					<div class="overflow-hidden rounded-md border">
 						{/* <img src={`/${project.name}.png`} alt={project.name} /> */}
 						<div class="h-[170px] w-full bg-monochromeKashmir" />
-						<div class="flex h-[calc(100%_-_170px)] gap-3 p-4">
-							<div>
-								<h1>{project.name}</h1>
-								<p class="text-sm text-moonlightText">
-									{project.description}
-								</p>
+						<div class="flex h-[calc(100%_-_170px)] flex-col gap-3 p-4">
+							<div class="flex gap-3">
+								<div>
+									<h1>{project.name}</h1>
+									<p class="text-sm text-moonlightText">
+										{project.description}
+									</p>
+								</div>
+								<a
+									class="ml-auto aspect-square flex-shrink-0 self-center"
+									href={`https://github.com/skearya/${project.repo ?? project.name}`}
+									target="_blank"
+								>
+									<img
+										src="/socials/github.png"
+										alt="github"
+										height="25px"
+										width="25px"
+									/>
+								</a>
 							</div>
-							<a
-								class="ml-auto aspect-square flex-shrink-0 self-center"
-								href={`https://github.com/skearya/${project.repo ?? project.name}`}
-								target="_blank"
-							>
-								<img
-									src="/socials/github.png"
-									alt="github"
-									height="25px"
-									width="25px"
-								/>
-							</a>
+							<hr class="mt-auto" />
+							<div class="flex gap-3">
+								{project.stack.map((item) => (
+									<img
+										src={`/stack/${item}.svg`}
+										alt={item}
+										title={item}
+										height="25px"
+										width="25px"
+									/>
+								))}
+							</div>
 						</div>
 					</div>
 				))
