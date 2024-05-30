@@ -1,0 +1,39 @@
+[
+    {
+        "name": "brainless",
+        "description": "a \"brainfuck\" to x86-64 assembly compiler"
+    },
+    {
+        "name": "skearything",
+        "description": "discord bot for stats on vc sessions and daily messages"
+    },
+    {
+        "name": "sift",
+        "description": "full-stack anime streaming site"
+    },
+    {
+        "name": "ttt",
+        "description": "multiplayer tic tac toe"
+    },
+    {
+        "name": "skeary.me",
+        "repo": "me",
+        "description": "this site!"
+    },
+    {
+        "name": "center",
+        "description": "a tool to help get stuff done without distractions"
+    },
+    {
+        "name": "bsstats",
+        "description": "various beat saber stats"
+    },
+    {
+        "name": "startpages",
+        "description": "personal startpages"
+    },
+    {
+        "name": "speedreader",
+        "description": "a minimal speedreader"
+    }
+]

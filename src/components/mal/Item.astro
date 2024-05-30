@@ -24,7 +24,7 @@ const { id, title, thumbnailUrl, year, score, finishDate } = Astro.props;
 		<div>
 			<a
 				href={`https://myanimelist.net/${year ? "anime" : "manga"}/${id}`}
-				class="hover:text-moonlightIndigo"
+				class="transition-colors hover:text-moonlightIndigo"
 			>
 				{title}</a
 			>

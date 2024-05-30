@@ -1,0 +1,43 @@
+---
+import Layout from "../layouts/Layout.astro";
+import projects from "../components/projects.json";
+---
+
+<Layout title="projects">
+	<main class="mx-auto w-full max-w-[42rem] p-4 py-10">
+		<h1 class="mb-2 text-4xl">projects</h1>
+		<p class="mb-6 text-moonlightText">
+			most of them, including the old and not so great ones
+		</p>
+		<div class="grid items-stretch gap-3 sm:grid-cols-2">
+			{
+				projects.map((project) => (
+					<div class="overflow-hidden rounded-md border">
+						{/* <img src={`/${project.name}.png`} alt={project.name} /> */}
+						<div class="h-[170px] w-full bg-monochromeKashmir" />
+						<div class="flex h-[calc(100%_-_170px)] gap-3 p-4">
+							<div>
+								<h1>{project.name}</h1>
+								<p class="text-sm text-moonlightText">
+									{project.description}
+								</p>
+							</div>
+							<a
+								class="ml-auto aspect-square flex-shrink-0 self-center"
+								href={`https://github.com/skearya/${project.repo ?? project.name}`}
+								target="_blank"
+							>
+								<img
+									src="/socials/github.png"
+									alt="github"
+									height="25px"
+									width="25px"
+								/>
+							</a>
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</main>
+</Layout>
