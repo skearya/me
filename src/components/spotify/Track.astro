@@ -1,9 +1,9 @@
 ---
+import { getTrack } from "./scrape";
+
 interface Props {
 	url: string;
 }
-
-import { getTrack } from "./scrape";
 
 const track = await getTrack(Astro.props.url);
 ---

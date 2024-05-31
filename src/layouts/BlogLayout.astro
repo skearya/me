@@ -1,0 +1,59 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Layout from "./Layout.astro";
+
+type Props = CollectionEntry<"blog">["data"];
+
+const { title, date } = Astro.props;
+---
+
+<Layout {title}>
+	<section class="mx-auto w-full max-w-[42rem] space-y-10 p-4 py-10">
+		<div class="space-y-1">
+			<h1 class="text-3xl">{title}</h1>
+			<h2 class="text-moonlightText">
+				{
+					date.toLocaleDateString("en-us", {
+						year: "numeric",
+						month: "numeric",
+						day: "numeric",
+					})
+				}
+			</h2>
+		</div>
+		<hr />
+		<main class="prose prose-invert">
+			<slot />
+		</main>
+		<hr />
+		<form method="POST" autocomplete="off" class="relative mt-10 space-y-2">
+			{
+				Astro.url.searchParams.get("submitted") && (
+					<h1 class="absolute -right-4 top-2 rotate-12 bg-moonlightPink p-1 text-lg text-moonlightBase">
+						message sent!
+					</h1>
+				)
+			}
+			<h1 class="font-semibold">
+				found a mistake? have a question or comment?
+			</h1>
+			<input
+				class="w-full rounded-md border bg-transparent p-3"
+				type="text"
+				name="contact"
+				placeholder="way to contact you back"
+			/>
+			<textarea
+				class="w-full rounded-md border bg-transparent p-3"
+				name="message"
+				placeholder="your message"
+				required></textarea>
+			<button class="w-full rounded-md bg-white p-3 text-moonlightBase">
+				send!
+			</button>
+			<h1 class="text-right text-sm text-moonlightStone">
+				you can also just contact me on discord @ <code>squisket</code>
+			</h1>
+		</form>
+	</section>
+</Layout>

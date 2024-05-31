@@ -1,16 +1,9 @@
 ---
 import { getAnimeList, getMangaList } from "./lists";
 import Item from "./Item.astro";
+import { getEnvVar } from "../utils";
 
-function getMalClientId(): string {
-	try {
-		return Astro.locals.runtime.env.MAL_CLIENT_ID;
-	} catch {
-		return import.meta.env.MAL_CLIENT_ID;
-	}
-}
-
-const MAL_CLIENT_ID = getMalClientId();
+const MAL_CLIENT_ID = getEnvVar(Astro, "MAL_CLIENT_ID");
 
 const [animeList, mangaList] = await Promise.all([
 	getAnimeList(MAL_CLIENT_ID),
@@ -34,10 +27,10 @@ const [animeList, mangaList] = await Promise.all([
 		</button>
 	</div>
 	<div id="anime" class="h-[34rem] divide-y overflow-y-scroll">
-		{animeList.map((anime) => <Item item={anime} />)}
+		{animeList.map((anime) => <Item {...anime} />)}
 	</div>
 	<div id="manga" class="hidden h-[34rem] divide-y overflow-y-scroll">
-		{mangaList.map((manga) => <Item item={manga} />)}
+		{mangaList.map((manga) => <Item {...manga} />)}
 	</div>
 </section>
 

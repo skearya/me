@@ -1,9 +1,9 @@
 ---
+import { getPlaylist } from "./scrape";
+
 interface Props {
 	url: string;
 }
-
-import { getPlaylist } from "./scrape";
 
 const [playlist, items] = await getPlaylist(Astro.props.url);
 ---
