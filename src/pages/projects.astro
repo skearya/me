@@ -1,21 +1,27 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import projects from "../components/projects.json";
+import { stack, projects } from "../components/projects.json";
 ---
 
 <Layout title="projects">
 	<main class="mx-auto w-full max-w-[42rem] p-4 py-10">
-		<h1 class="mb-2 text-4xl">projects</h1>
-		<p class="mb-6 text-moonlightText">
+		<h1 class="mb-4 text-4xl">projects</h1>
+		<p class="text-moonlightText">
 			most of them, including the old and not so great ones
 		</p>
+		<p class="mb-6 text-moonlightText">more info for each on github</p>
 		<div class="grid items-stretch gap-3 sm:grid-cols-2">
 			{
 				projects.map((project) => (
-					<div class="overflow-hidden rounded-md border">
-						{/* <img src={`/${project.name}.png`} alt={project.name} /> */}
-						<div class="h-[170px] w-full bg-monochromeKashmir" />
-						<div class="flex h-[calc(100%_-_170px)] flex-col gap-3 p-4">
+					<div class="flex flex-col overflow-hidden rounded-md border">
+						<img
+							class="object-cover"
+							src={`/projects/${project.name}.png`}
+							alt={project.name}
+							width="1280px"
+							height="720px"
+						/>
+						<div class="flex h-full flex-col gap-4 p-4">
 							<div class="flex gap-3">
 								<div>
 									<h1>{project.name}</h1>
@@ -39,13 +45,19 @@ import projects from "../components/projects.json";
 							<hr class="mt-auto" />
 							<div class="flex gap-3">
 								{project.stack.map((item) => (
-									<img
-										src={`/stack/${item}.svg`}
-										alt={item}
-										title={item}
-										height="25px"
-										width="25px"
-									/>
+									<a
+										class="transition-transform hover:-translate-y-1"
+										href={stack[item as keyof typeof stack]}
+										target="_blank"
+									>
+										<img
+											src={`/stack/${item}.svg`}
+											alt={item}
+											title={item}
+											height="25px"
+											width="25px"
+										/>
+									</a>
 								))}
 							</div>
 						</div>
