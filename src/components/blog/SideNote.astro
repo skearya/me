@@ -1,0 +1,25 @@
+---
+import Star from "../../icons/Star.astro";
+---
+
+<div
+	class="relative border-l-2 border-moonlightIndigo pl-4 text-moonlightIndigo"
+>
+	<div class="animate-spin-slow absolute bottom-0 right-0">
+		<Star width={25} height={25} />
+	</div>
+	<p>
+		<slot />
+	</p>
+</div>
+
+<style>
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+	.animate-spin-slow {
+		animation: spin 30s linear infinite;
+	}
+</style>

@@ -12,10 +12,10 @@ const track = await getTrack(Astro.props.url);
 	<div
 		style=`background: linear-gradient(200deg, ${track.color}, 70%, transparent)`
 	>
-		<div class="flex items-center justify-between p-4">
+		<div class="flex items-center justify-between gap-2 p-4">
 			<div>
-				<h1 class="text-xl font-semibold">{track.title}</h1>
-				<h2>{track.artist}</h2>
+				<h1 class="font-semibold sm:text-xl">{track.title}</h1>
+				<h2 class="text-sm sm:text-base">{track.artist}</h2>
 				<a
 					class="text-sm text-green-300/65"
 					href={`https://open.spotify.com/track/${track.id}`}
