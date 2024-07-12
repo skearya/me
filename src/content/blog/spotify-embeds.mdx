@@ -93,7 +93,7 @@ it's possible to make your embeds use 0 JS by using the native [&lt;audio /&gt;]
 
 <SideNote>
 	yes i did pinpoint the loading times to the hundred **&lt;audio /&gt;**
-	elements, it really doesn't like that making that many....
+	elements, safari really doesn't like that rendering that many....
 </SideNote>
 
 note that you can barely style **&lt;audio /&gt;** elements and the element looks very different across each browser. because of all that i used a bit of JS with [web components](https://developer.mozilla.org/en-US/docs/Web/API/Web_components) for my playlist embed, which gets server side rendered with [astro](https://astro.build/).
