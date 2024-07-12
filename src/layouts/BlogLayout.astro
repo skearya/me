@@ -2,12 +2,12 @@
 import type { CollectionEntry } from "astro:content";
 import Layout from "./Layout.astro";
 
-type Props = CollectionEntry<"blog">["data"];
+type Props = CollectionEntry<"blog">["data"] & { slug: string };
 
-const { title, date } = Astro.props;
+const { title, date, slug } = Astro.props;
 ---
 
-<Layout {title}>
+<Layout {title} ogImage={`/og/${slug}.png`}>
 	<section class="mx-auto w-full max-w-[42rem] space-y-10 p-4 py-10">
 		<div class="space-y-1">
 			<h1 class="text-3xl">{title}</h1>

@@ -37,6 +37,6 @@ if (entry === undefined) {
 const { Content } = await entry.render();
 ---
 
-<BlogLayout {...entry.data}>
+<BlogLayout {...entry.data} slug={slug!}>
 	<Content />
 </BlogLayout>
