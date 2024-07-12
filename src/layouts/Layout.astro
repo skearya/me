@@ -27,11 +27,11 @@ const { title, og } = Astro.props;
 				<>
 					<meta property="og:title" content={og.title} />
 					<meta property="og:type" content={og.type} />
-					<meta property="og:url" content={og.url} />
-					<meta property="og:image" content={og.image} />
+					<meta property="og:url" content={og.url + "?"} />
+					<meta property="og:image" content={og.image + "?"} />
 					<meta name="twitter:title" content={og.title} />
 					<meta name="twitter:card" content="summary_large_image" />
-					<meta name="twitter:image:src" content={og.image} />
+					<meta name="twitter:image:src" content={og.image + "?"} />
 				</>
 			)
 		}
