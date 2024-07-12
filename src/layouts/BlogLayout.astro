@@ -5,9 +5,16 @@ import Layout from "./Layout.astro";
 type Props = CollectionEntry<"blog">["data"] & { slug: string };
 
 const { title, date, slug } = Astro.props;
+
+const og = {
+	title,
+	type: "article",
+	image: `${Astro.url.origin}/og/${slug}.png`,
+	url: Astro.url.href,
+};
 ---
 
-<Layout {title} ogImage={`/og/${slug}.png`}>
+<Layout {title} {og}>
 	<section class="mx-auto w-full max-w-[42rem] space-y-10 p-4 py-10">
 		<div class="space-y-1">
 			<h1 class="text-3xl">{title}</h1>
