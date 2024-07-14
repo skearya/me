@@ -20,6 +20,7 @@
 		"@fontsource-variable/jetbrains-mono": "^5.0.21",
 		"@tailwindcss/typography": "^0.5.13",
 		"astro": "^4.11.5",
+		"astro-embed": "^0.7.2",
 		"tailwindcss": "^3.4.4",
 		"typescript": "^5.5.3"
 	},

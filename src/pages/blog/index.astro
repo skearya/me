@@ -8,8 +8,11 @@ const posts = (await getCollection("blog")).sort(
 ---
 
 <Layout title="blog">
-	<section class="mx-auto w-full max-w-[42rem] space-y-10 p-4 py-10">
-		<h1 class="mb-6 text-4xl">posts</h1>
+	<section class="mx-auto w-full max-w-[42rem] p-4 py-10">
+		<h1 class="mb-4 text-4xl">posts</h1>
+		<p class="mb-6 text-moonlightText">
+			mixed bag of anything, barely a blog
+		</p>
 		<div class="space-y-4">
 			{
 				posts.map((post) => (
