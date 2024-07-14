@@ -2,14 +2,13 @@
 import type { CollectionEntry } from "astro:content";
 import Layout from "./Layout.astro";
 
-type Props = CollectionEntry<"blog">["data"] & { slug: string };
+type Props = CollectionEntry<"blog">["data"];
 
-const { title, date, slug } = Astro.props;
+const { title, date } = Astro.props;
 
 const og = {
 	title,
 	type: "article",
-	image: `${Astro.url.origin}/og/${slug}.png`,
 	url: Astro.url.href,
 };
 ---

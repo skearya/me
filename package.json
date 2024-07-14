@@ -20,9 +20,6 @@
 		"@fontsource-variable/jetbrains-mono": "^5.0.21",
 		"@tailwindcss/typography": "^0.5.13",
 		"astro": "^4.11.5",
-		"satori": "^0.10.14",
-		"satori-html": "^0.3.2",
-		"sharp": "^0.33.4",
 		"tailwindcss": "^3.4.4",
 		"typescript": "^5.5.3"
 	},
