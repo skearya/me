@@ -91,4 +91,13 @@ const { title, og } = Astro.props;
 	::-webkit-scrollbar-thumb {
 		@apply rounded-sm !bg-moonlightWhite/30;
 	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+	.animate-spin-slow {
+		animation: spin 30s linear infinite;
+	}
 </style>
