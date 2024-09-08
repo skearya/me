@@ -18,12 +18,20 @@
 	"projects": {
 		"2024": [
 			{
+				"name": "kristopherboyce.com",
+				"repo": "none",
+				"url": "https://kristopherboyce.com/",
+				"description": "portfolio for a cool designer",
+				"stack": ["typescript", "astro", "tailwind"]
+			},
+			{
 				"name": "brainless",
 				"description": "\"brainfuck\" language to x86-64 assembly compiler",
 				"stack": ["rust"]
 			},
 			{
 				"name": "derivatives",
+				"url": "https://youtu.be/mRuNEYL6wbw",
 				"description": "video made entirely with code explaining derivatives",
 				"stack": ["typescript", "motion-canvas"]
 			},
