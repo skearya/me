@@ -5,6 +5,7 @@
 		"javascript": "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
 		"sveltekit": "https://kit.svelte.dev/",
 		"svelte": "https://svelte.dev/",
+		"solidjs": "https://www.solidjs.com/",
 		"sqlite": "https://www.sqlite.org/",
 		"prisma": "https://www.prisma.io/",
 		"tailwind": "https://tailwindcss.com/",
@@ -17,6 +18,12 @@
 	},
 	"projects": {
 		"2024": [
+			{
+				"name": "wordplay",
+				"url": "https://wordplay.lol/",
+				"description": "multiplayer word games!",
+				"stack": ["rust", "typescript", "solidjs", "tailwind"]
+			},
 			{
 				"name": "kristopherboyce.com",
 				"repo": "none",
