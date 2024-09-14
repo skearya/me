@@ -1,4 +1,4 @@
-<section class="relative h-[150vh] w-screen overflow-hidden">
+<section class="relative h-[150vh] w-screen max-w-full overflow-hidden">
 	<slot />
 	<div id="fish-container"></div>
 	<button
@@ -14,8 +14,7 @@
 		<div class="flex items-center justify-between gap-3">
 			<input
 				type="number"
-				class="setting w-12 rounded bg-moonlightBase
-                [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+				class="setting w-12 rounded bg-moonlightBase [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
 				name="spawn rate"
 				autocomplete="off"
 				value="1000"
