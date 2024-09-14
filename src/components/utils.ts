@@ -6,10 +6,5 @@ export function olderThanDay(date: Date): boolean {
 }
 
 export function getEnvVar(Astro: AstroGlobal, envVar: string): string {
-	try {
-		// @ts-expect-error
-		return Astro.locals.runtime.env[envVar];
-	} catch {
-		return import.meta.env[envVar];
-	}
+	return Astro.locals.runtime.env[envVar] ?? import.meta.env[envVar];
 }

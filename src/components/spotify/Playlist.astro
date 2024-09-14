@@ -85,6 +85,15 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 						</h2>
 					</div>
 					<div class="flex items-center gap-4">
+						<input
+							id="volume"
+							type="range"
+							value="25"
+							min="0"
+							max="100"
+							autocomplete="off"
+							class="h-2 w-28 cursor-pointer appearance-none rounded-full bg-[#1C274C]"
+						/>
 						<button id="pause-play">
 							<img
 								width="32"
@@ -126,7 +135,14 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 			let open = false;
 
 			const audio = new Audio();
-			audio.volume = 0.5;
+			audio.volume = 0.25;
+
+			const volumeSlider: HTMLInputElement =
+				this.querySelector("#volume")!;
+
+			volumeSlider.addEventListener("input", () => {
+				audio.volume = parseInt(volumeSlider.value) / 100;
+			});
 
 			const pausePlayToggle: HTMLButtonElement =
 				this.querySelector("#pause-play")!;
