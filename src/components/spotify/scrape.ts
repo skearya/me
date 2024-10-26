@@ -1,86 +1,89 @@
 import type { TrackEntity, TrackEmbedData } from "./types/track";
 import type { PlaylistEntity, PlaylistEmbedData } from "./types/playlist";
-import { olderThanDay } from "../utils";
-import { db, playlists, playlistItems, eq, tracks } from "astro:db";
+import type { AlbumEmbedData, AlbumEntity } from "./types/album";
+import { getCache, olderThanDay } from "../utils";
+import { db, eq, cache } from "astro:db";
 
-const getSpotifyId = (url: string) => url.split("/").at(-1)!.split("?")[0]!;
-
-export async function getTrack(url: string): Promise<{
+export type Track = {
 	id: string;
 	title: string;
 	artist: string;
 	coverUrl: string;
 	audioPreview: string | null;
 	color: string;
-}> {
-	const id = getSpotifyId(url);
+};
 
-	const track = (await db.select().from(tracks).where(eq(tracks.id, id)))[0];
+export type AlbumOrPlaylist = {
+	id: string;
+	name: string;
+	thumbnailUrl: string;
+	color: string;
+	tracks: {
+		id: string;
+		title: string;
+		artist: string;
+		audioPreview: string | null;
+	}[];
+};
+
+const getSpotifyId = (url: string) => url.split("/").at(-1)!.split("?")[0]!;
+
+export async function getTrack(url: string): Promise<Track> {
+	const id = `spotify:track:${getSpotifyId(url)}`;
+
+	const track = await getCache<Track>(id);
 
 	if (track) {
-		return track;
+		return track.data;
 	} else {
 		const track = await scrapeItem("track", id).then((data) =>
 			mapTrackEmbed(data),
 		);
 
-		await db.insert(tracks).values(track);
+		await db.insert(cache).values({ id, data: track });
 
 		return track;
 	}
 }
 
-export async function getPlaylist(url: string): Promise<
-	[
-		{
-			id: string;
-			color: string;
-			name: string;
-			thumbnailUrl: string;
-			lastUpdated?: Date;
-		},
-		{
-			id: string;
-			playlistId: string;
-			title: string;
-			artist: string;
-			audioPreview: string | null;
-		}[],
-	]
-> {
-	const id = getSpotifyId(url);
+export async function getAlbumOrPlaylist(
+	url: string,
+): Promise<AlbumOrPlaylist> {
+	const type = url.includes("album") ? "album" : "playlist";
+	const id = `spotify:${type}:${getSpotifyId(url)}`;
 
-	const playlistData = await db
-		.select()
-		.from(playlists)
-		.where(eq(playlists.id, id))
-		.leftJoin(playlistItems, eq(playlists.id, playlistItems.playlistId));
+	const item = await getCache<AlbumOrPlaylist>(id);
 
-	const playlist = playlistData[0]?.playlists;
-	const items = playlistData.map((data) => data.playlistItems!);
-
-	if (playlist && !olderThanDay(playlist.lastUpdated)) {
-		return [playlist, items];
+	if (item && type == "playlist" && !olderThanDay(item.lastUpdated)) {
+		return item.data;
+	} else if (item && type == "album") {
+		return item.data;
 	} else {
-		const [playlist, items] = await scrapeItem("playlist", id).then(
-			(data) => mapPlaylistEmbed(data),
+		const item = await scrapeItem(type, id).then((data) =>
+			mapAlbumOrPlaylistEmbed(data),
 		);
 
 		await db.batch([
-			db.delete(playlistItems).where(eq(playlistItems.playlistId, id)),
-			db.delete(playlists).where(eq(playlists.id, id)),
-			db.insert(playlists).values(playlist),
-			db.insert(playlistItems).values(items),
+			db.delete(cache).where(eq(cache.id, id)),
+			db.insert(cache).values({ id, data: item }),
 		]);
 
-		return [playlist, items];
+		return item;
 	}
 }
 
-async function scrapeItem<T extends "track" | "playlist">(
+async function scrapeItem<T extends "track" | "album" | "playlist">(
 	type: T,
-	id: string,
-): Promise<T extends "track" ? TrackEntity : PlaylistEntity> {
+	dbId: string,
+): Promise<
+	T extends "track"
+		? TrackEntity
+		: T extends "album"
+			? AlbumEntity
+			: PlaylistEntity
+> {
+	const id = dbId.split(":").at(-1)!;
+
 	const res = await fetch(`https://open.spotify.com/embed/${type}/${id}`, {
 		headers: {
 			"User-Agent":
@@ -103,21 +106,17 @@ async function scrapeItem<T extends "track" | "playlist">(
 			`type="application/json">`.length,
 		html.lastIndexOf(`</script>`),
 	);
-	const data: TrackEmbedData | PlaylistEmbedData = JSON.parse(json);
+	const data: TrackEmbedData | AlbumEmbedData | PlaylistEmbedData =
+		JSON.parse(json);
 
 	return data.props.pageProps.state.data.entity as T extends "track"
 		? TrackEntity
-		: PlaylistEntity;
+		: T extends "album"
+			? AlbumEntity
+			: PlaylistEntity;
 }
 
-function mapTrackEmbed(track: TrackEntity): {
-	id: string;
-	title: string;
-	artist: string;
-	color: string;
-	coverUrl: string;
-	audioPreview: string | null;
-} {
+function mapTrackEmbed(track: TrackEntity): Track {
 	return {
 		id: track.id,
 		title: track.name,
@@ -128,37 +127,19 @@ function mapTrackEmbed(track: TrackEntity): {
 	};
 }
 
-function mapPlaylistEmbed(playlist: PlaylistEntity): [
-	{
-		id: string;
-		name: string;
-		thumbnailUrl: string;
-		color: string;
-	},
-	{
-		id: string;
-		playlistId: string;
-		title: string;
-		artist: string;
-		audioPreview: string | null;
-	}[],
-] {
-	const data = {
-		id: playlist.id,
-		name: playlist.name,
-		thumbnailUrl: playlist.coverArt.sources[0]!.url,
-		color: playlist.coverArt.extractedColors.colorDark.hex ?? "#000000",
+function mapAlbumOrPlaylistEmbed(data: PlaylistEntity): AlbumOrPlaylist {
+	return {
+		id: data.id,
+		name: data.name,
+		thumbnailUrl: data.coverArt.sources[0]!.url,
+		color: data.coverArt.extractedColors.colorDark.hex ?? "#000000",
+		tracks: data.trackList.map((track) => {
+			return {
+				id: track.uri.split(":").at(-1)!,
+				title: track.title,
+				artist: track.subtitle,
+				audioPreview: track.audioPreview?.url ?? null,
+			};
+		}),
 	};
-
-	const items = playlist.trackList.map((track) => {
-		return {
-			id: track.uri.split(":").at(-1)!,
-			playlistId: playlist.id,
-			title: track.title,
-			artist: track.subtitle,
-			audioPreview: track.audioPreview?.url ?? null,
-		};
-	});
-
-	return [data, items];
 }

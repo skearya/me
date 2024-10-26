@@ -1,107 +1,69 @@
 import type { AnimeListData } from "./types/anime";
 import type { MangaListData } from "./types/manga";
-import { olderThanDay } from "../utils";
-import { db, animeList } from "astro:db";
-import { mangaList } from "astro:db";
+import { getCache, olderThanDay } from "../utils";
+import { db, eq, cache } from "astro:db";
 
-export async function getAnimeList(MAL_CLIENT_ID: string): Promise<
-	{
-		id: number;
-		title: string;
-		thumbnailUrl: string;
-		year: number;
-		score: number;
-		finishDate: string | null;
-	}[]
-> {
-	const list = await db.select().from(animeList);
+export type MalList = {
+	id: number;
+	title: string;
+	thumbnailUrl: string;
+	year: number | undefined;
+	score: number;
+	finishDate: string | null;
+}[];
 
-	if (list[0] && !olderThanDay(list[0].lastUpdated)) {
-		return list;
-	} else {
-		const res = await fetch(
-			"https://api.myanimelist.net/v2/users/skeary/animelist?" +
-				new URLSearchParams({
-					fields: "list_status,start_season",
-					status: "completed",
-					sort: "list_score",
-					limit: "100",
-				}),
-			{
-				headers: {
-					"X-MAL-CLIENT-ID": MAL_CLIENT_ID,
-				},
+export async function fetchList(
+	MAL_CLIENT_ID: string,
+	type: "anime" | "manga",
+): Promise<MalList> {
+	const res = await fetch(
+		`https://api.myanimelist.net/v2/users/skeary/${type}list?` +
+			new URLSearchParams({
+				fields:
+					type === "anime"
+						? "list_status,start_season"
+						: "list_status",
+				status: "completed",
+				sort: "list_score",
+				limit: "100",
+			}),
+		{
+			headers: {
+				"X-MAL-CLIENT-ID": MAL_CLIENT_ID,
 			},
-		);
-		const json = (await res.json()) as AnimeListData;
+		},
+	);
 
-		const list = json.data.map((anime) => {
-			return {
-				id: anime.node.id,
-				title: anime.node.title,
-				thumbnailUrl:
-					anime.node.main_picture.medium ??
-					anime.node.main_picture.large,
-				year: anime.node.start_season.year,
-				score: anime.list_status.score,
-				finishDate: anime.list_status.finish_date ?? null,
-			};
-		});
+	const json = (await res.json()) as AnimeListData | MangaListData;
 
-		await db.batch([
-			db.delete(animeList),
-			db.insert(animeList).values(list),
-		]);
-
-		return list;
-	}
+	return json.data.map((item) => {
+		return {
+			id: item.node.id,
+			title: item.node.title,
+			thumbnailUrl:
+				item.node.main_picture.medium ?? item.node.main_picture.large,
+			// @ts-expect-error
+			year: item.node?.start_season?.year as number | undefined,
+			score: item.list_status.score,
+			finishDate: item.list_status.finish_date ?? null,
+		};
+	});
 }
 
-export async function getMangaList(MAL_CLIENT_ID: string): Promise<
-	{
-		id: number;
-		title: string;
-		score: number;
-		thumbnailUrl: string;
-		finishDate: string | null;
-	}[]
-> {
-	const list = await db.select().from(mangaList);
+export async function getMalList(
+	MAL_CLIENT_ID: string,
+	type: "anime" | "manga",
+): Promise<MalList> {
+	const list = await getCache<MalList>(`mal:${type}`);
 
-	if (list[0] && !olderThanDay(list[0].lastUpdated)) {
-		return list;
+	if (list && !olderThanDay(list.lastUpdated)) {
+		return list.data;
 	} else {
-		const res = await fetch(
-			"https://api.myanimelist.net/v2/users/skeary/mangalist?" +
-				new URLSearchParams({
-					fields: "list_status",
-					status: "completed",
-					sort: "list_score",
-					limit: "100",
-				}),
-			{
-				headers: {
-					"X-MAL-CLIENT-ID": MAL_CLIENT_ID,
-				},
-			},
-		);
-		const json = (await res.json()) as MangaListData;
-
-		const list = json.data.map((anime) => {
-			return {
-				id: anime.node.id,
-				title: anime.node.title,
-				thumbnailUrl:
-					anime.node.main_picture.medium ??
-					anime.node.main_picture.large,
-				score: anime.list_status.score,
-				finishDate: anime.list_status.finish_date ?? null,
-			};
-		});
+		const list = await fetchList(MAL_CLIENT_ID, type);
 
 		await db.batch([
-			db.delete(mangaList),
-			db.insert(mangaList).values(list),
+			db.delete(cache).where(eq(cache.id, `mal:${type}`)),
+			db.insert(cache).values({ id: `mal:${type}`, data: list }),
 		]);
 
 		return list;

@@ -1,4 +1,12 @@
 import type { AstroGlobal } from "astro";
+import { cache, db, eq } from "astro:db";
+
+export async function getCache<T>(
+	id: string,
+): Promise<{ id: string; data: T; lastUpdated: Date } | undefined> {
+	// @ts-expect-error
+	return (await db.select().from(cache).where(eq(cache.id, id)))[0];
+}
 
 export function olderThanDay(date: Date): boolean {
 	const dayAgo = new Date(new Date().getTime() - 1000 * 60 * 60 * 24);

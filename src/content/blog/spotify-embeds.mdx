@@ -5,7 +5,7 @@ tags: ["js", "scraping"]
 ---
 
 import SideNote from "../../components/blog/SideNote.astro";
-import Playlist from "../../components/spotify/Playlist.astro";
+import AlbumOrPlaylist from "../../components/spotify/AlbumOrPlaylist.astro";
 import Track from "../../components/spotify/Track.astro";
 
 <SideNote>
@@ -35,7 +35,7 @@ this all started when i wanted to display my favorite songs on my [/about](/abou
 here they are!
 
 <div class="not-prose space-y-5">
-	<Playlist url="https://open.spotify.com/playlist/2m2lebj9Lg6Riwfyv7G9AD" />
+	<AlbumOrPlaylist url="https://open.spotify.com/playlist/2m2lebj9Lg6Riwfyv7G9AD" />
 	<div class="h-[1px] w-full bg-white/10" />
 	<Track url="https://open.spotify.com/track/1uIrEzzaygkxr6mntrf8jm" />
 </div>

@@ -1,12 +1,7 @@
 ---
-interface Props {
-	id: number;
-	title: string;
-	thumbnailUrl: string;
-	year?: number;
-	score: number;
-	finishDate: string | null;
-}
+import type { MalList } from "./lists";
+
+type Props = MalList[number];
 
 const { id, title, thumbnailUrl, year, score, finishDate } = Astro.props;
 ---

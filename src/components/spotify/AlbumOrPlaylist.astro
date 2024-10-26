@@ -1,24 +1,24 @@
 ---
-import { getPlaylist } from "./scrape";
+import { getAlbumOrPlaylist } from "./scrape";
 
 interface Props {
 	url: string;
 }
 
-const [playlist, items] = await getPlaylist(Astro.props.url);
+const item = await getAlbumOrPlaylist(Astro.props.url);
 ---
 
-<spotify-playlist>
+<spotify-item>
 	<section class="relative overflow-hidden rounded-lg border">
 		<div
-			style=`background: linear-gradient(200deg, ${playlist.color}, 70%, transparent)`
+			style=`background: linear-gradient(200deg, ${item.color}, 70%, transparent)`
 			class="flex items-center justify-between overflow-hidden border-b p-4"
 		>
 			<div>
-				<h1 class="text-xl font-semibold">{playlist.name}</h1>
+				<h1 class="text-xl font-semibold">{item.name}</h1>
 				<a
 					class="text-sm text-green-300/65"
-					href={`https://open.spotify.com/playlist/${playlist.id}`}
+					href={`https://open.spotify.com/${Astro.props.url.includes("album") ? "album" : "playlist"}/${item.id}`}
 				>
 					open in spotify
 				</a>
@@ -27,16 +27,16 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 				class="rounded-lg shadow-lg"
 				height="144px"
 				width="144px"
-				src={playlist.thumbnailUrl}
+				src={item.thumbnailUrl}
 				alt="playlist thumbnail"
 			/>
 		</div>
 		<div class="flex max-h-96 flex-col">
 			<div id="items" class="divide-y overflow-y-scroll">
 				{
-					items.map((track, i) => (
+					item.tracks.map((track, i) => (
 						<div
-							class="playlist-item flex w-full items-center justify-between gap-4 p-4"
+							class="track flex w-full items-center justify-between gap-4 p-4"
 							data-info={JSON.stringify(track)}
 						>
 							{track.audioPreview && (
@@ -60,7 +60,7 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 					))
 				}
 				{
-					items.length >= 100 && (
+					item.tracks.length >= 100 && (
 						<div class="p-4 text-center text-moonlightText">
 							<h1>there's more songs on spotify :&rpar;</h1>
 						</div>
@@ -115,18 +115,12 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 			</div>
 		</div>
 	</section>
-</spotify-playlist>
+</spotify-item>
 
 <script>
-	type PlaylistItem = {
-		id: string;
-		playlistId: string;
-		title: string;
-		artist: string;
-		audioPreview: string | null;
-	};
+	import type { AlbumOrPlaylist } from "./scrape";
 
-	class SpotifyPlaylist extends HTMLElement {
+	class SpotifyItem extends HTMLElement {
 		constructor() {
 			super();
 		}
@@ -175,7 +169,7 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 				setBackground((audio.currentTime / audio.duration) * 100);
 			});
 
-			const playAudio = (info: PlaylistItem) => {
+			const playAudio = (info: AlbumOrPlaylist["tracks"][number]) => {
 				setBackground(0);
 				nowPlaying.querySelector("#title")!.textContent = info.title;
 				nowPlaying.querySelector("#artist")!.textContent = info.artist;
@@ -207,10 +201,12 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 			};
 
 			const playlistItems: NodeListOf<HTMLDivElement> =
-				this.querySelectorAll(".playlist-item");
+				this.querySelectorAll(".track");
 
 			playlistItems.forEach((item) => {
-				const info: PlaylistItem = JSON.parse(item.dataset.info!);
+				const info: AlbumOrPlaylist["tracks"][number] = JSON.parse(
+					item.dataset.info!
+				);
 				const playButton = item.querySelector("button");
 
 				if (playButton) {
@@ -220,5 +216,5 @@ const [playlist, items] = await getPlaylist(Astro.props.url);
 		}
 	}
 
-	customElements.define("spotify-playlist", SpotifyPlaylist);
+	customElements.define("spotify-item", SpotifyItem);
 </script>

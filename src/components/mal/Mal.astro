@@ -1,13 +1,13 @@
 ---
-import { getAnimeList, getMangaList } from "./lists";
 import Item from "./Item.astro";
+import { getMalList } from "./lists";
 import { getEnvVar } from "../utils";
 
 const MAL_CLIENT_ID = getEnvVar(Astro, "MAL_CLIENT_ID");
 
 const [animeList, mangaList] = await Promise.all([
-	getAnimeList(MAL_CLIENT_ID),
-	getMangaList(MAL_CLIENT_ID),
+	getMalList(MAL_CLIENT_ID, "anime"),
+	getMalList(MAL_CLIENT_ID, "manga"),
 ]);
 ---
 

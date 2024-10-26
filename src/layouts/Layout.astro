@@ -6,13 +6,22 @@ interface Props {
 	title: string;
 	og?: {
 		title: string;
+		description: string | undefined;
 		type: string;
 		url: string;
-		image?: string;
+		image: string | undefined;
 	};
 }
 
-const { title, og } = Astro.props;
+const { title } = Astro.props;
+
+const og = {
+	title: "skeary's ocean",
+	description: "><>",
+	type: "website",
+	url: "https://skeary.me",
+	...Astro.props.og,
+};
 ---
 
 <!doctype html>
@@ -22,23 +31,17 @@ const { title, og } = Astro.props;
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/cat.svg" />
 		<meta name="generator" content={Astro.generator} />
+		<meta property="og:title" content={og.title} />
+		<meta property="og:description" content={og.description} />
+		<meta property="og:type" content={og.type} />
+		<meta property="og:url" content={og.url} />
 		{
-			og && (
+			og.image && (
 				<>
-					<meta property="og:title" content={og.title} />
-					<meta property="og:type" content={og.type} />
-					<meta property="og:url" content={og.url} />
-					{og.image && (
-						<>
-							<meta property="og:image" content={og.image} />
-							<meta name="twitter:title" content={og.title} />
-							<meta
-								name="twitter:card"
-								content="summary_large_image"
-							/>
-							<meta name="twitter:image:src" content={og.image} />
-						</>
-					)}
+					<meta property="og:image" content={og.image} />
+					<meta name="twitter:title" content={og.title} />
+					<meta name="twitter:card" content="summary_large_image" />
+					<meta name="twitter:image:src" content={og.image} />
 				</>
 			)
 		}
