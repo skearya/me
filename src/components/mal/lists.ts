@@ -53,19 +53,27 @@ export async function fetchList(
 export async function getMalList(
 	MAL_CLIENT_ID: string,
 	type: "anime" | "manga",
-): Promise<MalList> {
+): Promise<MalList | undefined> {
 	const list = await getCache<MalList>(`mal:${type}`);
 
-	if (list && !olderThanDay(list.lastUpdated)) {
+	if (list) {
+		if (olderThanDay(list.lastUpdated)) {
+			try {
+				const list = await fetchList(MAL_CLIENT_ID, type);
+
+				await db.batch([
+					db.delete(cache).where(eq(cache.id, `mal:${type}`)),
+					db.insert(cache).values({ id: `mal:${type}`, data: list }),
+				]);
+
+				return list;
+			} catch {
+				return list.data;
+			}
+		}
+
 		return list.data;
-	} else {
-		const list = await fetchList(MAL_CLIENT_ID, type);
-
-		await db.batch([
-			db.delete(cache).where(eq(cache.id, `mal:${type}`)),
-			db.insert(cache).values({ id: `mal:${type}`, data: list }),
-		]);
-
-		return list;
 	}
+
+	return undefined;
 }

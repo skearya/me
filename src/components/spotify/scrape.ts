@@ -48,28 +48,34 @@ export async function getTrack(url: string): Promise<Track> {
 
 export async function getAlbumOrPlaylist(
 	url: string,
-): Promise<AlbumOrPlaylist> {
+): Promise<AlbumOrPlaylist | undefined> {
 	const type = url.includes("album") ? "album" : "playlist";
 	const id = `spotify:${type}:${getSpotifyId(url)}`;
 
 	const item = await getCache<AlbumOrPlaylist>(id);
 
-	if (item && type == "playlist" && !olderThanDay(item.lastUpdated)) {
-		return item.data;
-	} else if (item && type == "album") {
-		return item.data;
-	} else {
-		const item = await scrapeItem(type, id).then((data) =>
-			mapAlbumOrPlaylistEmbed(data),
-		);
+	if (item) {
+		if (type === "playlist" && olderThanDay(item.lastUpdated)) {
+			try {
+				const item = await scrapeItem(type, id).then((data) =>
+					mapAlbumOrPlaylistEmbed(data),
+				);
 
-		await db.batch([
-			db.delete(cache).where(eq(cache.id, id)),
-			db.insert(cache).values({ id, data: item }),
-		]);
+				await db.batch([
+					db.delete(cache).where(eq(cache.id, id)),
+					db.insert(cache).values({ id, data: item }),
+				]);
 
-		return item;
+				return item;
+			} catch {
+				return item.data;
+			}
+		}
+
+		return item.data;
 	}
+
+	return undefined;
 }
 
 async function scrapeItem<T extends "track" | "album" | "playlist">(

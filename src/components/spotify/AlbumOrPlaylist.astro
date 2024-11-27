@@ -5,7 +5,7 @@ interface Props {
 	url: string;
 }
 
-const item = await getAlbumOrPlaylist(Astro.props.url);
+const item = (await getAlbumOrPlaylist(Astro.props.url))!;
 ---
 
 <spotify-item>
