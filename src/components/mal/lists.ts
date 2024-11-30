@@ -56,24 +56,28 @@ export async function getMalList(
 ): Promise<MalList | undefined> {
 	const list = await getCache<MalList>(`mal:${type}`);
 
+	const malList = async () => {
+		const list = await fetchList(MAL_CLIENT_ID, type);
+
+		await db.batch([
+			db.delete(cache).where(eq(cache.id, `mal:${type}`)),
+			db.insert(cache).values({ id: `mal:${type}`, data: list }),
+		]);
+
+		return list;
+	};
+
 	if (list) {
 		if (olderThanDay(list.lastUpdated)) {
 			try {
-				const list = await fetchList(MAL_CLIENT_ID, type);
-
-				await db.batch([
-					db.delete(cache).where(eq(cache.id, `mal:${type}`)),
-					db.insert(cache).values({ id: `mal:${type}`, data: list }),
-				]);
-
-				return list;
+				return await malList();
 			} catch {
 				return list.data;
 			}
 		}
 
 		return list.data;
+	} else {
+		return await malList();
 	}
-
-	return undefined;
 }

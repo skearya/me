@@ -6,74 +6,74 @@ export interface PlaylistEmbedData {
 	assetPrefix: string;
 	isFallback: boolean;
 	gssp: boolean;
-	appGip: boolean;
 	scriptLoader: any[];
 }
 
-export interface Query {
+interface Query {
+	utm_source: string;
 	id: string;
 }
 
-export interface Props {
+interface Props {
 	pageProps: PageProps;
 	__N_SSP: boolean;
 }
 
-export interface PageProps {
-	_sentryTraceData: string;
-	_sentryBaggage: string;
+interface PageProps {
 	state: State;
 	config: Config;
+	_sentryTraceData: string;
+	_sentryBaggage: string;
 }
 
-export interface Config {
+interface Config {
 	correlationId: string;
 	strings: Strings;
 	locale: string;
 	clientId: string;
+	restrictionId: string;
 }
 
-export interface Strings {
+interface Strings {
 	en: En;
 }
 
-export interface En {
+interface En {
 	translation: Translation;
 }
 
-export interface Translation {}
+interface Translation {}
 
-export interface State {
+interface State {
 	data: Data;
 	settings: Settings;
 }
 
-export interface Settings {
+interface Settings {
 	rtl: boolean;
 	session: Session;
 	entityContext: string;
 	clientId: string;
-	isPremiumOnlyMarket: boolean;
 	isMobile: boolean;
 	isSafari: boolean;
 	isIOS: boolean;
 	isTablet: boolean;
+	isDarkMode: boolean;
 }
 
-export interface Session {
+interface Session {
 	accessToken: string;
 	accessTokenExpirationTimestampMs: number;
 	isAnonymous: boolean;
 }
 
-export interface Data {
+interface Data {
 	entity: PlaylistEntity;
 	embeded_entity_uri: string;
 	defaultAudioFileObject: DefaultAudioFileObject;
-	backgroundColor: string;
 }
 
-export interface DefaultAudioFileObject {
+interface DefaultAudioFileObject {
 	passthrough: string;
 }
 
@@ -85,7 +85,7 @@ export interface PlaylistEntity {
 	title: string;
 	subtitle: string;
 	coverArt: CoverArt;
-	releaseDate?: any;
+	releaseDate: null;
 	duration: number;
 	maxDuration: number;
 	isPlayable: boolean;
@@ -93,9 +93,26 @@ export interface PlaylistEntity {
 	hasVideo: boolean;
 	relatedEntityUri: string;
 	trackList: TrackList[];
+	visualIdentity: VisualIdentity;
 }
 
-export interface TrackList {
+interface VisualIdentity {
+	backgroundBase: BackgroundBase;
+	backgroundTintedBase: BackgroundBase;
+	textBase: BackgroundBase;
+	textBrightAccent: BackgroundBase;
+	textSubdued: BackgroundBase;
+	image: any[];
+}
+
+interface BackgroundBase {
+	alpha: number;
+	blue: number;
+	green: number;
+	red: number;
+}
+
+interface TrackList {
 	uri: string;
 	uid: string;
 	title: string;
@@ -103,29 +120,20 @@ export interface TrackList {
 	isExplicit: boolean;
 	duration: number;
 	isPlayable: boolean;
-	audioPreview?: AudioPreview;
+	audioPreview: AudioPreview | null;
 }
 
-export interface AudioPreview {
+interface AudioPreview {
 	format: string;
 	url: string;
 }
 
-export interface CoverArt {
-	extractedColors: ExtractedColors;
+interface CoverArt {
 	sources: Source[];
 }
 
-export interface Source {
+interface Source {
 	height: number;
 	width: number;
 	url: string;
-}
-
-export interface ExtractedColors {
-	colorDark: ColorDark;
-}
-
-export interface ColorDark {
-	hex: string;
 }

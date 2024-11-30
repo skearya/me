@@ -54,28 +54,32 @@ export async function getAlbumOrPlaylist(
 
 	const item = await getCache<AlbumOrPlaylist>(id);
 
+	const albumOrPlaylist = async () => {
+		const item = await scrapeItem(type, id).then((data) =>
+			mapAlbumOrPlaylistEmbed(data),
+		);
+
+		await db.batch([
+			db.delete(cache).where(eq(cache.id, id)),
+			db.insert(cache).values({ id, data: item }),
+		]);
+
+		return item;
+	};
+
 	if (item) {
 		if (type === "playlist" && olderThanDay(item.lastUpdated)) {
 			try {
-				const item = await scrapeItem(type, id).then((data) =>
-					mapAlbumOrPlaylistEmbed(data),
-				);
-
-				await db.batch([
-					db.delete(cache).where(eq(cache.id, id)),
-					db.insert(cache).values({ id, data: item }),
-				]);
-
-				return item;
+				return albumOrPlaylist();
 			} catch {
 				return item.data;
 			}
 		}
 
 		return item.data;
+	} else {
+		return albumOrPlaylist();
 	}
-
-	return undefined;
 }
 
 async function scrapeItem<T extends "track" | "album" | "playlist">(
@@ -133,12 +137,15 @@ function mapTrackEmbed(track: TrackEntity): Track {
 	};
 }
 
-function mapAlbumOrPlaylistEmbed(data: PlaylistEntity): AlbumOrPlaylist {
+function mapAlbumOrPlaylistEmbed(
+	data: AlbumEntity | PlaylistEntity,
+): AlbumOrPlaylist {
 	return {
 		id: data.id,
 		name: data.name,
-		thumbnailUrl: data.coverArt.sources[0]!.url,
-		color: data.coverArt.extractedColors.colorDark.hex ?? "#000000",
+		thumbnailUrl:
+			data.visualIdentity.image[0]?.url ?? data.coverArt?.sources[0]?.url,
+		color: `rgba(${data.visualIdentity.backgroundBase.red}, ${data.visualIdentity.backgroundBase.green}, ${data.visualIdentity.backgroundBase.blue}, ${data.visualIdentity.backgroundBase.alpha})`,
 		tracks: data.trackList.map((track) => {
 			return {
 				id: track.uri.split(":").at(-1)!,
