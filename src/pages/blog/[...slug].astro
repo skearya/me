@@ -3,7 +3,7 @@ export const prerender = false;
 
 import BlogLayout from "../../layouts/BlogLayout.astro";
 import { getEntry } from "astro:content";
-import { getEnvVar } from "../../components/utils";
+import { getEnvVar } from "../../utils";
 
 if (Astro.request.method === "POST") {
 	try {

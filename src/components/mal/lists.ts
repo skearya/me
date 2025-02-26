@@ -1,6 +1,6 @@
 import type { AnimeListData } from "./types/anime";
 import type { MangaListData } from "./types/manga";
-import { getCache, olderThanDay } from "../utils";
+import { getCache, olderThanDay } from "../../utils";
 import { db, eq, cache } from "astro:db";
 
 export type MalList = {

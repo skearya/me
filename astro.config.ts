@@ -9,7 +9,7 @@ import { codeLabel } from "./src/components/blog/codeLabel";
 export default defineConfig({
 	site: "https://skeary.me",
 	integrations: [db(), tailwind(), mdx()],
-	output: "hybrid",
+	output: "static",
 	adapter: cloudflare(),
 	image: {
 		service: passthroughImageService(),
