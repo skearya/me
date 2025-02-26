@@ -15,7 +15,7 @@
 		"@astrojs/db": "^0.14.6",
 		"@astrojs/mdx": "^4.0.8",
 		"@astrojs/node": "^9.1.1",
-		"@astrojs/tailwind": "^6.0.0",
+		"@astrojs/tailwind": "^5.1.5",
 		"@fontsource-variable/inter": "^5.0.19",
 		"@fontsource-variable/jetbrains-mono": "^5.0.21",
 		"@libsql/client": "^0.14.0",

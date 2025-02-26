@@ -84,46 +84,48 @@ export interface TrackEntity {
 	id: string;
 	title: string;
 	artists: Artist[];
-	coverArt: CoverArt;
+	coverArt: null;
 	releaseDate: ReleaseDate;
 	duration: number;
-	maxDuration: number;
 	isPlayable: boolean;
 	isExplicit: boolean;
-	audioPreview?: AudioPreview;
+	audioPreview: AudioPreview;
 	hasVideo: boolean;
 	relatedEntityUri: string;
+	visualIdentity: VisualIdentity;
 }
 
-export interface AudioPreview {
+interface VisualIdentity {
+	backgroundBase: BackgroundBase;
+	backgroundTintedBase: BackgroundBase;
+	textBase: BackgroundBase;
+	textBrightAccent: BackgroundBase;
+	textSubdued: BackgroundBase;
+	image: Image[];
+}
+
+interface Image {
+	url: string;
+	maxHeight: number;
+	maxWidth: number;
+}
+
+interface BackgroundBase {
+	alpha: number;
+	blue: number;
+	green: number;
+	red: number;
+}
+
+interface AudioPreview {
 	url: string;
 }
 
-export interface ReleaseDate {
+interface ReleaseDate {
 	isoString: string;
 }
 
-export interface CoverArt {
-	extractedColors: ExtractedColors;
-	sources: Source[];
-}
-
-export interface Source {
-	url: string;
-	width: number;
-	height: number;
-}
-
-export interface ExtractedColors {
-	colorDark: ColorDark;
-	colorLight: ColorDark;
-}
-
-export interface ColorDark {
-	hex: string;
-}
-
-export interface Artist {
+interface Artist {
 	name: string;
 	uri: string;
 }

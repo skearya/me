@@ -131,8 +131,12 @@ function mapTrackEmbed(track: TrackEntity): Track {
 		id: track.id,
 		title: track.name,
 		artist: track.artists.map((artist) => artist.name).join(", "),
-		color: track.coverArt.extractedColors.colorDark.hex ?? "#000000",
-		coverUrl: track.coverArt.sources[0]!.url,
+		color:
+			"#" +
+			track.visualIdentity.backgroundBase.red.toString(16) +
+			track.visualIdentity.backgroundBase.green.toString(16) +
+			track.visualIdentity.backgroundBase.blue.toString(16),
+		coverUrl: track.visualIdentity.image[0]!.url,
 		audioPreview: track.audioPreview?.url ?? null,
 	};
 }
