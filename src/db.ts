@@ -1,8 +1,8 @@
+import { createClient } from "@libsql/client/web";
 import type { AstroGlobal } from "astro";
 import { drizzle } from "drizzle-orm/libsql/web";
-import { createClient } from "@libsql/client/web";
-import { getEnvVar } from "./utils";
 import * as schema from "./schema";
+import { getEnvVar } from "./utils";
 
 export function createDb(astro: AstroGlobal) {
 	const client = createClient({

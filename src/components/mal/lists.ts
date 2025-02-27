@@ -1,9 +1,9 @@
+import { eq } from "drizzle-orm";
+import type { Database } from "../../db";
+import { cache } from "../../schema";
+import { getCache, olderThanDay } from "../../utils";
 import type { AnimeListData } from "./types/anime";
 import type { MangaListData } from "./types/manga";
-import type { Database } from "../../db";
-import { getCache, olderThanDay } from "../../utils";
-import { cache } from "../../schema";
-import { eq } from "drizzle-orm";
 
 export type MalList = {
 	id: number;

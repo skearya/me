@@ -1,7 +1,7 @@
-import { defineConfig, passthroughImageService } from "astro/config";
 import cloudflare from "@astrojs/cloudflare";
-import tailwind from "@astrojs/tailwind";
 import mdx from "@astrojs/mdx";
+import tailwind from "@astrojs/tailwind";
+import { defineConfig, passthroughImageService } from "astro/config";
 import { codeLabel } from "./src/components/blog/codeLabel";
 
 // https://astro.build/config

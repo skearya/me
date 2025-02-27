@@ -1,7 +1,7 @@
 import type { AstroGlobal } from "astro";
+import { eq } from "drizzle-orm";
 import type { Database } from "./db";
 import { cache } from "./schema";
-import { eq } from "drizzle-orm";
 
 export async function getCache<T>(
 	db: Database,
