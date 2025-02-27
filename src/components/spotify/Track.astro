@@ -1,11 +1,13 @@
 ---
+import type { Database } from "../../db";
 import { getTrack } from "./scrape";
 
 interface Props {
+	db: Database;
 	url: string;
 }
 
-const track = await getTrack(Astro.props.url);
+const track = await getTrack(Astro.props.db, Astro.props.url);
 ---
 
 <section class="overflow-hidden rounded-lg border">

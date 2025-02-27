@@ -5,6 +5,7 @@ import Layout from "../layouts/Layout.astro";
 import Lanyard from "../components/lanyard/Lanyard.astro";
 import AlbumOrPlaylist from "../components/spotify/AlbumOrPlaylist.astro";
 import Mal from "../components/mal/Mal.astro";
+import { createDb } from "../db";
 
 const socials = [
 	{
@@ -26,6 +27,8 @@ const socials = [
 		color: "rgba(255, 202, 40, 0.125)",
 	},
 ];
+
+const db = createDb(Astro);
 ---
 
 <Layout title="me">
@@ -72,12 +75,13 @@ const socials = [
 		<div class="mt-10">
 			<h1 class="mb-6 text-4xl">favorite songs</h1>
 			<AlbumOrPlaylist
+				{db}
 				url="https://open.spotify.com/playlist/2m2lebj9Lg6Riwfyv7G9AD"
 			/>
 		</div>
 		<div class="mt-10">
 			<h1 class="mb-6 text-4xl">anime/manga list</h1>
-			<Mal />
+			<Mal {db} />
 		</div>
 	</main>
 </Layout>

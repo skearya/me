@@ -1,7 +1,9 @@
 import type { AnimeListData } from "./types/anime";
 import type { MangaListData } from "./types/manga";
+import type { Database } from "../../db";
 import { getCache, olderThanDay } from "../../utils";
-import { db, eq, cache } from "astro:db";
+import { cache } from "../../schema";
+import { eq } from "drizzle-orm";
 
 export type MalList = {
 	id: number;
@@ -51,10 +53,11 @@ export async function fetchList(
 }
 
 export async function getMalList(
+	db: Database,
 	MAL_CLIENT_ID: string,
 	type: "anime" | "manga",
 ): Promise<MalList | undefined> {
-	const list = await getCache<MalList>(`mal:${type}`);
+	const list = await getCache<MalList>(db, `mal:${type}`);
 
 	const malList = async () => {
 		const list = await fetchList(MAL_CLIENT_ID, type);

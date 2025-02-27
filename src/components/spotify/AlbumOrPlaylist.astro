@@ -1,11 +1,13 @@
 ---
+import type { Database } from "../../db";
 import { getAlbumOrPlaylist } from "./scrape";
 
 interface Props {
+	db: Database;
 	url: string;
 }
 
-const item = (await getAlbumOrPlaylist(Astro.props.url))!;
+const item = (await getAlbumOrPlaylist(Astro.props.db, Astro.props.url))!;
 ---
 
 <spotify-item>

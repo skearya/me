@@ -4,6 +4,7 @@ export const prerender = false;
 import BlogLayout from "../../layouts/BlogLayout.astro";
 import { getEntry } from "astro:content";
 import { getEnvVar } from "../../utils";
+import { createDb } from "../../db";
 
 if (Astro.request.method === "POST") {
 	try {
@@ -34,9 +35,11 @@ if (entry === undefined) {
 	return Astro.redirect("/404");
 }
 
+const db = entry.body.includes("db") ? createDb(Astro) : null;
+
 const { Content } = await entry.render();
 ---
 
 <BlogLayout {...entry.data}>
-	<Content />
+	<Content {db} />
 </BlogLayout>

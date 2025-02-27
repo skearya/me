@@ -1,7 +1,10 @@
 import type { AstroGlobal } from "astro";
-import { cache, db, eq } from "astro:db";
+import type { Database } from "./db";
+import { cache } from "./schema";
+import { eq } from "drizzle-orm";
 
 export async function getCache<T>(
+	db: Database,
 	id: string,
 ): Promise<{ id: string; data: T; lastUpdated: Date } | undefined> {
 	// @ts-expect-error

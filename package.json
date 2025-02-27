@@ -7,7 +7,10 @@
 		"start": "astro dev",
 		"build": "astro check && astro build --remote",
 		"preview": "astro preview",
-		"astro": "astro"
+		"astro": "astro",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "drizzle-kit migrate",
+		"db:studio": "drizzle-kit studio"
 	},
 	"dependencies": {
 		"@astrojs/check": "^0.9.4",

@@ -1,8 +1,10 @@
 import type { TrackEntity, TrackEmbedData } from "./types/track";
 import type { PlaylistEntity, PlaylistEmbedData } from "./types/playlist";
 import type { AlbumEmbedData, AlbumEntity } from "./types/album";
+import type { Database } from "../../db";
 import { getCache, olderThanDay } from "../../utils";
-import { db, eq, cache } from "astro:db";
+import { cache } from "../../schema";
+import { eq } from "drizzle-orm";
 
 export type Track = {
 	id: string;
@@ -28,10 +30,10 @@ export type AlbumOrPlaylist = {
 
 const getSpotifyId = (url: string) => url.split("/").at(-1)!.split("?")[0]!;
 
-export async function getTrack(url: string): Promise<Track> {
+export async function getTrack(db: Database, url: string): Promise<Track> {
 	const id = `spotify:track:${getSpotifyId(url)}`;
 
-	const track = await getCache<Track>(id);
+	const track = await getCache<Track>(db, id);
 
 	if (track) {
 		return track.data;
@@ -47,12 +49,13 @@ export async function getTrack(url: string): Promise<Track> {
 }
 
 export async function getAlbumOrPlaylist(
+	db: Database,
 	url: string,
 ): Promise<AlbumOrPlaylist | undefined> {
 	const type = url.includes("album") ? "album" : "playlist";
 	const id = `spotify:${type}:${getSpotifyId(url)}`;
 
-	const item = await getCache<AlbumOrPlaylist>(id);
+	const item = await getCache<AlbumOrPlaylist>(db, id);
 
 	const albumOrPlaylist = async () => {
 		const item = await scrapeItem(type, id).then((data) =>
