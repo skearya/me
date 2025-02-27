@@ -91,14 +91,14 @@ varying vec2 uv;
 uniform float iTime;
 uniform vec2 iResolution;
 uniform float scrollPos;
-uniform float viewportHeight;
+uniform float scrollHeight;
 
 vec3 wave(vec2 uv) {
     float wave = sin(uv.x + iTime * 0.2) * 0.1 + 0.5;
     float dist = abs(wave - uv.y);
     
     if (uv.y > wave) {
-        dist = smoothstep(0.0, 0.03, dist);
+        dist = smoothstep(0.0, 0.01, dist);
     };
     
     dist = 1.0 - dist;
@@ -110,32 +110,34 @@ vec3 wave(vec2 uv) {
 
 void main() {
 	vec2 uv = uv;
-	uv.x *= iResolution.x / iResolution.y;
-    
-    float y = (-uv.y - 1.0) / 2.0;
+
     float x = (uv.x + 1.0) / 2.0;
+    float y = (-uv.y - 1.0) / 2.0;
 
-	float progress = scrollPos / viewportHeight;
+	uv.x *= iResolution.x / iResolution.y;
+
+	float progress = scrollPos / scrollHeight;
 	progress = 1.0 - progress;
-	progress = mix(0.2, 0.4, progress);
 
-    vec3 bg = vec3(0.0, mix(0.001, 0.5, progress) + x * 0.15, mix(0.42, 0.85, progress) + x * 0.2);
+	// TODO: make gradient from l->r to be stronger, make more purpleish
+    vec3 bg = vec3(0.1, mix(0.001, 0.3, progress) + x * 0.25, mix(0.42, 0.80, progress) + x * 0.2);
     
 	uv.y -= scrollPos / 1000.0;
 
     vec3 waves = vec3(0.0);
-	waves += wave(vec2(uv.x, uv.y - 0.80));
-	waves += wave(vec2(uv.x, uv.y - 0.10));
-    waves += wave(vec2(uv.x * 0.5 + 8.0 + iTime * 0.1, uv.y + 0.61));
+	waves += wave(vec2(uv.x, uv.y));
+	waves += wave(vec2(uv.x * 0.5 + 8.0 + iTime * 0.1, uv.y - 0.10));
+    waves += wave(vec2(uv.x * 0.6 + 1.2, uv.y + 0.61));
     waves += wave(vec2(uv.x * 0.4 + 8.0 + iTime * 0.2, uv.y + 1.47));
     waves += wave(vec2(uv.x + 9.0 + iTime * 0.2, uv.y + 2.19));
     waves += wave(vec2(uv.x, uv.y + 2.74));
     waves += wave(vec2(uv.x + 9.0 + iTime * 0.2, uv.y + 3.54));
-    waves += wave(vec2(uv.x, uv.y + 4.32));
-    waves += wave(vec2(uv.x, uv.y + 4.97));
+    waves += wave(vec2(uv.x - 0.8, uv.y + 4.32));
+    waves += wave(vec2(uv.x - 1.4, uv.y + 4.97));
 
-    // Output to screen
-    gl_FragColor = vec4(waves * bg, 1.0) * min(iTime, 1.0);
+	vec3 base = vec3(0.0588, 0.0627, 0.0784);
+	
+    gl_FragColor = vec4(waves * bg + base, 1.0) * min(iTime, 1.0);
 }`,
 
 		attributes: {
@@ -155,8 +157,8 @@ void main() {
 				props.drawingBufferWidth,
 				props.drawingBufferHeight,
 			],
-			viewportHeight: regl.context("viewportHeight"),
 			scrollPos: () => window.scrollY,
+			scrollHeight: () => document.body.scrollHeight,
 		},
 
 		count: 6,
