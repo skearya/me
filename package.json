@@ -27,6 +27,7 @@
 		"astro-embed": "^0.7.2",
 		"drizzle-orm": "^0.40.0",
 		"hastscript": "^9.0.1",
+		"regl": "^2.1.1",
 		"tailwindcss": "^3.4.4",
 		"typescript": "^5.5.3"
 	},

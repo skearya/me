@@ -1,0 +1,192 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Ocean from "../components/OceanBg.astro";
+import { stack, projects } from "../components/projects.json";
+import Star from "../icons/Star.astro";
+import RightArrow from "../icons/RightArrow.astro";
+
+const entries = Object.entries(projects)
+	.map(([year, projects]) => [parseInt(year), projects] as const)
+	.sort((a, b) => b[0] - a[0]) as Array<
+	[
+		year: number,
+		Array<{
+			name: string;
+			description: string;
+			stack: Array<string>;
+			repo?: string;
+			url?: string;
+		}>,
+	]
+>;
+---
+
+<Layout title="skeary's portfolio" disableNav>
+	<Ocean disableHeight>
+		<div
+			class="appear relative mx-auto mt-20 flex w-full items-center justify-between p-6 font-mono opacity-0 md:max-w-lg"
+		>
+			<div class="move absolute z-10 -m-6 h-full w-full bg-moonlightPink">
+			</div>
+			<div class="flex flex-col justify-start gap-[2px]">
+				<h1 class="whitespace-nowrap text-xl">hi i'm skeary</h1>
+				<h1 id="time" class="text-moonlightStone"></h1>
+			</div>
+			<img
+				class="bounce"
+				height="125"
+				width="125"
+				src="/cat.svg"
+				alt="cat"
+			/>
+		</div>
+		<div class="mx-auto my-20 w-full max-w-5xl px-4">
+			<h1 class="mb-4 text-4xl">projects</h1>
+			<p class="text-moonlightText">
+				most of them, including the old and not so great ones
+			</p>
+			<p class="mb-6 text-moonlightText">more info for each on github</p>
+			<div class="grid items-stretch gap-3 sm:grid-cols-2">
+				{
+					entries.map(([year, projects], i) => (
+						<>
+							<div class="col-span-1 mb-1.5 w-min rounded-sm bg-gradient-to-r from-moonlightIndigo to-moonlightPink px-1 py-0.5 font-mono text-4xl text-moonlightBase sm:col-span-2">
+								{year}
+							</div>
+							{projects.map((project) => (
+								<div class="flex flex-col overflow-hidden rounded-md border">
+									<img
+										class="object-cover"
+										src={`/projects/${project.name}.png`}
+										alt={project.name}
+										width="1280px"
+										height="720px"
+									/>
+									<div class="flex h-full flex-col gap-4 p-4">
+										<div class="flex h-full gap-2.5">
+											<div>
+												<h1>{project.name}</h1>
+												<p class="text-sm text-moonlightText">
+													{project.description}
+												</p>
+											</div>
+											<div class="ml-auto flex flex-shrink-0 items-center gap-2 self-center">
+												{project?.url && (
+													<a
+														class="text-moonlightIndigo"
+														href={project.url}
+														target="_blank"
+													>
+														<RightArrow
+															width={30}
+															height={30}
+														/>
+													</a>
+												)}
+												{project?.repo !== "none" && (
+													<a
+														href={`https://github.com/skearya/${project.repo ?? project.name}`}
+														target="_blank"
+													>
+														<img
+															src="/socials/github.png"
+															alt="github"
+															height="25px"
+															width="25px"
+														/>
+													</a>
+												)}
+											</div>
+										</div>
+										<hr />
+										<div class="flex gap-3">
+											{project.stack.map((item) => (
+												<a
+													class="transition-transform hover:-translate-y-1"
+													href={
+														stack[
+															item as keyof typeof stack
+														]
+													}
+													target="_blank"
+												>
+													<img
+														src={`/stack/${item}.svg`}
+														alt={item}
+														title={item}
+														height="25px"
+														width="25px"
+													/>
+												</a>
+											))}
+										</div>
+									</div>
+								</div>
+							))}
+							{i !== projects.length && (
+								<div class="col-span-1 my-8 flex items-center gap-x-2 sm:col-span-2">
+									<Star
+										width={25}
+										height={25}
+										class="animate-spin-slow text-moonlightIndigo"
+									/>
+									<div class="h-[1px] w-full rounded-full bg-gradient-to-r from-moonlightIndigo to-moonlightPink" />
+									<Star
+										width={25}
+										height={25}
+										class="animate-spin-slow text-moonlightPink"
+									/>
+								</div>
+							)}
+						</>
+					))
+				}
+			</div>
+		</div>
+	</Ocean>
+</Layout>
+
+<style>
+	.appear {
+		animation: fade-in 1s cubic-bezier(0.45, 0.02, 0.09, 0.98) 0.3s forwards;
+	}
+
+	@keyframes fade-in {
+		100% {
+			opacity: 100%;
+		}
+	}
+
+	.bounce {
+		animation: bounce 0.4s ease 1s;
+	}
+
+	@keyframes bounce {
+		75% {
+			transform: translateY(-10%);
+		}
+		100% {
+			transform: translateY(0%);
+		}
+	}
+
+	.move {
+		animation: move 0.4s cubic-bezier(0.23, 1, 0.32, 1) 1s forwards;
+	}
+
+	@keyframes move {
+		100% {
+			width: 0px;
+		}
+	}
+</style>
+
+<script>
+	document.getElementById("time")!.textContent =
+		new Date().toLocaleString("en-US", {
+			timeZone: "America/New_York",
+			hour: "numeric",
+			minute: "numeric",
+			hour12: true,
+		}) + " EDT";
+</script>

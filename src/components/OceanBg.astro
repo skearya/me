@@ -1,0 +1,317 @@
+---
+interface Props {
+	disableHeight?: boolean;
+}
+
+const { disableHeight } = Astro.props;
+---
+
+<div id="waves-container" class="fixed -z-50 h-full w-full"></div>
+
+<section
+	class:list={[!disableHeight && "h-[150vh]"]}
+	class="relative w-screen max-w-full overflow-hidden"
+>
+	<slot />
+	<div id="fish-container"></div>
+	<button
+		id="settings-toggle"
+		class="text-accent absolute bottom-5 right-5 z-10 text-lg opacity-50 transition-opacity hover:opacity-100"
+	>
+		settings
+	</button>
+	<div
+		id="settings-content"
+		class="absolute bottom-16 right-5 z-10 hidden w-64 space-y-2 rounded-lg border p-3 backdrop-blur-md"
+	>
+		<div class="flex items-center justify-between gap-3">
+			<input
+				type="number"
+				class="setting w-12 rounded bg-moonlightBase [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+				name="spawn rate"
+				autocomplete="off"
+				value="1000"
+			/>
+			<label for="spawn rate">Spawn rate (ms)</label>
+		</div>
+		<div class="flex items-center justify-between gap-3">
+			<input
+				type="checkbox"
+				class="setting"
+				name="ltr only"
+				autocomplete="off"
+			/>
+			<label for="ltr only">LTR only</label>
+		</div>
+		<div class="flex items-center justify-between gap-3">
+			<input
+				type="checkbox"
+				class="setting"
+				name="variable speed"
+				autocomplete="off"
+				checked
+			/>
+			<label for="variable speed">Variable speed</label>
+		</div>
+		<div class="flex items-center justify-between gap-3">
+			<input
+				type="checkbox"
+				class="setting"
+				name="crash browser"
+				autocomplete="off"
+			/>
+			<label for="crash browser" class="text-red-400">
+				Crash browser
+			</label>
+		</div>
+	</div>
+</section>
+
+<script>
+	import reglInit from "regl";
+
+	const regl = reglInit("#waves-container");
+
+	const drawTriangle = regl({
+		vert: `
+precision mediump float;
+
+attribute vec2 position;
+varying vec2 uv;
+
+void main() {
+	uv = position;
+	gl_Position = vec4(position, 0, 1);
+}`,
+
+		frag: `
+precision mediump float;
+
+varying vec2 uv;
+uniform float iTime;
+uniform vec2 iResolution;
+uniform float scrollPos;
+uniform float viewportHeight;
+
+vec3 wave(vec2 uv) {
+    float wave = sin(uv.x + iTime * 0.2) * 0.1 + 0.5;
+    float dist = abs(wave - uv.y);
+    
+    if (uv.y > wave) {
+        dist = smoothstep(0.0, 0.03, dist);
+    };
+    
+    dist = 1.0 - dist;
+    dist = clamp(dist, 0.0, 1.0);
+    dist = pow(dist, 2.0);
+    
+    return dist * vec3(0.28, 0.29, 0.25);
+}
+
+void main() {
+	vec2 uv = uv;
+	uv.x *= iResolution.x / iResolution.y;
+    
+    float y = (-uv.y - 1.0) / 2.0;
+    float x = (uv.x + 1.0) / 2.0;
+
+	float progress = scrollPos / viewportHeight;
+	progress = 1.0 - progress;
+	progress = mix(0.2, 0.4, progress);
+
+    vec3 bg = vec3(0.0, mix(0.001, 0.5, progress) + x * 0.15, mix(0.42, 0.85, progress) + x * 0.2);
+    
+	uv.y -= scrollPos / 1000.0;
+
+    vec3 waves = vec3(0.0);
+	waves += wave(vec2(uv.x, uv.y - 0.80));
+	waves += wave(vec2(uv.x, uv.y - 0.10));
+    waves += wave(vec2(uv.x * 0.5 + 8.0 + iTime * 0.1, uv.y + 0.61));
+    waves += wave(vec2(uv.x * 0.4 + 8.0 + iTime * 0.2, uv.y + 1.47));
+    waves += wave(vec2(uv.x + 9.0 + iTime * 0.2, uv.y + 2.19));
+    waves += wave(vec2(uv.x, uv.y + 2.74));
+    waves += wave(vec2(uv.x + 9.0 + iTime * 0.2, uv.y + 3.54));
+    waves += wave(vec2(uv.x, uv.y + 4.32));
+    waves += wave(vec2(uv.x, uv.y + 4.97));
+
+    // Output to screen
+    gl_FragColor = vec4(waves * bg, 1.0) * min(iTime, 1.0);
+}`,
+
+		attributes: {
+			position: regl.buffer([
+				[1, 1],
+				[-1, 1],
+				[-1, -1],
+				[-1, -1],
+				[1, -1],
+				[1, 1],
+			]),
+		},
+
+		uniforms: {
+			iTime: regl.context("time"),
+			iResolution: (props) => [
+				props.drawingBufferWidth,
+				props.drawingBufferHeight,
+			],
+			viewportHeight: regl.context("viewportHeight"),
+			scrollPos: () => window.scrollY,
+		},
+
+		count: 6,
+	});
+
+	regl.frame(() => {
+		regl.clear({
+			color: [0, 0, 0, 0],
+			depth: 1,
+		});
+
+		drawTriangle();
+	});
+
+	const colors = {
+		white: "#FFFFFF",
+		blue: "#497EE9",
+		cyan: "#5CD8E6",
+		pink: "#D56CC3",
+	};
+
+	const settingsToggle = document.getElementById("settings-toggle")!;
+	const settingsContent = document.getElementById("settings-content")!;
+	const settings =
+		document.querySelectorAll<HTMLInputElement>("input.setting")!;
+	const fish = document.getElementById("fish-container")!;
+
+	let lastTime = performance.now();
+	let interval = performance.now();
+	let fishSpawned = 0;
+
+	let spawnTime = 1000;
+	let disableRtl = false;
+	let variableSpeed = true;
+	let crashBrowserProbably = false;
+
+	settingsToggle.addEventListener("click", () => {
+		settingsContent.classList.toggle("hidden");
+	});
+
+	settings.forEach((setting) => {
+		setting.addEventListener("change", () => {
+			const name = setting.getAttribute("name")!;
+
+			switch (name) {
+				case "spawn rate":
+					spawnTime = parseInt(setting.value);
+					break;
+				case "ltr only":
+					disableRtl = Boolean(setting.checked);
+					break;
+				case "variable speed":
+					variableSpeed = Boolean(setting.checked);
+					break;
+				case "crash browser":
+					if (Boolean(setting.checked)) {
+						if (window.confirm("are you sure you want this")) {
+							crashBrowserProbably = true;
+						} else {
+							setting.checked = false;
+						}
+					} else {
+						crashBrowserProbably = false;
+					}
+					break;
+			}
+		});
+	});
+
+	requestAnimationFrame(animate);
+
+	function spawnFish() {
+		const span = document.createElement("span");
+
+		const random = Math.random();
+		let ltr = disableRtl ? true : Math.random() < 0.5;
+
+		if (random < 0.7) {
+			span.textContent = ltr ? "><>" : "<><";
+			span.style.color =
+				fishSpawned % 10 == 0 ? colors.pink : colors.white;
+
+			fishSpawned += 1;
+		} else if (random < 0.85) {
+			span.textContent = "~";
+			span.style.color = colors.blue;
+			ltr = true;
+		} else {
+			span.textContent = "ᵒ";
+			span.style.color = colors.cyan;
+			ltr = true;
+		}
+
+		Object.assign(span.style, {
+			position: "absolute",
+			whiteSpace: "nowrap",
+			top: `${randomIntFromInterval(1, 100)}%`,
+			fontSize: `${randomIntFromInterval(12, 36)}px`,
+			opacity: "0",
+			zIndex: "-10",
+			[ltr ? "left" : "right"]: "0px",
+		});
+
+		span.dataset.ltr = `${ltr}`;
+		span.dataset.variableSpeed = `${Math.random()}`;
+		span.classList.add("fish");
+		fish.appendChild(span);
+
+		interval = performance.now();
+	}
+
+	function animate(time: number) {
+		if ((time - interval) / spawnTime > 1) {
+			spawnFish();
+		}
+
+		if (crashBrowserProbably) {
+			for (let i = 0; i < 1000; i++) {
+				spawnFish();
+			}
+		}
+
+		const elapsed = time - lastTime;
+
+		for (let i = 0; i < fish.children.length; i++) {
+			const currentFish = fish.children[i] as HTMLSpanElement;
+			const direction =
+				currentFish.dataset.ltr === "true" ? "left" : "right";
+			const speed = variableSpeed
+				? Number(currentFish.dataset.variableSpeed!)
+				: 1;
+
+			let newPos =
+				parseFloat(currentFish.style[direction].slice(0, -2)) + 0.1;
+			let newOpacity =
+				parseFloat(currentFish.style.opacity) +
+				elapsed / window.innerWidth;
+
+			if (newPos <= window.innerWidth) {
+				currentFish.style[direction] =
+					`${newPos + (elapsed / 10) * speed}px`;
+			} else {
+				currentFish.remove();
+			}
+
+			if (newOpacity <= 100) {
+				currentFish.style.opacity = `${newOpacity}`;
+			}
+		}
+
+		lastTime = time;
+		requestAnimationFrame(animate);
+	}
+
+	function randomIntFromInterval(min: number, max: number) {
+		return Math.floor(Math.random() * (max - min + 1) + min);
+	}
+</script>
