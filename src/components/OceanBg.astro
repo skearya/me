@@ -6,7 +6,7 @@ interface Props {
 const { disableHeight } = Astro.props;
 ---
 
-<div id="waves-container" class="fixed -z-50 h-full w-full"></div>
+<div id="waves-container" class="fixed -z-50 h-lvh w-full"></div>
 
 <section
 	class:list={[!disableHeight && "h-[150vh]"]}
@@ -72,6 +72,8 @@ const { disableHeight } = Astro.props;
 
 	const regl = reglInit("#waves-container");
 
+	let scrollY = -400;
+
 	const drawTriangle = regl({
 		vert: `
 precision mediump float;
@@ -119,7 +121,7 @@ void main() {
 	float progress = scrollPos / scrollHeight;
 	progress = 1.0 - progress;
 
-	// TODO: make gradient from l->r to be stronger, make more purpleish
+	// TODO: make gradient from l -> r to be stronger, make more purpleish
     vec3 bg = vec3(0.1, mix(0.001, 0.3, progress) + x * 0.25, mix(0.42, 0.80, progress) + x * 0.2);
     
 	uv.y -= scrollPos / 1000.0;
@@ -132,8 +134,8 @@ void main() {
     waves += wave(vec2(uv.x + 9.0 + iTime * 0.2, uv.y + 2.19));
     waves += wave(vec2(uv.x, uv.y + 2.74));
     waves += wave(vec2(uv.x + 9.0 + iTime * 0.2, uv.y + 3.54));
-    waves += wave(vec2(uv.x - 0.8, uv.y + 4.32));
-    waves += wave(vec2(uv.x - 1.4, uv.y + 4.97));
+    waves += wave(vec2(uv.x - 0.8 * 0.4, uv.y + 4.32));
+    waves += wave(vec2(uv.x + 1.4, uv.y + 4.97));
 
 	vec3 base = vec3(0.0588, 0.0627, 0.0784);
 	
@@ -157,7 +159,10 @@ void main() {
 				props.drawingBufferWidth,
 				props.drawingBufferHeight,
 			],
-			scrollPos: () => window.scrollY,
+			scrollPos: () => {
+				scrollY = lerp(scrollY, window.scrollY, 0.1);
+				return scrollY;
+			},
 			scrollHeight: document.body.scrollHeight,
 		},
 
@@ -256,9 +261,9 @@ void main() {
 			position: "absolute",
 			whiteSpace: "nowrap",
 			top: `${randomIntFromInterval(1, 100)}%`,
-			fontSize: `${randomIntFromInterval(12, 36)}px`,
+			fontSize: `${randomIntFromInterval(12, 32)}px`,
 			opacity: "0",
-			zIndex: "-10",
+			pointerEvents: "none",
 			[ltr ? "left" : "right"]: "0px",
 		});
 
@@ -315,5 +320,9 @@ void main() {
 
 	function randomIntFromInterval(min: number, max: number) {
 		return Math.floor(Math.random() * (max - min + 1) + min);
+	}
+
+	function lerp(start: number, end: number, amount: number) {
+		return (1 - amount) * start + amount * end;
 	}
 </script>

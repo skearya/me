@@ -146,10 +146,13 @@ const entries = Object.entries(projects)
 
 <style>
 	.appear {
-		animation: fade-in 1s cubic-bezier(0.45, 0.02, 0.09, 0.98) 0.3s forwards;
+		animation: fade-in 1s cubic-bezier(0.45, 0.02, 0.09, 0.98) forwards;
 	}
 
 	@keyframes fade-in {
+		0% {
+			opacity: 0%;
+		}
 		100% {
 			opacity: 100%;
 		}
