@@ -68,6 +68,8 @@ const { disableHeight } = Astro.props;
 </section>
 
 <script>
+	import vert from "./vert.glsl?raw";
+	import frag from "./frag.glsl?raw";
 	import reglInit from "regl";
 
 	const regl = reglInit("#waves-container");
@@ -75,73 +77,8 @@ const { disableHeight } = Astro.props;
 	let scrollY = -400;
 
 	const drawTriangle = regl({
-		vert: `
-precision mediump float;
-
-attribute vec2 position;
-varying vec2 uv;
-
-void main() {
-	uv = position;
-	gl_Position = vec4(position, 0, 1);
-}`,
-
-		frag: `
-precision mediump float;
-
-varying vec2 uv;
-uniform float iTime;
-uniform vec2 iResolution;
-uniform float scrollPos;
-uniform float scrollHeight;
-
-vec3 wave(vec2 uv) {
-    float wave = sin(uv.x + iTime * 0.2) * 0.1 + 0.5;
-    float dist = abs(wave - uv.y);
-    
-    if (uv.y > wave) {
-        dist = smoothstep(0.0, 0.01, dist);
-    };
-    
-    dist = 1.0 - dist;
-    dist = clamp(dist, 0.0, 1.0);
-    dist = pow(dist, 2.0);
-    
-    return dist * vec3(0.28, 0.29, 0.25);
-}
-
-void main() {
-	vec2 uv = uv;
-
-    float x = (uv.x + 1.0) / 2.0;
-    float y = (-uv.y - 1.0) / 2.0;
-
-	uv.x *= iResolution.x / iResolution.y;
-
-	float progress = scrollPos / scrollHeight;
-	progress = 1.0 - progress;
-
-	// TODO: make gradient from l -> r to be stronger, make more purpleish
-    vec3 bg = vec3(0.1, mix(0.001, 0.3, progress) + x * 0.25, mix(0.42, 0.80, progress) + x * 0.2);
-    
-	uv.y -= scrollPos / 1000.0;
-
-    vec3 waves = vec3(0.0);
-	waves += wave(vec2(uv.x, uv.y));
-	waves += wave(vec2(uv.x * 0.5 + 8.0 + iTime * 0.1, uv.y - 0.10));
-    waves += wave(vec2(uv.x * 0.6 + 1.2, uv.y + 0.61));
-    waves += wave(vec2(uv.x * 0.4 + 8.0 + iTime * 0.2, uv.y + 1.47));
-    waves += wave(vec2(uv.x + 9.0 + iTime * 0.2, uv.y + 2.19));
-    waves += wave(vec2(uv.x, uv.y + 2.74));
-    waves += wave(vec2(uv.x + 9.0 + iTime * 0.2, uv.y + 3.54));
-    waves += wave(vec2(uv.x - 0.8 * 0.4, uv.y + 4.32));
-    waves += wave(vec2(uv.x + 1.4, uv.y + 4.97));
-
-	vec3 base = vec3(0.0588, 0.0627, 0.0784);
-	
-    gl_FragColor = vec4(waves * bg + base, 1.0) * min(iTime, 1.0);
-}`,
-
+		vert,
+		frag,
 		attributes: {
 			position: regl.buffer([
 				[1, 1],
@@ -152,20 +89,15 @@ void main() {
 				[1, 1],
 			]),
 		},
-
 		uniforms: {
 			iTime: regl.context("time"),
 			iResolution: (props) => [
 				props.drawingBufferWidth,
 				props.drawingBufferHeight,
 			],
-			scrollPos: () => {
-				scrollY = lerp(scrollY, window.scrollY, 0.1);
-				return scrollY;
-			},
+			scrollPos: () => (scrollY = lerp(scrollY, window.scrollY, 0.1)),
 			scrollHeight: document.body.scrollHeight,
 		},
-
 		count: 6,
 	});
 
