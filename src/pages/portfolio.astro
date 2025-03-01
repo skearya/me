@@ -13,7 +13,7 @@ const entries = Object.entries(projects)
 		Array<{
 			name: string;
 			description: string;
-			stack: Array<string>;
+			stack: Array<keyof typeof stack>;
 			repo?: string;
 			url?: string;
 		}>,
@@ -28,7 +28,7 @@ const entries = Object.entries(projects)
 		>
 			<div class="flex flex-col justify-start gap-[2px]">
 				<h1 class="whitespace-nowrap text-xl">hi i'm skeary</h1>
-				<h1 id="time" class="text-moonlightStone"></h1>
+				<h1 id="time" class="text-monochromeCat"></h1>
 			</div>
 			<img
 				class="bounce"
@@ -40,11 +40,11 @@ const entries = Object.entries(projects)
 		</div>
 		<div class="mx-auto my-20 w-full max-w-5xl px-4">
 			<h1 class="mb-4 text-4xl">projects</h1>
-			<p class="text-moonlightText">
-				most of them, including the old and not so great ones
+			<p class="text-monochromeCat">
+				most of them, including the old ones
 			</p>
-			<p class="mb-6 text-moonlightText">more info for each on github</p>
-			<div class="grid items-stretch gap-3 sm:grid-cols-2">
+			<p class="mb-6 text-monochromeCat">more info for each on github</p>
+			<div class="grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2">
 				{
 					entries.map(([year, projects], i) => (
 						<>
@@ -60,18 +60,18 @@ const entries = Object.entries(projects)
 										width="1280px"
 										height="720px"
 									/>
-									<div class="flex h-full flex-col gap-4 p-4">
+									<div class="flex h-full flex-col gap-4 bg-moonlightBase/50 p-4">
 										<div class="flex h-full gap-2.5">
 											<div>
 												<h1>{project.name}</h1>
-												<p class="text-sm text-moonlightText">
+												<p class="text-sm text-monochromeCat">
 													{project.description}
 												</p>
 											</div>
 											<div class="ml-auto flex flex-shrink-0 items-center gap-2 self-center">
 												{project?.url && (
 													<a
-														class="text-moonlightIndigo"
+														class="origin-right text-moonlightIndigo transition-transform hover:scale-110"
 														href={project.url}
 														target="_blank"
 													>
@@ -83,6 +83,7 @@ const entries = Object.entries(projects)
 												)}
 												{project?.repo !== "none" && (
 													<a
+														class="origin-right transition-transform hover:scale-110"
 														href={`https://github.com/skearya/${project.repo ?? project.name}`}
 														target="_blank"
 													>
@@ -101,11 +102,7 @@ const entries = Object.entries(projects)
 											{project.stack.map((item) => (
 												<a
 													class="transition-transform hover:-translate-y-1"
-													href={
-														stack[
-															item as keyof typeof stack
-														]
-													}
+													href={stack[item]}
 													target="_blank"
 												>
 													<img
