@@ -121,7 +121,15 @@ const { disableHeight } = Astro.props;
 	const settingsContent = document.getElementById("settings-content")!;
 	const settings =
 		document.querySelectorAll<HTMLInputElement>("input.setting")!;
-	const fish = document.getElementById("fish-container")!;
+	const fishContainer = document.getElementById("fish-container")!;
+	const fish: {
+		opacity: number;
+		ltr: boolean;
+		speed: number;
+		x: number;
+		y: number;
+		ref: HTMLSpanElement;
+	}[] = [];
 
 	let lastTime = performance.now();
 	let interval = performance.now();
@@ -167,7 +175,7 @@ const { disableHeight } = Astro.props;
 
 	requestAnimationFrame(animate);
 
-	function spawnFish() {
+	function spawnFish(scrollHeight: number) {
 		const span = document.createElement("span");
 
 		const random = Math.random();
@@ -189,60 +197,76 @@ const { disableHeight } = Astro.props;
 			ltr = true;
 		}
 
+		const x = ltr ? 0 : window.innerWidth;
+		const y = randomIntFromInterval(1, scrollHeight);
+
 		Object.assign(span.style, {
 			position: "absolute",
+			top: `${y}px`,
+			left: "0px",
 			whiteSpace: "nowrap",
-			top: `${randomIntFromInterval(1, 100)}%`,
-			fontSize: `${randomIntFromInterval(12, 32)}px`,
-			opacity: "0",
+			opacity: "0%",
 			pointerEvents: "none",
-			[ltr ? "left" : "right"]: "0px",
+			fontSize: `${randomIntFromInterval(12, 32)}px`,
+			transform: `translateX(${x}px)`,
 		});
 
-		span.dataset.ltr = `${ltr}`;
-		span.dataset.variableSpeed = `${Math.random()}`;
-		span.classList.add("fish");
-		fish.appendChild(span);
+		fish.push({
+			ltr,
+			opacity: 0,
+			speed: Math.random(),
+			x,
+			y,
+			ref: span,
+		});
+
+		fishContainer.appendChild(span);
 
 		interval = performance.now();
 	}
 
 	function animate(time: number) {
+		const scrollHeight = document.body.scrollHeight;
+
 		if ((time - interval) / spawnTime > 1) {
-			spawnFish();
+			spawnFish(scrollHeight);
 		}
 
 		if (crashBrowserProbably) {
 			for (let i = 0; i < 1000; i++) {
-				spawnFish();
+				spawnFish(scrollHeight);
 			}
 		}
 
 		const elapsed = time - lastTime;
+		const windowWidth = window.innerWidth;
 
-		for (let i = 0; i < fish.children.length; i++) {
-			const currentFish = fish.children[i] as HTMLSpanElement;
-			const direction =
-				currentFish.dataset.ltr === "true" ? "left" : "right";
-			const speed = variableSpeed
-				? Number(currentFish.dataset.variableSpeed!)
-				: 1;
+		for (let i = 0; i < fish.length; i++) {
+			const currentFish = fish[i]!;
 
-			let newPos =
-				parseFloat(currentFish.style[direction].slice(0, -2)) + 0.1;
-			let newOpacity =
-				parseFloat(currentFish.style.opacity) +
-				elapsed / window.innerWidth;
-
-			if (newPos <= window.innerWidth) {
-				currentFish.style[direction] =
-					`${newPos + (elapsed / 10) * speed}px`;
-			} else {
-				currentFish.remove();
+			if (
+				currentFish.x < 0 ||
+				currentFish.x > windowWidth ||
+				currentFish.y > scrollHeight
+			) {
+				currentFish.ref.remove();
+				fish.splice(i, 1);
+				continue;
 			}
 
-			if (newOpacity <= 100) {
-				currentFish.style.opacity = `${newOpacity}`;
+			currentFish.x +=
+				0.1 +
+				(elapsed / 10) *
+					(variableSpeed ? currentFish.speed : 1) *
+					(currentFish.ltr ? 1 : -1);
+
+			currentFish.ref.style.transform = `translateX(${currentFish.x}px)`;
+
+			currentFish.opacity =
+				currentFish.opacity + (elapsed / windowWidth) * 100;
+
+			if (currentFish.opacity < 100) {
+				currentFish.ref.style.opacity = `${currentFish.opacity}%`;
 			}
 		}
 

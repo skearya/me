@@ -23,7 +23,8 @@ vec3 wave(vec2 uv) {
 void main() {
     vec2 uv = gl_FragCoord.xy / iResolution * 2.0 - 1.0;
     uv.x *= iResolution.x / iResolution.y;
-    uv += sin(iTime) * 0.05 + 0.05;
+
+    uv += sin(iTime) * 0.03 + 0.03;
 
     float x = gl_FragCoord.x / iResolution.x;
     float y = gl_FragCoord.y / iResolution.y;
@@ -36,18 +37,16 @@ void main() {
     uv.y -= scrollPos * 0.001;
 
     vec3 waves;
-
     waves += wave(vec2(uv.x, uv.y)) / 1.5;
     waves += wave(vec2(uv.x * 1.5 + 8.0 + iTime * 0.1, uv.y - 0.1)) / 1.5;
-    waves += wave(vec2(uv.x * 0.6 + 1.2, uv.y + 0.61));
+    waves += wave(vec2(uv.x + 1.2, uv.y + 0.61));
     waves += wave(vec2(uv.x * 0.4 + 8.0 + iTime * 0.2, uv.y + 1.47));
     waves += wave(vec2(uv.x + 9.0 + iTime * 0.2, uv.y + 2.19));
 
-    waves += wave(vec2(uv.x + 9.48, uv.y + 3.74 - 1.0));
-    waves += wave(vec2(uv.x, -uv.y - 2.74 + 1.0));
+    waves += wave(vec2(uv.x, -uv.y - 2.0)) / 2.0;
+    waves += wave(vec2(uv.x + 2.0, -uv.y - 2.06));
 
-    waves += wave(vec2(uv.x + 9.0 + iTime * 0.2, -uv.y - 2.3));
-    waves += wave(vec2(uv.x, -uv.y - 2.9));
+    waves += wave(vec2(uv.x + 3.4, -uv.y - 2.9));
     waves += wave(vec2(uv.x * 0.6 + 1.2, -uv.y - 3.5));
     waves += wave(vec2(uv.x + 1.4, -uv.y - 4.0));
     waves += wave(vec2(uv.x - 0.8 * 0.4, -uv.y - 5.2));
