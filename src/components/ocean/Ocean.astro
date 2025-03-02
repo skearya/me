@@ -122,7 +122,7 @@ const { disableHeight } = Astro.props;
 	const settings =
 		document.querySelectorAll<HTMLInputElement>("input.setting")!;
 	const fishContainer = document.getElementById("fish-container")!;
-	const fish: {
+	let fish: {
 		opacity: number;
 		ltr: boolean;
 		speed: number;
@@ -241,32 +241,28 @@ const { disableHeight } = Astro.props;
 		const elapsed = time - lastTime;
 		const windowWidth = window.innerWidth;
 
-		for (let i = 0; i < fish.length; i++) {
-			const currentFish = fish[i]!;
-
-			if (
-				currentFish.x < 0 ||
-				currentFish.x > windowWidth ||
-				currentFish.y > scrollHeight
-			) {
-				currentFish.ref.remove();
-				fish.splice(i, 1);
-				continue;
+		fish = fish.filter((f) => {
+			if (f.x < -10 || f.x > windowWidth || f.y > scrollHeight) {
+				f.ref.remove();
+				return false;
+			} else {
+				return true;
 			}
+		});
 
-			currentFish.x +=
+		for (const f of fish) {
+			f.x +=
 				0.1 +
 				(elapsed / 10) *
-					(variableSpeed ? currentFish.speed : 1) *
-					(currentFish.ltr ? 1 : -1);
+					(variableSpeed ? f.speed : 1) *
+					(f.ltr ? 1 : -1);
 
-			currentFish.ref.style.transform = `translateX(${currentFish.x}px)`;
+			f.ref.style.transform = `translateX(${f.x}px)`;
 
-			currentFish.opacity =
-				currentFish.opacity + (elapsed / windowWidth) * 100;
+			f.opacity = f.opacity + (elapsed / windowWidth) * 100;
 
-			if (currentFish.opacity < 100) {
-				currentFish.ref.style.opacity = `${currentFish.opacity}%`;
+			if (f.opacity < 100) {
+				f.ref.style.opacity = `${f.opacity}%`;
 			}
 		}
 
