@@ -1,13 +1,18 @@
 ---
 import Item from "./Item.astro";
+import type { Database } from "../../db";
 import { getMalList, type MalList } from "./lists";
-import { getEnvVar } from "../utils";
+import { getEnvVar } from "../../utils";
+
+interface Props {
+	db: Database;
+}
 
 const MAL_CLIENT_ID = getEnvVar(Astro, "MAL_CLIENT_ID");
 
 const [animeList, mangaList] = (await Promise.all([
-	getMalList(MAL_CLIENT_ID, "anime"),
-	getMalList(MAL_CLIENT_ID, "manga"),
+	getMalList(Astro.props.db, MAL_CLIENT_ID, "anime"),
+	getMalList(Astro.props.db, MAL_CLIENT_ID, "manga"),
 ])) as [MalList, MalList];
 ---
 

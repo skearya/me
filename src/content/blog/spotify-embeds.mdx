@@ -35,9 +35,15 @@ this all started when i wanted to display my favorite songs on my [/about](/abou
 here they are!
 
 <div class="not-prose space-y-5">
-	<AlbumOrPlaylist url="https://open.spotify.com/playlist/2m2lebj9Lg6Riwfyv7G9AD" />
+	<AlbumOrPlaylist
+		db={props.db}
+		url="https://open.spotify.com/playlist/2m2lebj9Lg6Riwfyv7G9AD"
+	/>
 	<div class="h-[1px] w-full bg-white/10" />
-	<Track url="https://open.spotify.com/track/1uIrEzzaygkxr6mntrf8jm" />
+	<Track
+		db={props.db}
+		url="https://open.spotify.com/track/1uIrEzzaygkxr6mntrf8jm"
+	/>
 </div>
 
 the track embed was made with 0 JS, and the playlist embed was made with 1.84kb (minified) of JS, that's 99.9061% smaller than the official embed, and i think it fits my site much better :)

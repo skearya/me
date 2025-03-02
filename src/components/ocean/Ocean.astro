@@ -1,4 +1,17 @@
-<section class="relative h-[150vh] w-screen max-w-full overflow-hidden">
+---
+interface Props {
+	disableHeight?: boolean;
+}
+
+const { disableHeight } = Astro.props;
+---
+
+<div id="waves-container" class="fixed -z-50 h-lvh w-full"></div>
+
+<section
+	class:list={[!disableHeight && "h-[265rem]"]}
+	class="relative w-screen max-w-full overflow-hidden"
+>
 	<slot />
 	<div id="fish-container"></div>
 	<button
@@ -55,6 +68,48 @@
 </section>
 
 <script>
+	import vert from "./vert.glsl?raw";
+	import frag from "./frag.glsl?raw";
+	import reglInit from "regl";
+
+	const regl = reglInit("#waves-container");
+
+	let scrollY = -400;
+
+	const drawTriangle = regl({
+		vert,
+		frag,
+		attributes: {
+			position: regl.buffer([
+				[1, 1],
+				[-1, 1],
+				[-1, -1],
+				[-1, -1],
+				[1, -1],
+				[1, 1],
+			]),
+		},
+		uniforms: {
+			iTime: regl.context("time"),
+			iResolution: (props) => [
+				props.drawingBufferWidth,
+				props.drawingBufferHeight,
+			],
+			scrollPos: () => (scrollY = lerp(scrollY, window.scrollY, 0.1)),
+			scrollHeight: document.body.scrollHeight,
+		},
+		count: 6,
+	});
+
+	regl.frame(() => {
+		regl.clear({
+			color: [0, 0, 0, 0],
+			depth: 1,
+		});
+
+		drawTriangle();
+	});
+
 	const colors = {
 		white: "#FFFFFF",
 		blue: "#497EE9",
@@ -66,7 +121,15 @@
 	const settingsContent = document.getElementById("settings-content")!;
 	const settings =
 		document.querySelectorAll<HTMLInputElement>("input.setting")!;
-	const fish = document.getElementById("fish-container")!;
+	const fishContainer = document.getElementById("fish-container")!;
+	let fish: {
+		opacity: number;
+		ltr: boolean;
+		speed: number;
+		x: number;
+		y: number;
+		ref: HTMLSpanElement;
+	}[] = [];
 
 	let lastTime = performance.now();
 	let interval = performance.now();
@@ -112,7 +175,7 @@
 
 	requestAnimationFrame(animate);
 
-	function spawnFish() {
+	function spawnFish(scrollHeight: number) {
 		const span = document.createElement("span");
 
 		const random = Math.random();
@@ -134,59 +197,72 @@
 			ltr = true;
 		}
 
+		const x = ltr ? 0 : window.innerWidth;
+		const y = randomIntFromInterval(1, scrollHeight);
+
 		Object.assign(span.style, {
 			position: "absolute",
+			top: `${y}px`,
+			left: "0px",
 			whiteSpace: "nowrap",
-			top: `${randomIntFromInterval(1, 100)}%`,
-			fontSize: `${randomIntFromInterval(12, 36)}px`,
-			opacity: "0",
-			[ltr ? "left" : "right"]: "0px",
+			opacity: "0%",
+			pointerEvents: "none",
+			fontSize: `${randomIntFromInterval(12, 32)}px`,
+			transform: `translateX(${x}px)`,
 		});
 
-		span.dataset.ltr = `${ltr}`;
-		span.dataset.variableSpeed = `${Math.random()}`;
-		span.classList.add("fish");
-		fish.appendChild(span);
+		fish.push({
+			ltr,
+			opacity: 0,
+			speed: Math.random(),
+			x,
+			y,
+			ref: span,
+		});
+
+		fishContainer.appendChild(span);
 
 		interval = performance.now();
 	}
 
 	function animate(time: number) {
+		const scrollHeight = document.body.scrollHeight;
+
 		if ((time - interval) / spawnTime > 1) {
-			spawnFish();
+			spawnFish(scrollHeight);
 		}
 
 		if (crashBrowserProbably) {
 			for (let i = 0; i < 1000; i++) {
-				spawnFish();
+				spawnFish(scrollHeight);
 			}
 		}
 
 		const elapsed = time - lastTime;
+		const windowWidth = window.innerWidth;
 
-		for (let i = 0; i < fish.children.length; i++) {
-			const currentFish = fish.children[i] as HTMLSpanElement;
-			const direction =
-				currentFish.dataset.ltr === "true" ? "left" : "right";
-			const speed = variableSpeed
-				? Number(currentFish.dataset.variableSpeed!)
-				: 1;
-
-			let newPos =
-				parseFloat(currentFish.style[direction].slice(0, -2)) + 0.1;
-			let newOpacity =
-				parseFloat(currentFish.style.opacity) +
-				elapsed / window.innerWidth;
-
-			if (newPos <= window.innerWidth) {
-				currentFish.style[direction] =
-					`${newPos + (elapsed / 10) * speed}px`;
+		fish = fish.filter((f) => {
+			if (f.x < -10 || f.x > windowWidth || f.y > scrollHeight) {
+				f.ref.remove();
+				return false;
 			} else {
-				currentFish.remove();
+				return true;
 			}
+		});
 
-			if (newOpacity <= 100) {
-				currentFish.style.opacity = `${newOpacity}`;
+		for (const f of fish) {
+			f.x +=
+				0.1 +
+				(elapsed / 10) *
+					(variableSpeed ? f.speed : 1) *
+					(f.ltr ? 1 : -1);
+
+			f.ref.style.transform = `translateX(${f.x}px)`;
+
+			f.opacity = f.opacity + (elapsed / windowWidth) * 100;
+
+			if (f.opacity < 100) {
+				f.ref.style.opacity = `${f.opacity}%`;
 			}
 		}
 
@@ -196,5 +272,9 @@
 
 	function randomIntFromInterval(min: number, max: number) {
 		return Math.floor(Math.random() * (max - min + 1) + min);
+	}
+
+	function lerp(start: number, end: number, amount: number) {
+		return (1 - amount) * start + amount * end;
 	}
 </script>

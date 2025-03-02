@@ -1,8 +1,10 @@
-import type { TrackEntity, TrackEmbedData } from "./types/track";
-import type { PlaylistEntity, PlaylistEmbedData } from "./types/playlist";
+import { eq } from "drizzle-orm";
+import type { Database } from "../../db";
+import { cache } from "../../schema";
+import { getCache, olderThanDay } from "../../utils";
 import type { AlbumEmbedData, AlbumEntity } from "./types/album";
-import { getCache, olderThanDay } from "../utils";
-import { db, eq, cache } from "astro:db";
+import type { PlaylistEmbedData, PlaylistEntity } from "./types/playlist";
+import type { TrackEmbedData, TrackEntity } from "./types/track";
 
 export type Track = {
 	id: string;
@@ -28,10 +30,10 @@ export type AlbumOrPlaylist = {
 
 const getSpotifyId = (url: string) => url.split("/").at(-1)!.split("?")[0]!;
 
-export async function getTrack(url: string): Promise<Track> {
+export async function getTrack(db: Database, url: string): Promise<Track> {
 	const id = `spotify:track:${getSpotifyId(url)}`;
 
-	const track = await getCache<Track>(id);
+	const track = await getCache<Track>(db, id);
 
 	if (track) {
 		return track.data;
@@ -47,12 +49,13 @@ export async function getTrack(url: string): Promise<Track> {
 }
 
 export async function getAlbumOrPlaylist(
+	db: Database,
 	url: string,
 ): Promise<AlbumOrPlaylist | undefined> {
 	const type = url.includes("album") ? "album" : "playlist";
 	const id = `spotify:${type}:${getSpotifyId(url)}`;
 
-	const item = await getCache<AlbumOrPlaylist>(id);
+	const item = await getCache<AlbumOrPlaylist>(db, id);
 
 	const albumOrPlaylist = async () => {
 		const item = await scrapeItem(type, id).then((data) =>
@@ -131,8 +134,12 @@ function mapTrackEmbed(track: TrackEntity): Track {
 		id: track.id,
 		title: track.name,
 		artist: track.artists.map((artist) => artist.name).join(", "),
-		color: track.coverArt.extractedColors.colorDark.hex ?? "#000000",
-		coverUrl: track.coverArt.sources[0]!.url,
+		color:
+			"#" +
+			track.visualIdentity.backgroundBase.red.toString(16) +
+			track.visualIdentity.backgroundBase.green.toString(16) +
+			track.visualIdentity.backgroundBase.blue.toString(16),
+		coverUrl: track.visualIdentity.image[0]!.url,
 		audioPreview: track.audioPreview?.url ?? null,
 	};
 }
