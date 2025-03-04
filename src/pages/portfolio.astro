@@ -19,6 +19,19 @@ const entries = Object.entries(projects)
 		}>,
 	]
 >;
+
+import { getEntry } from "astro:content";
+import { createDb } from "../db";
+
+const entry = await getEntry("blog", "wordplay-release");
+
+if (entry === undefined) {
+	return Astro.redirect("/404");
+}
+
+const db = entry.body.includes("db") ? createDb(Astro) : null;
+
+const { Content } = await entry.render();
 ---
 
 <Layout title="skeary's portfolio" disableNav>
@@ -69,32 +82,12 @@ const entries = Object.entries(projects)
 												</p>
 											</div>
 											<div class="ml-auto flex flex-shrink-0 items-center gap-2 self-center">
-												{project?.url && (
-													<a
-														class="origin-right text-moonlightIndigo transition-transform hover:scale-110"
-														href={project.url}
-														target="_blank"
-													>
-														<RightArrow
-															width={30}
-															height={30}
-														/>
-													</a>
-												)}
-												{project?.repo !== "none" && (
-													<a
-														class="origin-right transition-transform hover:scale-110"
-														href={`https://github.com/skearya/${project.repo ?? project.name}`}
-														target="_blank"
-													>
-														<img
-															src="/socials/github.png"
-															alt="github"
-															height="25px"
-															width="25px"
-														/>
-													</a>
-												)}
+												<button class="epic-button origin-right text-moonlightIndigo">
+													<RightArrow
+														width={30}
+														height={30}
+													/>
+												</button>
 											</div>
 										</div>
 										<hr />
@@ -139,6 +132,31 @@ const entries = Object.entries(projects)
 			</div>
 		</div>
 	</Ocean>
+	<div
+		id="project-info"
+		class="die-transition2 cubic-transition fixed left-0 top-0 flex h-full w-full translate-y-full items-end justify-center"
+	>
+		<div
+			class="h-[90%] max-w-2xl overflow-y-scroll rounded-t-lg border border-b-0 bg-moonlightBase p-5"
+		>
+			<div class="prose prose-invert">
+				<Content {db} />
+			</div>
+		</div>
+	</div>
+	<!-- <div
+		id="project-info-overlay"
+		class="die-transition2 fixed left-0 top-0 z-50 hidden h-full w-full items-end justify-center"
+	>
+		<div
+			id="project-info"
+			class="die-transition2 prose prose-invert h-[90%] w-full max-w-2xl translate-y-full overflow-y-scroll rounded-t-xl border-x border-t bg-moonlightBase p-6"
+		>
+			<h2>wordplay</h2>
+			<div class="h-[1px] w-full bg-moonlightSoft"></div>
+			<Content {db} />
+		</div>
+	</div> -->
 </Layout>
 
 <style>
@@ -167,6 +185,31 @@ const entries = Object.entries(projects)
 			transform: translateY(0%);
 		}
 	}
+
+	.die-transition2 {
+		transition-property: transform;
+		transition-duration: 1000ms;
+	}
+</style>
+
+<style is:global>
+	.cubic-transition {
+		transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.uppish-origin {
+		transform-origin: 50% 30%;
+	}
+
+	.die-transition {
+		transition-property: transform filter;
+		transition-duration: 2000ms;
+	}
+
+	.die {
+		/* @apply -rotate-1 scale-75 overflow-hidden rounded-3xl grayscale; */
+		@apply -rotate-2 scale-75 saturate-[.25];
+	}
 </style>
 
 <script>
@@ -177,4 +220,63 @@ const entries = Object.entries(projects)
 			minute: "numeric",
 			hour12: true,
 		}) + " EDT";
+
+	const ocean = document.getElementById("ocean-component")!;
+	const waves = document.getElementById("waves-container")!;
+	const projectInfo = document.getElementById("project-info")!;
+
+	ocean.classList.add("cubic-transition", "uppish-origin");
+	waves.classList.add("cubic-transition", "uppish-origin");
+
+	function die() {
+		// i don't like the window resize transition
+		ocean.classList.add("die-transition");
+		waves.classList.add("die-transition");
+
+		ocean.classList.add("die");
+		waves.classList.add("die");
+
+		projectInfo.classList.remove("translate-y-full");
+
+		ocean.addEventListener(
+			"transitionend",
+			() => ocean.classList.remove("die-transition"),
+			{ once: true }
+		);
+		waves.addEventListener(
+			"transitionend",
+			() => waves.classList.remove("die-transition"),
+			{ once: true }
+		);
+	}
+
+	function revive() {
+		ocean.classList.add("die-transition");
+		waves.classList.add("die-transition");
+
+		ocean.classList.remove("die");
+		waves.classList.remove("die");
+
+		projectInfo.classList.add("translate-y-full");
+
+		ocean.addEventListener(
+			"transitionend",
+			() => ocean.classList.remove("die-transition"),
+			{ once: true }
+		);
+		waves.addEventListener(
+			"transitionend",
+			() => waves.classList.remove("die-transition"),
+			{ once: true }
+		);
+	}
+
+	document.addEventListener("keydown", (e) => {
+		if (e.key === "q") die();
+		if (e.key === "w") revive();
+	});
+
+	document
+		.querySelectorAll<HTMLButtonElement>(".epic-button")
+		.forEach((button) => button.addEventListener("click", () => die()));
 </script>

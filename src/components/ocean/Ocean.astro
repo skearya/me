@@ -6,71 +6,81 @@ interface Props {
 const { disableHeight } = Astro.props;
 ---
 
-<div id="waves-container" class="fixed -z-50 h-lvh w-full"></div>
+<div id="waves-container" class="fixed left-0 top-0 -z-50 h-lvh w-full"></div>
+
+<button
+	id="settings-toggle"
+	class="fixed bottom-5 right-5 z-10 text-lg text-monochromeLogan transition-colors hover:text-moonlightWhite"
+>
+	settings
+</button>
+<div
+	id="settings-content"
+	class="fixed bottom-16 right-5 z-10 hidden w-64 space-y-2 rounded-lg border p-3"
+>
+	<div class="flex items-center justify-between gap-3">
+		<input
+			type="number"
+			class="setting w-12 rounded bg-moonlightBase [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+			name="spawn rate"
+			autocomplete="off"
+			value="1000"
+		/>
+		<label for="spawn rate">Spawn rate (ms)</label>
+	</div>
+	<div class="flex items-center justify-between gap-3">
+		<input
+			type="checkbox"
+			class="setting"
+			name="ltr only"
+			autocomplete="off"
+		/>
+		<label for="ltr only">LTR only</label>
+	</div>
+	<div class="flex items-center justify-between gap-3">
+		<input
+			type="checkbox"
+			class="setting"
+			name="variable speed"
+			autocomplete="off"
+			checked
+		/>
+		<label for="variable speed">Variable speed</label>
+	</div>
+	<div class="flex items-center justify-between gap-3">
+		<input
+			type="checkbox"
+			class="setting"
+			name="crash browser"
+			autocomplete="off"
+		/>
+		<label for="crash browser" class="text-red-400"> Crash browser </label>
+	</div>
+</div>
 
 <section
-	class:list={[!disableHeight && "h-[265rem]"]}
-	class="relative w-screen max-w-full overflow-hidden"
+	id="ocean-component"
+	class:list={[disableHeight ? "h-screen" : "h-[265rem]"]}
+	class="relative w-screen overflow-y-auto overflow-x-hidden"
+	data-disable-height={disableHeight}
 >
 	<slot />
 	<div id="fish-container"></div>
-	<button
-		id="settings-toggle"
-		class="text-accent absolute bottom-5 right-5 z-10 text-lg opacity-50 transition-opacity hover:opacity-100"
-	>
-		settings
-	</button>
-	<div
-		id="settings-content"
-		class="absolute bottom-16 right-5 z-10 hidden w-64 space-y-2 rounded-lg border p-3 backdrop-blur-md"
-	>
-		<div class="flex items-center justify-between gap-3">
-			<input
-				type="number"
-				class="setting w-12 rounded bg-moonlightBase [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-				name="spawn rate"
-				autocomplete="off"
-				value="1000"
-			/>
-			<label for="spawn rate">Spawn rate (ms)</label>
-		</div>
-		<div class="flex items-center justify-between gap-3">
-			<input
-				type="checkbox"
-				class="setting"
-				name="ltr only"
-				autocomplete="off"
-			/>
-			<label for="ltr only">LTR only</label>
-		</div>
-		<div class="flex items-center justify-between gap-3">
-			<input
-				type="checkbox"
-				class="setting"
-				name="variable speed"
-				autocomplete="off"
-				checked
-			/>
-			<label for="variable speed">Variable speed</label>
-		</div>
-		<div class="flex items-center justify-between gap-3">
-			<input
-				type="checkbox"
-				class="setting"
-				name="crash browser"
-				autocomplete="off"
-			/>
-			<label for="crash browser" class="text-red-400">
-				Crash browser
-			</label>
-		</div>
-	</div>
 </section>
 
 <script>
 	import vert from "./vert.glsl?raw";
 	import frag from "./frag.glsl?raw";
 	import reglInit from "regl";
+
+	const oceanComponent = document.getElementById("ocean-component")!;
+	const settingsToggle = document.getElementById("settings-toggle")!;
+	const settingsContent = document.getElementById("settings-content")!;
+	const settings =
+		document.querySelectorAll<HTMLInputElement>("input.setting")!;
+	const fishContainer = document.getElementById("fish-container")!;
+
+	const disableHeight = oceanComponent.dataset.disableHeight === "true";
 
 	const regl = reglInit("#waves-container");
 
@@ -95,8 +105,13 @@ const { disableHeight } = Astro.props;
 				props.drawingBufferWidth,
 				props.drawingBufferHeight,
 			],
-			scrollPos: () => (scrollY = lerp(scrollY, window.scrollY, 0.1)),
-			scrollHeight: document.body.scrollHeight,
+			scrollPos: () =>
+				(scrollY = lerp(
+					scrollY,
+					disableHeight ? oceanComponent.scrollTop : window.scrollY,
+					0.1
+				)),
+			scrollHeight: oceanComponent.scrollHeight,
 		},
 		count: 6,
 	});
@@ -117,11 +132,6 @@ const { disableHeight } = Astro.props;
 		pink: "#D56CC3",
 	};
 
-	const settingsToggle = document.getElementById("settings-toggle")!;
-	const settingsContent = document.getElementById("settings-content")!;
-	const settings =
-		document.querySelectorAll<HTMLInputElement>("input.setting")!;
-	const fishContainer = document.getElementById("fish-container")!;
 	let fish: {
 		opacity: number;
 		ltr: boolean;
@@ -198,7 +208,7 @@ const { disableHeight } = Astro.props;
 		}
 
 		const x = ltr ? 0 : window.innerWidth;
-		const y = randomIntFromInterval(1, scrollHeight);
+		const y = randomIntFromInterval(10, scrollHeight - 10);
 
 		Object.assign(span.style, {
 			position: "absolute",
@@ -226,7 +236,7 @@ const { disableHeight } = Astro.props;
 	}
 
 	function animate(time: number) {
-		const scrollHeight = document.body.scrollHeight;
+		const scrollHeight = oceanComponent.scrollHeight;
 
 		if ((time - interval) / spawnTime > 1) {
 			spawnFish(scrollHeight);
