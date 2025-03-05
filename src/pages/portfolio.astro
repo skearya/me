@@ -134,7 +134,7 @@ const { Content } = await entry.render();
 	</Ocean>
 	<div
 		id="project-info"
-		class="info-transition-options cubic-transition fixed left-0 top-0 flex h-full w-full translate-y-full items-end justify-center"
+		class="info-transition-options fixed left-0 top-0 flex h-full w-full translate-y-full items-end justify-center"
 	>
 		<div
 			class="h-[90%] max-w-2xl overflow-y-scroll rounded-t-lg border border-b-0 bg-moonlightBase p-5"
@@ -176,6 +176,7 @@ const { Content } = await entry.render();
 	.info-transition-options {
 		will-change: transform;
 		transition-property: transform;
+		transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
 		transition-duration: 750ms;
 	}
 
@@ -185,17 +186,14 @@ const { Content } = await entry.render();
 </style>
 
 <style is:global>
-	.cubic-transition {
-		transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
-	}
-
 	.background-transition-other {
-		will-change: transform filter;
+		will-change: transform, filter;
 	}
 
 	.background-transition-options {
-		transition-property: transform filter;
-		transition-duration: 2000ms;
+		transition-property: transform, filter;
+		transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+		transition-duration: 1250ms;
 	}
 
 	.background-die {
@@ -223,17 +221,14 @@ const { Content } = await entry.render();
 	// i don't like the window resize transition that happens with bg-transition-options, so it only gets applied when needed
 	// background-transition-other is for properties that should always be applied
 
-	ocean.classList.add("cubic-transition", "background-transition-other");
-	waves.classList.add("cubic-transition", "background-transition-other");
+	ocean.classList.add("background-transition-other");
+	waves.classList.add("background-transition-other");
 
-	ocean.addEventListener("transitionend", () => {
-		ocean.classList.remove("background-transition-options");
-	});
-	waves.addEventListener("transitionend", () => {
-		waves.classList.remove("background-transition-options");
-	});
+	let open = false;
 
 	function die() {
+		if (open) return;
+
 		oceanControls.stop();
 
 		ocean.classList.add("background-transition-options");
@@ -243,9 +238,24 @@ const { Content } = await entry.render();
 		waves.classList.add("background-die");
 
 		projectInfo.classList.add("info-die");
+
+		ocean.addEventListener(
+			"transitionend",
+			() => ocean.classList.remove("background-transition-options"),
+			{ once: true }
+		);
+		waves.addEventListener(
+			"transitionend",
+			() => waves.classList.remove("background-transition-options"),
+			{ once: true }
+		);
+
+		open = true;
 	}
 
 	function revive() {
+		if (!open) return;
+
 		oceanControls.resume();
 
 		ocean.classList.add("background-transition-options");
@@ -255,6 +265,19 @@ const { Content } = await entry.render();
 		waves.classList.remove("background-die");
 
 		projectInfo.classList.remove("info-die");
+
+		ocean.addEventListener(
+			"transitionend",
+			() => ocean.classList.remove("background-transition-options"),
+			{ once: true }
+		);
+		waves.addEventListener(
+			"transitionend",
+			() => waves.classList.remove("background-transition-options"),
+			{ once: true }
+		);
+
+		open = false;
 	}
 
 	document.addEventListener("keydown", (e) => {
