@@ -35,7 +35,7 @@ const { Content } = await entry.render();
 ---
 
 <Layout title="skeary's portfolio" disableNav>
-	<Ocean disableHeight>
+	<Ocean lockedHeight>
 		<div
 			class="appear relative mx-auto mt-20 flex w-full items-center justify-between p-6 font-mono md:max-w-lg"
 		>
@@ -134,7 +134,7 @@ const { Content } = await entry.render();
 	</Ocean>
 	<div
 		id="project-info"
-		class="die-transition2 cubic-transition fixed left-0 top-0 flex h-full w-full translate-y-full items-end justify-center"
+		class="info-transition-options cubic-transition fixed left-0 top-0 flex h-full w-full translate-y-full items-end justify-center"
 	>
 		<div
 			class="h-[90%] max-w-2xl overflow-y-scroll rounded-t-lg border border-b-0 bg-moonlightBase p-5"
@@ -144,19 +144,6 @@ const { Content } = await entry.render();
 			</div>
 		</div>
 	</div>
-	<!-- <div
-		id="project-info-overlay"
-		class="die-transition2 fixed left-0 top-0 z-50 hidden h-full w-full items-end justify-center"
-	>
-		<div
-			id="project-info"
-			class="die-transition2 prose prose-invert h-[90%] w-full max-w-2xl translate-y-full overflow-y-scroll rounded-t-xl border-x border-t bg-moonlightBase p-6"
-		>
-			<h2>wordplay</h2>
-			<div class="h-[1px] w-full bg-moonlightSoft"></div>
-			<Content {db} />
-		</div>
-	</div> -->
 </Layout>
 
 <style>
@@ -186,33 +173,39 @@ const { Content } = await entry.render();
 		}
 	}
 
-	.die-transition2 {
+	.info-transition-options {
+		will-change: transform;
 		transition-property: transform;
-		transition-duration: 1000ms;
+		transition-duration: 750ms;
+	}
+
+	.info-die {
+		@apply translate-y-0;
 	}
 </style>
 
 <style is:global>
 	.cubic-transition {
-		transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+		transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
 	}
 
-	.uppish-origin {
-		transform-origin: 50% 30%;
+	.background-transition-other {
+		will-change: transform filter;
 	}
 
-	.die-transition {
+	.background-transition-options {
 		transition-property: transform filter;
 		transition-duration: 2000ms;
 	}
 
-	.die {
-		/* @apply -rotate-1 scale-75 overflow-hidden rounded-3xl grayscale; */
-		@apply -rotate-2 scale-75 saturate-[.25];
+	.background-die {
+		@apply rotate-2 scale-75 saturate-[.25];
 	}
 </style>
 
 <script>
+	import { oceanScript } from "../components/ocean/ocean";
+
 	document.getElementById("time")!.textContent =
 		new Date().toLocaleString("en-US", {
 			timeZone: "America/New_York",
@@ -221,54 +214,47 @@ const { Content } = await entry.render();
 			hour12: true,
 		}) + " EDT";
 
+	const oceanControls = oceanScript();
+
 	const ocean = document.getElementById("ocean-component")!;
 	const waves = document.getElementById("waves-container")!;
 	const projectInfo = document.getElementById("project-info")!;
 
-	ocean.classList.add("cubic-transition", "uppish-origin");
-	waves.classList.add("cubic-transition", "uppish-origin");
+	// i don't like the window resize transition that happens with bg-transition-options, so it only gets applied when needed
+	// background-transition-other is for properties that should always be applied
+
+	ocean.classList.add("cubic-transition", "background-transition-other");
+	waves.classList.add("cubic-transition", "background-transition-other");
+
+	ocean.addEventListener("transitionend", () => {
+		ocean.classList.remove("background-transition-options");
+	});
+	waves.addEventListener("transitionend", () => {
+		waves.classList.remove("background-transition-options");
+	});
 
 	function die() {
-		// i don't like the window resize transition
-		ocean.classList.add("die-transition");
-		waves.classList.add("die-transition");
+		oceanControls.stop();
 
-		ocean.classList.add("die");
-		waves.classList.add("die");
+		ocean.classList.add("background-transition-options");
+		waves.classList.add("background-transition-options");
 
-		projectInfo.classList.remove("translate-y-full");
+		ocean.classList.add("background-die");
+		waves.classList.add("background-die");
 
-		ocean.addEventListener(
-			"transitionend",
-			() => ocean.classList.remove("die-transition"),
-			{ once: true }
-		);
-		waves.addEventListener(
-			"transitionend",
-			() => waves.classList.remove("die-transition"),
-			{ once: true }
-		);
+		projectInfo.classList.add("info-die");
 	}
 
 	function revive() {
-		ocean.classList.add("die-transition");
-		waves.classList.add("die-transition");
+		oceanControls.resume();
 
-		ocean.classList.remove("die");
-		waves.classList.remove("die");
+		ocean.classList.add("background-transition-options");
+		waves.classList.add("background-transition-options");
 
-		projectInfo.classList.add("translate-y-full");
+		ocean.classList.remove("background-die");
+		waves.classList.remove("background-die");
 
-		ocean.addEventListener(
-			"transitionend",
-			() => ocean.classList.remove("die-transition"),
-			{ once: true }
-		);
-		waves.addEventListener(
-			"transitionend",
-			() => waves.classList.remove("die-transition"),
-			{ once: true }
-		);
+		projectInfo.classList.remove("info-die");
 	}
 
 	document.addEventListener("keydown", (e) => {

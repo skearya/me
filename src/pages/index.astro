@@ -61,6 +61,8 @@ import Ocean from "../components/ocean/Ocean.astro";
 </style>
 
 <script>
+	import { oceanScript } from "../components/ocean/ocean";
+
 	document.getElementById("time")!.textContent =
 		new Date().toLocaleString("en-US", {
 			timeZone: "America/New_York",
@@ -68,4 +70,6 @@ import Ocean from "../components/ocean/Ocean.astro";
 			minute: "numeric",
 			hour12: true,
 		}) + " EDT";
+
+	oceanScript();
 </script>
