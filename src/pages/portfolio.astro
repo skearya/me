@@ -4,6 +4,7 @@ import Ocean from "../components/ocean/Ocean.astro";
 import { stack, projects } from "../components/projects.json";
 import Star from "../icons/Star.astro";
 import RightArrow from "../icons/RightArrow.astro";
+import Close from "../icons/Close.astro";
 
 const entries = Object.entries(projects)
 	.map(([year, projects]) => [parseInt(year), projects] as const)
@@ -19,19 +20,6 @@ const entries = Object.entries(projects)
 		}>,
 	]
 >;
-
-import { getEntry } from "astro:content";
-import { createDb } from "../db";
-
-const entry = await getEntry("blog", "wordplay-release");
-
-if (entry === undefined) {
-	return Astro.redirect("/404");
-}
-
-const db = entry.body.includes("db") ? createDb(Astro) : null;
-
-const { Content } = await entry.render();
 ---
 
 <Layout title="skeary's portfolio" disableNav>
@@ -65,7 +53,10 @@ const { Content } = await entry.render();
 								{year}
 							</div>
 							{projects.map((project) => (
-								<div class="flex flex-col overflow-hidden rounded-md border">
+								<div
+									class="project flex flex-col overflow-hidden rounded-md border bg-moonlightBase/50"
+									data-name={project.name}
+								>
 									<img
 										class="object-cover"
 										src={`/projects/${project.name}.png`}
@@ -73,22 +64,20 @@ const { Content } = await entry.render();
 										width="1280px"
 										height="720px"
 									/>
-									<div class="flex h-full flex-col gap-4 bg-moonlightBase/50 p-4">
-										<div class="flex h-full gap-2.5">
+									<div class="flex h-full flex-col gap-4 p-4">
+										<div class="flex h-full items-center gap-2.5">
 											<div>
 												<h1>{project.name}</h1>
 												<p class="text-sm text-monochromeCat">
 													{project.description}
 												</p>
 											</div>
-											<div class="ml-auto flex flex-shrink-0 items-center gap-2 self-center">
-												<button class="epic-button origin-right text-moonlightIndigo">
-													<RightArrow
-														width={30}
-														height={30}
-													/>
-												</button>
-											</div>
+											<button class="ml-auto text-moonlightIndigo">
+												<RightArrow
+													width={30}
+													height={30}
+												/>
+											</button>
 										</div>
 										<hr />
 										<div class="flex gap-3">
@@ -137,11 +126,24 @@ const { Content } = await entry.render();
 		class="info-transition-options fixed left-0 top-0 flex h-full w-full translate-y-full items-end justify-center"
 	>
 		<div
-			class="h-[90%] max-w-2xl overflow-y-scroll rounded-t-lg border border-b-0 bg-moonlightBase p-5"
+			class="h-[90%] w-full space-y-4 overflow-y-scroll border-t bg-moonlightOverlay p-3.5 sm:max-w-xl sm:rounded-t-lg sm:border-x"
 		>
-			<div class="prose prose-invert">
-				<Content {db} />
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-light">microwave</h1>
+					<h2 class="text-moonlightText">june 2024</h2>
+				</div>
+				<button id="project-close-button" class="text-moonlightOrange">
+					<Close width={30} height={30} />
+				</button>
 			</div>
+			<hr />
+			<img
+				src="/projects/microwave.png"
+				alt="microwave"
+				class="rounded-lg object-cover"
+			/>
+			<p>text</p>
 		</div>
 	</div>
 </Layout>
@@ -214,9 +216,28 @@ const { Content } = await entry.render();
 
 	const oceanControls = oceanScript();
 
+	const projects = document.querySelectorAll<HTMLElement>(".project");
 	const ocean = document.getElementById("ocean-component")!;
 	const waves = document.getElementById("waves-container")!;
 	const projectInfo = document.getElementById("project-info")!;
+	const projectInfoClose = document.getElementById("project-close-button")!;
+
+	projects.forEach((project) => {
+		project.querySelector("button")!.addEventListener("click", () => die());
+	});
+
+	projectInfoClose.addEventListener("click", () => revive());
+
+	projectInfo.addEventListener("click", (event) => {
+		if (event.target === projectInfo) {
+			revive();
+		}
+	});
+
+	document.addEventListener("keydown", (e) => {
+		if (e.key === "q") die();
+		if (e.key === "w") revive();
+	});
 
 	// i don't like the window resize transition that happens with bg-transition-options, so it only gets applied when needed
 	// background-transition-other is for properties that should always be applied
@@ -279,13 +300,4 @@ const { Content } = await entry.render();
 
 		open = false;
 	}
-
-	document.addEventListener("keydown", (e) => {
-		if (e.key === "q") die();
-		if (e.key === "w") revive();
-	});
-
-	document
-		.querySelectorAll<HTMLButtonElement>(".epic-button")
-		.forEach((button) => button.addEventListener("click", () => die()));
 </script>

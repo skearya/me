@@ -12,7 +12,10 @@ export function oceanScript() {
 
 	const lockedHeight = oceanComponent.dataset.lockedHeight === "true";
 
-	const regl = REGL("#waves-container");
+	const regl = REGL({
+		container: "#waves-container",
+		pixelRatio: 1,
+	});
 
 	let scrollY = -400;
 
@@ -75,9 +78,12 @@ export function oceanScript() {
 
 	let requestAnimationFrameId: number | undefined = undefined;
 	let lastTime = performance.now();
-	let interval = performance.now();
+	let totalElapsed = 0;
+	let frameCount = 0;
 	let pausedTime = 0;
+
 	let fishSpawned = 0;
+	let lastSpawnedTime = performance.now();
 
 	let spawnTime = 1000;
 	let disableRtl = false;
@@ -166,13 +172,15 @@ export function oceanScript() {
 
 		fishContainer.appendChild(span);
 
-		interval = performance.now();
+		lastSpawnedTime = performance.now();
 	}
 
 	function animate(time: number) {
 		time -= pausedTime;
 
-		// regl (waves)
+		const elapsed = time - lastTime;
+		totalElapsed += elapsed;
+
 		regl.poll();
 
 		regl.clear({
@@ -184,10 +192,9 @@ export function oceanScript() {
 
 		regl._gl.flush();
 
-		// dom translations (fish)
 		const scrollHeight = oceanComponent.scrollHeight;
 
-		if ((time - interval) / spawnTime > 1) {
+		if ((time - lastSpawnedTime) / spawnTime > 1) {
 			spawnFish(scrollHeight);
 		}
 
@@ -197,9 +204,9 @@ export function oceanScript() {
 			}
 		}
 
-		const elapsed = time - lastTime;
 		const windowWidth = window.innerWidth;
 
+		// TODO: doesn't actually remove hidden fish
 		fish = fish.filter((f) => {
 			if (f.x < -10 || f.x > windowWidth || f.y > scrollHeight) {
 				f.ref.remove();
@@ -225,26 +232,23 @@ export function oceanScript() {
 			}
 		}
 
+		frameCount++;
 		lastTime = time;
 		requestAnimationFrameId = requestAnimationFrame(animate);
 	}
 
 	return {
 		stop: () => {
-			if (requestAnimationFrameId === undefined) {
-				return;
+			if (requestAnimationFrameId !== undefined) {
+				cancelAnimationFrame(requestAnimationFrameId);
+				requestAnimationFrameId = undefined;
 			}
-
-			cancelAnimationFrame(requestAnimationFrameId);
-			requestAnimationFrameId = undefined;
 		},
 		resume: () => {
-			if (requestAnimationFrameId !== undefined) {
-				return;
+			if (requestAnimationFrameId === undefined) {
+				pausedTime = performance.now() - lastTime;
+				requestAnimationFrameId = requestAnimationFrame(animate);
 			}
-
-			pausedTime = performance.now() - lastTime;
-			requestAnimationFrameId = requestAnimationFrame(animate);
 		},
 	};
 }
