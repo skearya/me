@@ -20,7 +20,7 @@ const { lockedHeight, oceanClass, wavesClass } = Astro.props;
 	style="will-change: transform, filter;"
 	class:list={[
 		lockedHeight ? "h-screen" : "h-[265rem]",
-		"relative w-screen overflow-y-auto overflow-x-hidden",
+		"relative w-screen max-w-full overflow-y-auto overflow-x-hidden",
 		oceanClass,
 	]}
 	data-locked-height={lockedHeight}

@@ -97,7 +97,7 @@ const scriptData = JSON.stringify(
 										width="1280px"
 										height="720px"
 									/>
-									<div class="flex h-full flex-col gap-4 p-4">
+									<div class="flex h-full w-full flex-col gap-4 p-4">
 										<div class="flex h-full justify-between gap-2.5">
 											<div>
 												<h1>{project.name}</h1>
@@ -161,64 +161,66 @@ const scriptData = JSON.stringify(
 	>
 		<div
 			style="scrollbar-width: thin;"
-			class="h-[90%] w-full overflow-y-scroll border-t bg-moonlightOverlay sm:max-w-xl sm:rounded-t-lg sm:border-x"
+			class="h-[90%] w-full overflow-hidden border-t bg-moonlightOverlay sm:max-w-xl sm:rounded-t-lg sm:border-x"
 		>
-			<div
-				class="sticky top-0 flex items-center justify-between bg-gradient-to-b from-moonlightOverlay to-transparent p-3.5 pb-4"
-			>
-				<div>
-					<h1 id="project-info-title" class="text-2xl font-light">
-						microwave
-					</h1>
-					<h2 id="project-info-date" class="text-moonlightText">
-						june 2024
-					</h2>
-				</div>
-				<button id="project-info-close">
-					<Close
-						width={30}
-						height={30}
-						class="text-moonlightOrange"
-					/>
-				</button>
-			</div>
-			<div class="space-y-4 px-3.5">
-				<hr />
-				<img
-					id="project-info-image"
-					alt="project showcase image"
-					class="rounded-md object-cover"
-				/>
-				<div class="flex gap-x-2.5">
-					<a
-						id="project-info-github"
-						href="/"
-						target="_blank"
-						class="flex w-full items-center justify-center gap-x-3 rounded-md bg-moonlightFocusHigh p-3 transition-all hover:brightness-125"
-					>
-						<GitHub width={25} height={25} />
-						<p>github</p>
-					</a>
-					<a
-						id="project-info-url"
-						href="/"
-						target="_blank"
-						class="flex w-full items-center justify-center gap-x-3 rounded-md bg-moonlightIndigo p-3 text-moonlightBase transition-all hover:brightness-125"
-					>
-						<p>site</p>
-						<RightArrow width={25} height={25} />
-					</a>
-				</div>
+			<div class="h-full w-full overflow-y-auto">
 				<div
-					class="prose prose-invert prose-img:mt-0 prose-img:rounded-md prose-video:mt-0 prose-video:rounded-md [&_lite-youtube]:mb-8"
+					class="sticky top-0 flex items-center justify-between bg-gradient-to-b from-moonlightOverlay to-transparent p-3.5 pb-4"
 				>
-					{
-						readmes.map(({ id, md }) => (
-							<div id={`project-${id}`} class="hidden">
-								<md.Content />
-							</div>
-						))
-					}
+					<div>
+						<h1 id="project-info-title" class="text-2xl font-light">
+							microwave
+						</h1>
+						<h2 id="project-info-date" class="text-moonlightText">
+							june 2024
+						</h2>
+					</div>
+					<button id="project-info-close">
+						<Close
+							width={30}
+							height={30}
+							class="text-moonlightOrange"
+						/>
+					</button>
+				</div>
+				<div class="space-y-4 px-3.5">
+					<hr />
+					<img
+						id="project-info-image"
+						alt="project showcase image"
+						class="rounded-md object-cover"
+					/>
+					<div class="flex gap-x-2.5">
+						<a
+							id="project-info-github"
+							href="/"
+							target="_blank"
+							class="flex w-full items-center justify-center gap-x-3 rounded-md bg-moonlightFocusHigh p-3 transition-all hover:brightness-125"
+						>
+							<GitHub width={25} height={25} />
+							<p>github</p>
+						</a>
+						<a
+							id="project-info-url"
+							href="/"
+							target="_blank"
+							class="flex w-full items-center justify-center gap-x-3 rounded-md bg-moonlightIndigo p-3 text-moonlightBase transition-all hover:brightness-125"
+						>
+							<p>site</p>
+							<RightArrow width={25} height={25} />
+						</a>
+					</div>
+					<div
+						class="prose prose-invert prose-img:mt-0 prose-img:rounded-md prose-video:mt-0 prose-video:rounded-md [&_lite-youtube]:mb-8"
+					>
+						{
+							readmes.map(({ id, md }) => (
+								<div id={`project-${id}`} class="hidden">
+									<md.Content />
+								</div>
+							))
+						}
+					</div>
 				</div>
 			</div>
 		</div>

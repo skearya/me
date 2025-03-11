@@ -83,6 +83,7 @@ const og = {
 
 <style is:global>
 	html {
+		color-scheme: dark;
 		font-variant-ligatures: none;
 		@apply bg-moonlightBase text-moonlightWhite;
 	}
@@ -91,22 +92,12 @@ const og = {
 		@apply border-moonlightWhite/10;
 	}
 
-	::-webkit-scrollbar {
-		@apply w-2;
-		@apply h-2;
-	}
-	::-webkit-scrollbar-track {
-		@apply !bg-moonlightFocusMedium;
-	}
-	::-webkit-scrollbar-thumb {
-		@apply rounded-sm !bg-moonlightWhite/30;
-	}
-
 	@keyframes spin {
 		to {
 			transform: rotate(360deg);
 		}
 	}
+
 	.animate-spin-slow {
 		animation: spin 30s linear infinite;
 	}
