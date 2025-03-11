@@ -1,7 +1,15 @@
 ## [first](https://github.com/skearya/startpages/tree/main/first)
 
-![image](/project-info/startpage-one.png)
+<img
+	alt="image"
+	src="/project-info/startpage-one.png"
+    loading="lazy"
+/>
 
 ## [second](https://github.com/skearya/startpages/tree/main/second)
 
-![image](/project-info/startpage-two.png)
+<img
+	alt="image"
+	src="/project-info/startpage-two.png"
+    loading="lazy"
+/>

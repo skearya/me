@@ -7,8 +7,8 @@ vc and daily message logging
 <img
 	width="554"
 	alt="image"
+    loading="lazy"
 	src="/project-info/skearything-msg-log.png"
-	class="mt-0"
 />
 
 ### example vc session log
@@ -16,6 +16,6 @@ vc and daily message logging
 <img
 	width="313"
 	alt="image"
+    loading="lazy"
 	src="/project-info/skearything-vc-log.png"
-	class="mt-0"
 />

@@ -10,14 +10,17 @@ a decent way to watch anime
 
 <img
 	alt="image"
+	loading="lazy"
 	src="/project-info/sift-one.png"
 />
 <img
 	alt="image"
+	loading="lazy"
 	src="/project-info/sift-two.png"
 />
 <img
 	alt="image"
+	loading="lazy"
 	src="/project-info/sift-three.png"
 />
 

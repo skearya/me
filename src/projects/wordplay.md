@@ -2,7 +2,7 @@ multiplayer word games!
 
 ### video showcase
 
-<video src="/blog/wordplay-release/wordplay.mp4" controls class="mt-0"></video>
+<video src="/blog/wordplay-release/wordplay.mp4" controls></video>
 
 ### features
 

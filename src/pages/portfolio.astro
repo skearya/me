@@ -52,7 +52,11 @@ const scriptData = JSON.stringify(
 ---
 
 <Layout title="skeary's portfolio" disableNav>
-	<Ocean lockedHeight>
+	<Ocean
+		lockedHeight
+		oceanClass="background-transition-options"
+		wavesClass="background-transition-options"
+	>
 		<div
 			class="appear relative mx-auto mt-20 flex w-full items-center justify-between p-6 font-mono md:max-w-lg"
 		>
@@ -82,7 +86,10 @@ const scriptData = JSON.stringify(
 								{year}
 							</div>
 							{projects.map((project) => (
-								<div class="flex flex-col overflow-hidden rounded-md border bg-moonlightBase/50">
+								<button
+									class="project-open-button group flex flex-col overflow-hidden rounded-md border bg-moonlightBase/50 text-left transition-colors hover:border-moonlightPink hover:bg-moonlightBase/85"
+									data-id={project.name.replaceAll(".", "")}
+								>
 									<img
 										class="object-cover"
 										src={`/projects/${project.name}.png`}
@@ -98,18 +105,12 @@ const scriptData = JSON.stringify(
 													{project.description}
 												</p>
 											</div>
-											<button
-												class="project-open-button origin-right self-center text-moonlightIndigo transition-transform hover:scale-110"
-												data-id={project.name.replaceAll(
-													".",
-													""
-												)}
-											>
+											<div class="origin-right self-center text-moonlightIndigo transition-transform group-hover:scale-125 group-hover:text-moonlightPink">
 												<RightArrow
 													width={30}
 													height={30}
 												/>
-											</button>
+											</div>
 										</div>
 										<hr />
 										<div class="flex gap-3">
@@ -130,7 +131,7 @@ const scriptData = JSON.stringify(
 											))}
 										</div>
 									</div>
-								</div>
+								</button>
 							))}
 							{i !== projects.length && (
 								<div class="col-span-1 my-8 flex items-center gap-x-2 sm:col-span-2">
@@ -181,7 +182,7 @@ const scriptData = JSON.stringify(
 					/>
 				</button>
 			</div>
-			<div class="space-y-4 p-3.5 pt-0">
+			<div class="space-y-4 px-3.5">
 				<hr />
 				<img
 					id="project-info-image"
@@ -193,31 +194,24 @@ const scriptData = JSON.stringify(
 						id="project-info-github"
 						href="/"
 						target="_blank"
-						class="group flex w-full items-center justify-center gap-x-3 rounded-md bg-moonlightFocusHigh p-3 transition-opacity"
+						class="flex w-full items-center justify-center gap-x-3 rounded-md bg-moonlightFocusHigh p-3 transition-all hover:brightness-125"
 					>
-						<GitHub
-							width={25}
-							height={25}
-							class="group-hover:animate-bounce"
-						/>
-						<h2>github</h2>
+						<GitHub width={25} height={25} />
+						<p>github</p>
 					</a>
 					<a
 						id="project-info-url"
 						href="/"
 						target="_blank"
-						class="group flex w-full items-center justify-center gap-x-3 rounded-md bg-moonlightIndigo p-3 text-moonlightBase transition-opacity"
+						class="flex w-full items-center justify-center gap-x-3 rounded-md bg-moonlightIndigo p-3 text-moonlightBase transition-all hover:brightness-125"
 					>
-						<h2>site</h2>
-						<RightArrow
-							width={25}
-							height={25}
-							class="group-hover:animate-bounce"
-						/>
+						<p>site</p>
+						<RightArrow width={25} height={25} />
 					</a>
 				</div>
-
-				<div class="prose prose-invert">
+				<div
+					class="prose prose-invert prose-img:mt-0 prose-img:rounded-md prose-video:mt-0 prose-video:rounded-md [&_lite-youtube]:mb-8"
+				>
 					{
 						readmes.map(({ id, md }) => (
 							<div id={`project-${id}`} class="hidden">
@@ -334,7 +328,12 @@ const scriptData = JSON.stringify(
 	);
 
 	projectOpeners.forEach((button) => {
-		button.addEventListener("click", () => die(button.dataset.id!));
+		button.addEventListener("click", (event) => {
+			// @ts-expect-error
+			if (event.target?.parentElement?.nodeName !== "A") {
+				die(button.dataset.id!);
+			}
+		});
 	});
 
 	projectInfoClose.addEventListener("click", () => revive());
@@ -354,14 +353,10 @@ const scriptData = JSON.stringify(
 		open: false,
 	};
 
-	// i don't like the window resize transition that happens with background-transition-options, so it only gets applied when needed
 	function die(id: string) {
 		if (state.open) return;
 
 		oceanControls.stop();
-
-		ocean.classList.add("background-transition-options");
-		waves.classList.add("background-transition-options");
 
 		ocean.classList.add("background-die");
 		waves.classList.add("background-die");
@@ -393,43 +388,18 @@ const scriptData = JSON.stringify(
 			projectInfoUrl.classList.add("hidden");
 		}
 
-		ocean.addEventListener(
-			"transitionend",
-			() => ocean.classList.remove("background-transition-options"),
-			{ once: true }
-		);
-		waves.addEventListener(
-			"transitionend",
-			() => waves.classList.remove("background-transition-options"),
-			{ once: true }
-		);
-
 		state = { open: true, currentReadme };
 	}
 
 	function revive() {
 		if (!state.open) return;
 
-		oceanControls.resume();
-
-		ocean.classList.add("background-transition-options");
-		waves.classList.add("background-transition-options");
-
 		ocean.classList.remove("background-die");
 		waves.classList.remove("background-die");
 
 		projectInfoContainer.classList.remove("info-die");
 
-		ocean.addEventListener(
-			"transitionend",
-			() => ocean.classList.remove("background-transition-options"),
-			{ once: true }
-		);
-		waves.addEventListener(
-			"transitionend",
-			() => waves.classList.remove("background-transition-options"),
-			{ once: true }
-		);
+		oceanControls.resume();
 
 		state = { open: false, prevReadme: state.currentReadme };
 	}

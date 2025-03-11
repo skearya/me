@@ -159,6 +159,7 @@ export function oceanScript() {
 			pointerEvents: "none",
 			fontSize: `${randomIntFromInterval(12, 32)}px`,
 			transform: `translateX(${x}px)`,
+			zIndex: `-40`,
 		});
 
 		fish.push({
@@ -172,7 +173,7 @@ export function oceanScript() {
 
 		fishContainer.appendChild(span);
 
-		lastSpawnedTime = performance.now();
+		lastSpawnedTime = performance.now() - pausedTime;
 	}
 
 	function animate(time: number) {
