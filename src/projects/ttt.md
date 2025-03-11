@@ -1,10 +1,10 @@
-# [ttt](https://skearyttt.vercel.app/)
+simply multiplayer tic tac toe
 
-simply tic tac toe
+### video showcase
 
-https://github.com/skearya/ttt/assets/77034153/cdcf8775-78dd-4322-bc45-86b5aa15d17d
+<video src="/project-info/ttt.mp4" controls class="mt-0"></video>
 
-## Monorepo structure
+### monorepo structure
 
 - `/packages/frontend`: sveltekit (typescript, tailwind, shadcn)
 - `/packages/server`: socket.io + express

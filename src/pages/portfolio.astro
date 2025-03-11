@@ -183,12 +183,17 @@ const scriptData = JSON.stringify(
 			</div>
 			<div class="space-y-4 p-3.5 pt-0">
 				<hr />
+				<img
+					id="project-info-image"
+					alt="project showcase image"
+					class="rounded-md object-cover"
+				/>
 				<div class="flex gap-x-2.5">
 					<a
 						id="project-info-github"
 						href="/"
 						target="_blank"
-						class="group flex w-full items-center justify-center gap-x-3 rounded-md bg-monochromeCloud p-3 text-moonlightBase transition-opacity"
+						class="group flex w-full items-center justify-center gap-x-3 rounded-md bg-moonlightFocusHigh p-3 transition-opacity"
 					>
 						<GitHub
 							width={25}
@@ -211,6 +216,7 @@ const scriptData = JSON.stringify(
 						/>
 					</a>
 				</div>
+
 				<div class="prose prose-invert">
 					{
 						readmes.map(({ id, md }) => (
@@ -300,6 +306,9 @@ const scriptData = JSON.stringify(
 	)!;
 	const projectInfoTitle = document.getElementById("project-info-title")!;
 	const projectInfoDate = document.getElementById("project-info-date")!;
+	const projectInfoImage = document.getElementById(
+		"project-info-image"
+	)! as HTMLImageElement;
 	const projectInfoGithub = document.getElementById(
 		"project-info-github"
 	)! as HTMLLinkElement;
@@ -366,6 +375,7 @@ const scriptData = JSON.stringify(
 
 		const data = projectData[id]!;
 
+		projectInfoImage.src = `/projects/${data.name}.png`;
 		projectInfoTitle.textContent = data.name;
 		projectInfoDate.textContent = `${data.year}`;
 

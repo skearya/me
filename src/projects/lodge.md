@@ -1,14 +1,6 @@
-# lodge
+basic terminal chat server/client written in C
 
-<img
-	width="1336"
-	alt="image"
-	src="https://github.com/user-attachments/assets/134ba2d4-810c-46b0-aaf2-9b5ed497474b"
-/>
-
----
-
-very basic terminal chat server/client written in C
+### info
 
 - tcp
 - able to handle partial message reads
@@ -16,6 +8,6 @@ very basic terminal chat server/client written in C
 - client uses `poll`
 - linux only
 
-deps:
+### dependencies
 
 - [stb_ds.h](https://github.com/nothings/stb/blob/master/stb_ds.h): used on server for a hashmap to manage client data

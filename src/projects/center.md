@@ -1,16 +1,8 @@
-# center
+a tool to help get stuff done without distractions. made with [SvelteKit + Electron](https://github.com/FractalHQ/sveltekit-electron), Tailwind, and JavaScript.
 
-<img
-	width="1307"
-	alt="image"
-	src="https://user-images.githubusercontent.com/77034153/233804275-abbacb0c-fcdc-45b5-b9a6-8682598179e4.png"
-/>
+web version at https://center-skeary.vercel.app/ (no spotify controls)
 
-A tool to help get stuff done without distractions. Made with [SvelteKit + Electron](https://github.com/FractalHQ/sveltekit-electron), Tailwind, and TypeScript (partially).
-
-Web version at https://center-skeary.vercel.app/ (no spotify controls)
-
-### Features:
+### features
 
 - pomodoro timer
 - todo list

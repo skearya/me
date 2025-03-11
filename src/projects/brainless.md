@@ -1,8 +1,6 @@
-# brainless
-
 a toy [brainf\*\*\*](https://en.wikipedia.org/wiki/Brainfuck) to x86-64 NASM for linux compiler in rust
 
-resources used:
+resources used
 
 - assembly intro: https://github.com/hackclub/some-assembly-required
 - gdb with gef for debugging: https://github.com/hugsy/gef

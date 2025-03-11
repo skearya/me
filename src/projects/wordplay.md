@@ -1,6 +1,8 @@
-<video src="https://github.com/user-attachments/assets/3930b114-4b43-43e8-911e-b6a50c217f75" controls class="rounded"></video>
+multiplayer word games!
 
-https://wordplay.lol/
+### video showcase
+
+<video src="/blog/wordplay-release/wordplay.mp4" controls class="mt-0"></video>
 
 ### features
 
@@ -14,23 +16,15 @@ https://wordplay.lol/
 - message rate limiting
 - spectating
 
-### uses
+### stack
 
-- `/client`
+- client
     - [TypeScript](https://www.typescriptlang.org/)
     - [SolidJS](https://www.solidjs.com/)
     - [Vite](https://vitejs.dev)
     - [TailwindCSS](https://tailwindcss.com)
-- `/server`
+- server
     - [Rust](https://www.rust-lang.org/)
     - [axum](https://github.com/tokio-rs/axum)
-- `/prompt_gen` (script for generating word bomb prompts)
-    - [Rust](https://www.rust-lang.org/)
 
 [Docker](https://docs.docker.com/) / [Docker Compose](https://docs.docker.com/compose/) used to build and manage deployments
-
-### special thanks
-
-- avatar generation is taken from [vercel/avatar](https://github.com/vercel/avatar)
-- most icons are from [SVG Repo](https://www.svgrepo.com/)
-- friends for playtesting and feedback
