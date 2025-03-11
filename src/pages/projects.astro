@@ -64,9 +64,9 @@ const entries = Object.entries(projects)
 													/>
 												</a>
 											)}
-											{project?.repo !== "none" && (
+											{project?.repo && (
 												<a
-													href={`https://github.com/skearya/${project.repo ?? project.name}`}
+													href={project.repo}
 													target="_blank"
 												>
 													<img
