@@ -6,7 +6,23 @@ interface Props {
 const { lockedHeight } = Astro.props;
 ---
 
-<div id="waves-container" class="fixed left-0 top-0 -z-50 h-lvh w-full"></div>
+<div
+	id="waves-container"
+	style="will-change: transform, filter;"
+	class="fixed left-0 top-0 -z-50 h-lvh w-full"
+>
+</div>
+
+<section
+	id="ocean-component"
+	style="will-change: transform, filter;"
+	class="relative w-screen overflow-y-auto overflow-x-hidden"
+	class:list={[lockedHeight ? "h-screen" : "h-[265rem]"]}
+	data-locked-height={lockedHeight}
+>
+	<slot />
+	<div id="fish-container"></div>
+</section>
 
 <button
 	id="settings-toggle"
@@ -57,13 +73,3 @@ const { lockedHeight } = Astro.props;
 		<label for="crash browser" class="text-red-400"> Crash browser </label>
 	</div>
 </div>
-
-<section
-	id="ocean-component"
-	class="relative w-screen overflow-y-auto overflow-x-hidden"
-	class:list={[lockedHeight ? "h-screen" : "h-[265rem]"]}
-	data-locked-height={lockedHeight}
->
-	<slot />
-	<div id="fish-container"></div>
-</section>

@@ -22,17 +22,18 @@
 			{
 				"name": "microwave",
 				"description": "control your microphone anywhere in vr",
-				"stack": ["rust", "iced"]
+				"stack": ["rust", "iced"],
+				"repo": "https://github.com/skearya/microwave"
 			},
 			{
 				"name": "wordplay",
 				"url": "https://wordplay.lol/",
 				"description": "multiplayer word games!",
-				"stack": ["rust", "typescript", "solidjs", "tailwind"]
+				"stack": ["rust", "typescript", "solidjs", "tailwind"],
+				"repo": "https://github.com/skearya/wordplay"
 			},
 			{
 				"name": "kristopherboyce.com",
-				"repo": "none",
 				"url": "https://kristopherboyce.com/",
 				"description": "portfolio commissioned for a really cool designer",
 				"stack": ["typescript", "astro", "tailwind"]
@@ -40,22 +41,25 @@
 			{
 				"name": "brainless",
 				"description": "\"brainfuck\" programming language to x86-64 assembly compiler",
-				"stack": ["rust"]
+				"stack": ["rust"],
+				"repo": "https://github.com/skearya/brainless"
 			},
 			{
 				"name": "derivatives",
 				"url": "https://youtu.be/mRuNEYL6wbw",
 				"description": "video made entirely with code visually explaining derivatives",
-				"stack": ["typescript", "motion-canvas"]
+				"stack": ["typescript", "motion-canvas"],
+				"repo": "https://github.com/skearya/derivatives"
 			},
 			{
 				"name": "lodge",
 				"description": "tcp terminal chat server/client from scratch",
-				"stack": ["c"]
+				"stack": ["c"],
+				"repo": "https://github.com/skearya/lodge"
 			},
 			{
 				"name": "skeary.me",
-				"repo": "me",
+				"repo": "https://github.com/skearya/me",
 				"description": "this site!",
 				"stack": ["typescript", "astro", "tailwind"]
 			}
@@ -64,39 +68,46 @@
 			{
 				"name": "skearything",
 				"description": "discord bot for statistics on vc sessions and daily messages",
-				"stack": ["rust", "sqlite"]
+				"stack": ["rust", "sqlite"],
+				"repo": "https://github.com/skearya/skearything"
 			},
 			{
 				"name": "ttt",
 				"description": "multiplayer tic tac toe",
-				"stack": ["typescript", "socket.io", "sveltekit", "tailwind"]
+				"stack": ["typescript", "socket.io", "sveltekit", "tailwind"],
+				"repo": "https://github.com/skearya/ttt"
 			},
 			{
 				"name": "sift",
 				"description": "full-stack anime streaming site",
-				"stack": ["typescript", "sveltekit", "prisma", "tailwind"]
+				"stack": ["typescript", "sveltekit", "prisma", "tailwind"],
+				"repo": "https://github.com/skearya/sift"
 			},
 			{
 				"name": "center",
 				"description": "a tool to help get stuff done without distractions",
-				"stack": ["javascript", "electron", "sveltekit", "tailwind"]
+				"stack": ["javascript", "electron", "sveltekit", "tailwind"],
+				"repo": "https://github.com/skearya/center"
 			},
 			{
 				"name": "bsstats",
 				"description": "various ranked beat saber stats",
-				"stack": ["javascript", "sveltekit", "tailwind"]
+				"stack": ["javascript", "sveltekit", "tailwind"],
+				"repo": "https://github.com/skearya/bsstats"
 			}
 		],
 		"2022": [
 			{
 				"name": "startpages",
 				"description": "personal startpages",
-				"stack": ["javascript", "sveltekit"]
+				"stack": ["javascript", "sveltekit"],
+				"repo": "https://github.com/skearya/startpages"
 			},
 			{
 				"name": "speedreader",
 				"description": "a minimal speedreader",
-				"stack": ["javascript", "vite", "svelte"]
+				"stack": ["javascript", "vite", "svelte"],
+				"repo": "https://github.com/skearya/speedreader"
 			}
 		]
 	}

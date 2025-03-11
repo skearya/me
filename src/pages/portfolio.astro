@@ -1,14 +1,17 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Ocean from "../components/ocean/Ocean.astro";
-import { stack, projects } from "../components/projects.json";
+import { stack, projects } from "../projects.json";
 import Star from "../icons/Star.astro";
 import RightArrow from "../icons/RightArrow.astro";
 import Close from "../icons/Close.astro";
+import { render } from "astro:content";
+import { getCollection } from "astro:content";
+import GitHub from "../icons/GitHub.astro";
 
 const entries = Object.entries(projects)
 	.map(([year, projects]) => [parseInt(year), projects] as const)
-	.sort((a, b) => b[0] - a[0]) as Array<
+	.sort(([a], [b]) => b - a) as Array<
 	[
 		year: number,
 		Array<{
@@ -20,6 +23,32 @@ const entries = Object.entries(projects)
 		}>,
 	]
 >;
+
+const projectsCollection = await getCollection("projects");
+
+const readmes = await Promise.all(
+	projectsCollection.map(async (project) => ({
+		...project,
+		id: project.id.replaceAll(".", ""),
+		md: await render(project),
+	}))
+);
+
+const scriptData = JSON.stringify(
+	Object.fromEntries(
+		entries.flatMap(([year, projects]) =>
+			projects.map(({ name, repo, url }) => [
+				name.replaceAll(".", ""),
+				{
+					name,
+					repo,
+					url,
+					year,
+				},
+			])
+		)
+	)
+);
 ---
 
 <Layout title="skeary's portfolio" disableNav>
@@ -53,10 +82,7 @@ const entries = Object.entries(projects)
 								{year}
 							</div>
 							{projects.map((project) => (
-								<div
-									class="project flex flex-col overflow-hidden rounded-md border bg-moonlightBase/50"
-									data-name={project.name}
-								>
+								<div class="flex flex-col overflow-hidden rounded-md border bg-moonlightBase/50">
 									<img
 										class="object-cover"
 										src={`/projects/${project.name}.png`}
@@ -65,14 +91,20 @@ const entries = Object.entries(projects)
 										height="720px"
 									/>
 									<div class="flex h-full flex-col gap-4 p-4">
-										<div class="flex h-full items-center gap-2.5">
+										<div class="flex h-full justify-between gap-2.5">
 											<div>
 												<h1>{project.name}</h1>
 												<p class="text-sm text-monochromeCat">
 													{project.description}
 												</p>
 											</div>
-											<button class="ml-auto text-moonlightIndigo">
+											<button
+												class="project-open-button origin-right self-center text-moonlightIndigo transition-transform hover:scale-110"
+												data-id={project.name.replaceAll(
+													".",
+													""
+												)}
+											>
 												<RightArrow
 													width={30}
 													height={30}
@@ -122,28 +154,73 @@ const entries = Object.entries(projects)
 		</div>
 	</Ocean>
 	<div
-		id="project-info"
+		id="project-info-container"
 		class="info-transition-options fixed left-0 top-0 flex h-full w-full translate-y-full items-end justify-center"
+		data-projects={scriptData}
 	>
 		<div
-			class="h-[90%] w-full space-y-4 overflow-y-scroll border-t bg-moonlightOverlay p-3.5 sm:max-w-xl sm:rounded-t-lg sm:border-x"
+			style="scrollbar-width: thin;"
+			class="h-[90%] w-full overflow-y-scroll border-t bg-moonlightOverlay sm:max-w-xl sm:rounded-t-lg sm:border-x"
 		>
-			<div class="flex items-center justify-between">
+			<div
+				class="sticky top-0 flex items-center justify-between bg-gradient-to-b from-moonlightOverlay to-transparent p-3.5 pb-4"
+			>
 				<div>
-					<h1 class="text-2xl font-light">microwave</h1>
-					<h2 class="text-moonlightText">june 2024</h2>
+					<h1 id="project-info-title" class="text-2xl font-light">
+						microwave
+					</h1>
+					<h2 id="project-info-date" class="text-moonlightText">
+						june 2024
+					</h2>
 				</div>
-				<button id="project-close-button" class="text-moonlightOrange">
-					<Close width={30} height={30} />
+				<button id="project-info-close">
+					<Close
+						width={30}
+						height={30}
+						class="text-moonlightOrange"
+					/>
 				</button>
 			</div>
-			<hr />
-			<img
-				src="/projects/microwave.png"
-				alt="microwave"
-				class="rounded-lg object-cover"
-			/>
-			<p>text</p>
+			<div class="space-y-4 p-3.5 pt-0">
+				<hr />
+				<div class="flex gap-x-2.5">
+					<a
+						id="project-info-github"
+						href="/"
+						target="_blank"
+						class="group flex w-full items-center justify-center gap-x-3 rounded-md bg-monochromeCloud p-3 text-moonlightBase transition-opacity"
+					>
+						<GitHub
+							width={25}
+							height={25}
+							class="group-hover:animate-bounce"
+						/>
+						<h2>github</h2>
+					</a>
+					<a
+						id="project-info-url"
+						href="/"
+						target="_blank"
+						class="group flex w-full items-center justify-center gap-x-3 rounded-md bg-moonlightIndigo p-3 text-moonlightBase transition-opacity"
+					>
+						<h2>site</h2>
+						<RightArrow
+							width={25}
+							height={25}
+							class="group-hover:animate-bounce"
+						/>
+					</a>
+				</div>
+				<div class="prose prose-invert">
+					{
+						readmes.map(({ id, md }) => (
+							<div id={`project-${id}`} class="hidden">
+								<md.Content />
+							</div>
+						))
+					}
+				</div>
+			</div>
 		</div>
 	</div>
 </Layout>
@@ -183,15 +260,11 @@ const entries = Object.entries(projects)
 	}
 
 	.info-die {
-		@apply translate-y-0;
+		transform: translateY(0px);
 	}
 </style>
 
 <style is:global>
-	.background-transition-other {
-		will-change: transform, filter;
-	}
-
 	.background-transition-options {
 		transition-property: transform, filter;
 		transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
@@ -199,7 +272,8 @@ const entries = Object.entries(projects)
 	}
 
 	.background-die {
-		@apply rotate-2 scale-75 saturate-[.25];
+		transform: rotate(2deg) scale(0.75);
+		filter: saturate(25%);
 	}
 </style>
 
@@ -216,39 +290,64 @@ const entries = Object.entries(projects)
 
 	const oceanControls = oceanScript();
 
-	const projects = document.querySelectorAll<HTMLElement>(".project");
 	const ocean = document.getElementById("ocean-component")!;
 	const waves = document.getElementById("waves-container")!;
-	const projectInfo = document.getElementById("project-info")!;
-	const projectInfoClose = document.getElementById("project-close-button")!;
+	const projectOpeners = document.querySelectorAll<HTMLButtonElement>(
+		".project-open-button"
+	);
+	const projectInfoContainer = document.getElementById(
+		"project-info-container"
+	)!;
+	const projectInfoTitle = document.getElementById("project-info-title")!;
+	const projectInfoDate = document.getElementById("project-info-date")!;
+	const projectInfoGithub = document.getElementById(
+		"project-info-github"
+	)! as HTMLLinkElement;
+	const projectInfoUrl = document.getElementById(
+		"project-info-url"
+	)! as HTMLLinkElement;
+	const projectInfoClose = document.getElementById("project-info-close")!;
 
-	projects.forEach((project) => {
-		project.querySelector("button")!.addEventListener("click", () => die());
+	const projectData = JSON.parse(projectInfoContainer.dataset.projects!) as {
+		[id: string]: {
+			name: string;
+			year: number;
+			repo?: string;
+			url?: string;
+		};
+	};
+
+	const projectReadmeRefs = Object.fromEntries(
+		Object.entries(projectData).map(([id]) => [
+			id,
+			document.getElementById(`project-${id}`)!,
+		])
+	);
+
+	projectOpeners.forEach((button) => {
+		button.addEventListener("click", () => die(button.dataset.id!));
 	});
 
 	projectInfoClose.addEventListener("click", () => revive());
 
-	projectInfo.addEventListener("click", (event) => {
-		if (event.target === projectInfo) {
-			revive();
-		}
+	projectInfoContainer.addEventListener("click", (event) => {
+		if (event.target === projectInfoContainer) revive();
 	});
 
 	document.addEventListener("keydown", (e) => {
-		if (e.key === "q") die();
-		if (e.key === "w") revive();
+		if (e.key === "Escape") revive();
 	});
 
-	// i don't like the window resize transition that happens with bg-transition-options, so it only gets applied when needed
-	// background-transition-other is for properties that should always be applied
+	// weird but i want a way to manage only the visibility of the content i need to
+	let state:
+		| { open: true; currentReadme: HTMLElement }
+		| { open: false; prevReadme?: HTMLElement } = {
+		open: false,
+	};
 
-	ocean.classList.add("background-transition-other");
-	waves.classList.add("background-transition-other");
-
-	let open = false;
-
-	function die() {
-		if (open) return;
+	// i don't like the window resize transition that happens with background-transition-options, so it only gets applied when needed
+	function die(id: string) {
+		if (state.open) return;
 
 		oceanControls.stop();
 
@@ -258,7 +357,31 @@ const entries = Object.entries(projects)
 		ocean.classList.add("background-die");
 		waves.classList.add("background-die");
 
-		projectInfo.classList.add("info-die");
+		projectInfoContainer.classList.add("info-die");
+
+		state.prevReadme?.classList.add("hidden");
+
+		const currentReadme = projectReadmeRefs[id]!;
+		currentReadme.classList.remove("hidden");
+
+		const data = projectData[id]!;
+
+		projectInfoTitle.textContent = data.name;
+		projectInfoDate.textContent = `${data.year}`;
+
+		if (data.repo) {
+			projectInfoGithub.classList.remove("hidden");
+			projectInfoGithub.href = data.repo;
+		} else {
+			projectInfoGithub.classList.add("hidden");
+		}
+
+		if (data.url) {
+			projectInfoUrl.classList.remove("hidden");
+			projectInfoUrl.href = data.url;
+		} else {
+			projectInfoUrl.classList.add("hidden");
+		}
 
 		ocean.addEventListener(
 			"transitionend",
@@ -271,11 +394,11 @@ const entries = Object.entries(projects)
 			{ once: true }
 		);
 
-		open = true;
+		state = { open: true, currentReadme };
 	}
 
 	function revive() {
-		if (!open) return;
+		if (!state.open) return;
 
 		oceanControls.resume();
 
@@ -285,7 +408,7 @@ const entries = Object.entries(projects)
 		ocean.classList.remove("background-die");
 		waves.classList.remove("background-die");
 
-		projectInfo.classList.remove("info-die");
+		projectInfoContainer.classList.remove("info-die");
 
 		ocean.addEventListener(
 			"transitionend",
@@ -298,6 +421,6 @@ const entries = Object.entries(projects)
 			{ once: true }
 		);
 
-		open = false;
+		state = { open: false, prevReadme: state.currentReadme };
 	}
 </script>
