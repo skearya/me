@@ -1,13 +1,17 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Ocean from "../components/ocean/Ocean.astro";
-import { stack, projects } from "../components/projects.json";
+import { stack, projects } from "../projects.json";
 import Star from "../icons/Star.astro";
 import RightArrow from "../icons/RightArrow.astro";
+import Close from "../icons/Close.astro";
+import { render } from "astro:content";
+import { getCollection } from "astro:content";
+import GitHub from "../icons/GitHub.astro";
 
 const entries = Object.entries(projects)
 	.map(([year, projects]) => [parseInt(year), projects] as const)
-	.sort((a, b) => b[0] - a[0]) as Array<
+	.sort(([a], [b]) => b - a) as Array<
 	[
 		year: number,
 		Array<{
@@ -19,10 +23,36 @@ const entries = Object.entries(projects)
 		}>,
 	]
 >;
+
+const projectsCollection = await getCollection("projects");
+
+const readmes = await Promise.all(
+	projectsCollection.map(async (project) => ({
+		...project,
+		id: project.id.replaceAll(".", ""),
+		md: await render(project),
+	}))
+);
+
+const scriptData = JSON.stringify(
+	Object.fromEntries(
+		entries.flatMap(([year, projects]) =>
+			projects.map(({ name, repo, url }) => [
+				name.replaceAll(".", ""),
+				{
+					name,
+					repo,
+					url,
+					year,
+				},
+			])
+		)
+	)
+);
 ---
 
 <Layout title="skeary's portfolio" disableNav>
-	<Ocean disableHeight>
+	<Ocean lockedHeight>
 		<div
 			class="appear relative mx-auto mt-20 flex w-full items-center justify-between p-6 font-mono md:max-w-lg"
 		>
@@ -52,7 +82,7 @@ const entries = Object.entries(projects)
 								{year}
 							</div>
 							{projects.map((project) => (
-								<div class="flex flex-col overflow-hidden rounded-md border">
+								<div class="flex flex-col overflow-hidden rounded-md border bg-moonlightBase/50">
 									<img
 										class="object-cover"
 										src={`/projects/${project.name}.png`}
@@ -60,42 +90,26 @@ const entries = Object.entries(projects)
 										width="1280px"
 										height="720px"
 									/>
-									<div class="flex h-full flex-col gap-4 bg-moonlightBase/50 p-4">
-										<div class="flex h-full gap-2.5">
+									<div class="flex h-full flex-col gap-4 p-4">
+										<div class="flex h-full justify-between gap-2.5">
 											<div>
 												<h1>{project.name}</h1>
 												<p class="text-sm text-monochromeCat">
 													{project.description}
 												</p>
 											</div>
-											<div class="ml-auto flex flex-shrink-0 items-center gap-2 self-center">
-												{project?.url && (
-													<a
-														class="origin-right text-moonlightIndigo transition-transform hover:scale-110"
-														href={project.url}
-														target="_blank"
-													>
-														<RightArrow
-															width={30}
-															height={30}
-														/>
-													</a>
+											<button
+												class="project-open-button origin-right self-center text-moonlightIndigo transition-transform hover:scale-110"
+												data-id={project.name.replaceAll(
+													".",
+													""
 												)}
-												{project?.repo !== "none" && (
-													<a
-														class="origin-right transition-transform hover:scale-110"
-														href={`https://github.com/skearya/${project.repo ?? project.name}`}
-														target="_blank"
-													>
-														<img
-															src="/socials/github.png"
-															alt="github"
-															height="25px"
-															width="25px"
-														/>
-													</a>
-												)}
-											</div>
+											>
+												<RightArrow
+													width={30}
+													height={30}
+												/>
+											</button>
 										</div>
 										<hr />
 										<div class="flex gap-3">
@@ -139,6 +153,82 @@ const entries = Object.entries(projects)
 			</div>
 		</div>
 	</Ocean>
+	<div
+		id="project-info-container"
+		class="info-transition-options fixed left-0 top-0 flex h-full w-full translate-y-full items-end justify-center"
+		data-projects={scriptData}
+	>
+		<div
+			style="scrollbar-width: thin;"
+			class="h-[90%] w-full overflow-y-scroll border-t bg-moonlightOverlay sm:max-w-xl sm:rounded-t-lg sm:border-x"
+		>
+			<div
+				class="sticky top-0 flex items-center justify-between bg-gradient-to-b from-moonlightOverlay to-transparent p-3.5 pb-4"
+			>
+				<div>
+					<h1 id="project-info-title" class="text-2xl font-light">
+						microwave
+					</h1>
+					<h2 id="project-info-date" class="text-moonlightText">
+						june 2024
+					</h2>
+				</div>
+				<button id="project-info-close">
+					<Close
+						width={30}
+						height={30}
+						class="text-moonlightOrange"
+					/>
+				</button>
+			</div>
+			<div class="space-y-4 p-3.5 pt-0">
+				<hr />
+				<img
+					id="project-info-image"
+					alt="project showcase image"
+					class="rounded-md object-cover"
+				/>
+				<div class="flex gap-x-2.5">
+					<a
+						id="project-info-github"
+						href="/"
+						target="_blank"
+						class="group flex w-full items-center justify-center gap-x-3 rounded-md bg-moonlightFocusHigh p-3 transition-opacity"
+					>
+						<GitHub
+							width={25}
+							height={25}
+							class="group-hover:animate-bounce"
+						/>
+						<h2>github</h2>
+					</a>
+					<a
+						id="project-info-url"
+						href="/"
+						target="_blank"
+						class="group flex w-full items-center justify-center gap-x-3 rounded-md bg-moonlightIndigo p-3 text-moonlightBase transition-opacity"
+					>
+						<h2>site</h2>
+						<RightArrow
+							width={25}
+							height={25}
+							class="group-hover:animate-bounce"
+						/>
+					</a>
+				</div>
+
+				<div class="prose prose-invert">
+					{
+						readmes.map(({ id, md }) => (
+							<div id={`project-${id}`} class="hidden">
+								<md.Content />
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</div>
+	</div>
 </Layout>
 
 <style>
@@ -167,9 +257,35 @@ const entries = Object.entries(projects)
 			transform: translateY(0%);
 		}
 	}
+
+	.info-transition-options {
+		will-change: transform;
+		transition-property: transform;
+		transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+		transition-duration: 750ms;
+	}
+
+	.info-die {
+		transform: translateY(0px);
+	}
+</style>
+
+<style is:global>
+	.background-transition-options {
+		transition-property: transform, filter;
+		transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+		transition-duration: 1250ms;
+	}
+
+	.background-die {
+		transform: rotate(2deg) scale(0.75);
+		filter: saturate(25%);
+	}
 </style>
 
 <script>
+	import { oceanScript } from "../components/ocean/ocean";
+
 	document.getElementById("time")!.textContent =
 		new Date().toLocaleString("en-US", {
 			timeZone: "America/New_York",
@@ -177,4 +293,144 @@ const entries = Object.entries(projects)
 			minute: "numeric",
 			hour12: true,
 		}) + " EDT";
+
+	const oceanControls = oceanScript();
+
+	const ocean = document.getElementById("ocean-component")!;
+	const waves = document.getElementById("waves-container")!;
+	const projectOpeners = document.querySelectorAll<HTMLButtonElement>(
+		".project-open-button"
+	);
+	const projectInfoContainer = document.getElementById(
+		"project-info-container"
+	)!;
+	const projectInfoTitle = document.getElementById("project-info-title")!;
+	const projectInfoDate = document.getElementById("project-info-date")!;
+	const projectInfoImage = document.getElementById(
+		"project-info-image"
+	)! as HTMLImageElement;
+	const projectInfoGithub = document.getElementById(
+		"project-info-github"
+	)! as HTMLLinkElement;
+	const projectInfoUrl = document.getElementById(
+		"project-info-url"
+	)! as HTMLLinkElement;
+	const projectInfoClose = document.getElementById("project-info-close")!;
+
+	const projectData = JSON.parse(projectInfoContainer.dataset.projects!) as {
+		[id: string]: {
+			name: string;
+			year: number;
+			repo?: string;
+			url?: string;
+		};
+	};
+
+	const projectReadmeRefs = Object.fromEntries(
+		Object.entries(projectData).map(([id]) => [
+			id,
+			document.getElementById(`project-${id}`)!,
+		])
+	);
+
+	projectOpeners.forEach((button) => {
+		button.addEventListener("click", () => die(button.dataset.id!));
+	});
+
+	projectInfoClose.addEventListener("click", () => revive());
+
+	projectInfoContainer.addEventListener("click", (event) => {
+		if (event.target === projectInfoContainer) revive();
+	});
+
+	document.addEventListener("keydown", (e) => {
+		if (e.key === "Escape") revive();
+	});
+
+	// weird but i want a way to manage only the visibility of the content i need to
+	let state:
+		| { open: true; currentReadme: HTMLElement }
+		| { open: false; prevReadme?: HTMLElement } = {
+		open: false,
+	};
+
+	// i don't like the window resize transition that happens with background-transition-options, so it only gets applied when needed
+	function die(id: string) {
+		if (state.open) return;
+
+		oceanControls.stop();
+
+		ocean.classList.add("background-transition-options");
+		waves.classList.add("background-transition-options");
+
+		ocean.classList.add("background-die");
+		waves.classList.add("background-die");
+
+		projectInfoContainer.classList.add("info-die");
+
+		state.prevReadme?.classList.add("hidden");
+
+		const currentReadme = projectReadmeRefs[id]!;
+		currentReadme.classList.remove("hidden");
+
+		const data = projectData[id]!;
+
+		projectInfoImage.src = `/projects/${data.name}.png`;
+		projectInfoTitle.textContent = data.name;
+		projectInfoDate.textContent = `${data.year}`;
+
+		if (data.repo) {
+			projectInfoGithub.classList.remove("hidden");
+			projectInfoGithub.href = data.repo;
+		} else {
+			projectInfoGithub.classList.add("hidden");
+		}
+
+		if (data.url) {
+			projectInfoUrl.classList.remove("hidden");
+			projectInfoUrl.href = data.url;
+		} else {
+			projectInfoUrl.classList.add("hidden");
+		}
+
+		ocean.addEventListener(
+			"transitionend",
+			() => ocean.classList.remove("background-transition-options"),
+			{ once: true }
+		);
+		waves.addEventListener(
+			"transitionend",
+			() => waves.classList.remove("background-transition-options"),
+			{ once: true }
+		);
+
+		state = { open: true, currentReadme };
+	}
+
+	function revive() {
+		if (!state.open) return;
+
+		oceanControls.resume();
+
+		ocean.classList.add("background-transition-options");
+		waves.classList.add("background-transition-options");
+
+		ocean.classList.remove("background-die");
+		waves.classList.remove("background-die");
+
+		projectInfoContainer.classList.remove("info-die");
+
+		ocean.addEventListener(
+			"transitionend",
+			() => ocean.classList.remove("background-transition-options"),
+			{ once: true }
+		);
+		waves.addEventListener(
+			"transitionend",
+			() => waves.classList.remove("background-transition-options"),
+			{ once: true }
+		);
+
+		state = { open: false, prevReadme: state.currentReadme };
+	}
 </script>

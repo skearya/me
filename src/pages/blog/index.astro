@@ -17,7 +17,7 @@ const posts = (await getCollection("blog")).sort(
 			{
 				posts.map((post) => (
 					<a
-						href={`/blog/${post.slug}`}
+						href={`/blog/${post.id}`}
 						class="flex items-center gap-3 rounded-lg border p-4"
 					>
 						<code class="text-lg font-light text-moonlightIndigo">

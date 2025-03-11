@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { stack, projects } from "../components/projects.json";
+import { stack, projects } from "../projects.json";
 import Star from "../icons/Star.astro";
 import RightArrow from "../icons/RightArrow.astro";
 
@@ -64,9 +64,9 @@ const entries = Object.entries(projects)
 													/>
 												</a>
 											)}
-											{project?.repo !== "none" && (
+											{project?.repo && (
 												<a
-													href={`https://github.com/skearya/${project.repo ?? project.name}`}
+													href={project.repo}
 													target="_blank"
 												>
 													<img
