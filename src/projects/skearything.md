@@ -1,6 +1,6 @@
-vc and daily message logging
+a discord bot for logging vc sessions and daily statistics
 
-(wip)
+---
 
 ### example daily log
 
@@ -19,3 +19,5 @@ vc and daily message logging
     loading="lazy"
 	src="/project-info/skearything-vc-log.png"
 />
+
+[writeup coming soon]

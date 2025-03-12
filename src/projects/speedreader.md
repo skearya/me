@@ -1,6 +1,8 @@
 a simple speedreader, made with svelte and vite
 
-features
+---
+
+## features
 
 - mobile responsive
 - keyboard shortcuts

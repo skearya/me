@@ -1,10 +1,12 @@
 multiplayer word games!
 
-### video showcase
+---
+
+## video showcase
 
 <video src="/blog/wordplay-release/wordplay.mp4" controls></video>
 
-### features
+## features
 
 - pretty & fast!
 - word bomb
@@ -16,15 +18,18 @@ multiplayer word games!
 - message rate limiting
 - spectating
 
-### stack
+## stack
 
-- client
-    - [TypeScript](https://www.typescriptlang.org/)
-    - [SolidJS](https://www.solidjs.com/)
-    - [Vite](https://vitejs.dev)
-    - [TailwindCSS](https://tailwindcss.com)
-- server
-    - [Rust](https://www.rust-lang.org/)
-    - [axum](https://github.com/tokio-rs/axum)
+client
 
-[Docker](https://docs.docker.com/) / [Docker Compose](https://docs.docker.com/compose/) used to build and manage deployments
+- [TypeScript](https://www.typescriptlang.org/)
+- [SolidJS](https://www.solidjs.com/)
+- [Vite](https://vitejs.dev)
+- [TailwindCSS](https://tailwindcss.com)
+
+server
+
+- [Rust](https://www.rust-lang.org/)
+- [axum](https://github.com/tokio-rs/axum)
+
+[Docker](https://docs.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) are used to build and manage deployments on a rented VPS

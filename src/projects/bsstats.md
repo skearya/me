@@ -1,4 +1,8 @@
-site to show various Beat Saber info from:
+a site to aggregate Beat Saber player statistics
+
+---
+
+data collected from
 
 - ScoreSaber
 - BeatSaver (soon!)

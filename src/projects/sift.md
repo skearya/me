@@ -1,5 +1,9 @@
 a decent way to watch anime
 
+---
+
+## features
+
 - no tracking/analytics
 - no ads
 - watch history
@@ -26,7 +30,7 @@ a decent way to watch anime
 
 </details>
 
-### info
+## info
 
 - Full stack framework: [SvelteKit](https://kit.svelte.dev/)
 - ORM: [Prisma](https://www.prisma.io/)

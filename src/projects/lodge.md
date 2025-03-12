@@ -1,6 +1,8 @@
-basic terminal chat server/client written in C
+a basic terminal chat server/client written in C
 
-### info
+---
+
+## info
 
 - tcp
 - able to handle partial message reads
@@ -8,6 +10,6 @@ basic terminal chat server/client written in C
 - client uses `poll`
 - linux only
 
-### dependencies
+## dependencies
 
 - [stb_ds.h](https://github.com/nothings/stb/blob/master/stb_ds.h): used on server for a hashmap to manage client data

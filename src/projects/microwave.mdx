@@ -2,6 +2,20 @@ import { YouTube } from "astro-embed";
 
 a tool to control your microphone anywhere in VR through controller binds (Oculus/Meta headsets only)
 
-### video showcase
+---
+
+## video showcase
 
 <YouTube id="eyB2dw0DLxo" />
+
+this project was created out of a simple desire to have controller binds to mic controls outside of SteamVR. after researching for a bit and landing on a guide to the [Oculus SDK](https://developers.meta.com/horizon/documentation/native/pc/pcsdk-intro), i knew it was possible. i went with rust because of familiarity and a better state of GUI toolkits over c++. the initial figma mockup was pretty close to the end result.
+
+<div align="center">
+	<img
+		src="/project-info/microwave-figma.png"
+		alt="figma mockup"
+		loading="lazy"
+	/>
+</div>
+
+made with raw C bindings to the [Oculus SDK](https://developers.meta.com/horizon/downloads/package/oculus-sdk-for-windows/), thanks to [rust-bindgen](https://github.com/rust-lang/rust-bindgen), and bindings to windows apis through [windows-rs](https://github.com/microsoft/windows-rs/) for mic management. the ui was created with [iced](https://github.com/iced-rs/iced) which was very pleasant to work with.
