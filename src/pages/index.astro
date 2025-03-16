@@ -8,8 +8,6 @@ import Ocean from "../components/ocean/Ocean.astro";
 		<div
 			class="appear relative mx-auto mt-20 flex w-full items-center justify-between p-6 font-mono opacity-0 md:max-w-lg"
 		>
-			<div class="move absolute z-10 -m-6 h-full w-full bg-moonlightPink">
-			</div>
 			<div class="flex flex-col justify-start gap-[2px]">
 				<h1 class="whitespace-nowrap text-xl">hi i'm skeary</h1>
 				<h1 id="time" class="text-moonlightStone"></h1>
@@ -46,16 +44,6 @@ import Ocean from "../components/ocean/Ocean.astro";
 		}
 		100% {
 			transform: translateY(0%);
-		}
-	}
-
-	.move {
-		animation: move 0.4s cubic-bezier(0.23, 1, 0.32, 1) 1s forwards;
-	}
-
-	@keyframes move {
-		100% {
-			width: 0px;
 		}
 	}
 </style>
