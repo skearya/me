@@ -6,6 +6,7 @@ type ShikiTransfomer = Exclude<ShikiConfig["transformers"], undefined>[number];
 const langIcons = [
 	"astro",
 	"c",
+	"cpp",
 	"electron",
 	"iced",
 	"java",

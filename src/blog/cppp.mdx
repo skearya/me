@@ -1,0 +1,54 @@
+---
+title: "how to make c+++"
+description: "(real)"
+date: 2025-03-14
+tags: ["silly"]
+---
+
+on a whim i had a possibly funny idea. changing the post-increment operator in c from "++" to "+++" and renaming the language c+++. how hard could it be? (spoiler: not very).
+
+from my ongoing reading of the wonderful [Crafting Interpreters](https://craftinginterpreters.com/), a token in programming languages is simply a small sequence of characters that mean something in the language. for example: **(**, **!=**, **.**, **++**, and **return** are various kinds of tokens in C. these tokens get built by the tokenizer, or lexer, or scanner... (there are slight differences).
+
+since **++** is a standalone token, theoretically all i would need to do is have the tokenizer recognize "+++" as whatever structure the **++** token is in clang. and yeah, that was literally it. it didn't take too long for me to stumble upon the tokenizer ([clang/lib/Lex/Lexer.cpp](https://github.com/llvm/llvm-project/blob/main/clang/lib/Lex/Lexer.cpp)) and scroll around until i saw where most single character characters were being tokenized.
+
+```cpp label=Lexer.cpp (line 4113)
+  case '+':
+    Char = getCharAndSize(CurPtr, SizeTmp);
+    if (Char == '+') {
+      CurPtr = ConsumeChar(CurPtr, SizeTmp, Result);
+      Kind = tok::plusplus;
+    } else if (Char == '=') {
+      CurPtr = ConsumeChar(CurPtr, SizeTmp, Result);
+      Kind = tok::plusequal;
+    } else {
+      Kind = tok::plus;
+    }
+    break;
+```
+
+with a massive leap of faith, i ended with something that seemed like it could work.
+
+```cpp label=Lexer.cpp (modified)
+  case '+':
+    Char = getCharAndSize(CurPtr, SizeTmp);
+    if (Char == '+') {
+      Char = getCharAndSize(CurPtr, SizeTmp);
+      CurPtr = ConsumeChar(CurPtr, SizeTmp, Result);
+      if (Char == '+') {
+        CurPtr = ConsumeChar(CurPtr, SizeTmp, Result);
+        Kind = tok::plusplus;
+      }
+    } else if (Char == '=') {
+      CurPtr = ConsumeChar(CurPtr, SizeTmp, Result);
+      Kind = tok::plusequal;
+    } else {
+      Kind = tok::plus;
+    }
+    break;
+```
+
+4 hours of compiling and 50 GB of build data later, it worked!
+
+![output](/blog/cppp/output.png)
+
+i'd probably like to play around with clang again later cause of how easy this change was.
