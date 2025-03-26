@@ -8,10 +8,13 @@ interface Props {
 const { lockedHeight, oceanClass, wavesClass } = Astro.props;
 ---
 
+{
+	/* i don't want to use h-dvh on ios because it causes stutters but the in-app browser doesn't respect h-lvh? */
+}
 <div
 	id="waves-container"
 	style="will-change: transform, filter;"
-	class:list={["fixed left-0 top-0 -z-50 h-lvh w-full", wavesClass]}
+	class:list={["fixed left-0 top-0 -z-50 h-dvh w-full", wavesClass]}
 >
 </div>
 
