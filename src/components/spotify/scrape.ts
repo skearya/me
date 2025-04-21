@@ -71,7 +71,7 @@ export async function getAlbumOrPlaylist(
 	};
 
 	if (item) {
-		if (type === "playlist" && olderThanDay(item.lastUpdated)) {
+		if (type === "playlist" && olderThanDay(new Date(item.lastUpdated))) {
 			try {
 				return albumOrPlaylist();
 			} catch {

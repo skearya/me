@@ -71,7 +71,7 @@ export async function getMalList(
 	};
 
 	if (list) {
-		if (olderThanDay(list.lastUpdated)) {
+		if (olderThanDay(new Date(list.lastUpdated))) {
 			try {
 				return await malList();
 			} catch {
