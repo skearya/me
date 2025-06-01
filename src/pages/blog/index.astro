@@ -33,9 +33,9 @@ const posts = (await getCollection("blog")).sort(
 								})}
 							</h1>
 						</div>
-						<div class="ml-auto flex items-center gap-2 text-sm">
+						<div class="ml-auto flex flex-wrap items-center justify-end gap-2 text-sm">
 							{post.data.tags.map((tag) => (
-								<code class="rounded-lg bg-moonlightIndigo px-2 py-1 text-moonlightBase">
+								<code class="text-nowrap rounded-lg bg-moonlightIndigo px-2 py-1 text-moonlightBase">
 									{tag}
 								</code>
 							))}

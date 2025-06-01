@@ -3,6 +3,7 @@ import mdx from "@astrojs/mdx";
 import tailwind from "@astrojs/tailwind";
 import { defineConfig, passthroughImageService } from "astro/config";
 import { codeLabel } from "./src/components/blog/codeLabel";
+import { removePrettierIgnore } from "./src/components/blog/removePrettierIgnore";
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,7 +17,7 @@ export default defineConfig({
 	markdown: {
 		shikiConfig: {
 			theme: "houston",
-			transformers: [codeLabel],
+			transformers: [removePrettierIgnore, codeLabel],
 		},
 	},
 });

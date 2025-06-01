@@ -41,6 +41,10 @@ export const codeLabel: ShikiTransfomer = {
 				lang = "javascript";
 			}
 
+			if (lang === "ts") {
+				lang = "typescript";
+			}
+
 			if (typeof lang === "string" && langIcons.includes(lang)) {
 				label.children.push(
 					h("img", {
@@ -51,7 +55,7 @@ export const codeLabel: ShikiTransfomer = {
 						width: "20px",
 					}),
 				);
-			} else {
+			} else if (lang !== "plaintext") {
 				label.children.push(h("span", lang?.toString()));
 			}
 

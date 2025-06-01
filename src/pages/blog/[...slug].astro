@@ -36,7 +36,7 @@ if (entry === undefined) {
 	return Astro.redirect("/404");
 }
 
-const db = entry.body?.includes("db") ? createDb(Astro) : null;
+const db = entry.body?.includes("db=") ? createDb(Astro) : null;
 
 const { Content } = await render(entry);
 ---
