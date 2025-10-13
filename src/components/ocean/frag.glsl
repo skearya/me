@@ -15,7 +15,6 @@ vec3 wave(vec2 uv) {
 
     dist = 1.0 - dist;
     dist = clamp(dist, 0.0, 1.0);
-    dist = pow(dist, 2.0);
 
     return vec3(dist) * 0.5;
 }
@@ -44,17 +43,10 @@ void main() {
     waves += wave(vec2(uv.x * 0.4 + 8.0 + iTime * 0.2, uv.y + 1.47));
     waves += wave(vec2(uv.x + 9.0 + iTime * 0.2, uv.y + 2.19));
 
-    uv.y *= -1.0;
-
-    waves += wave(vec2(uv.x, uv.y - 2.0)) / 2.0;
-    waves += wave(vec2(uv.x + 2.0, uv.y - 2.06));
-
-    waves += wave(vec2(uv.x + 3.4, uv.y - 2.9));
-    waves += wave(vec2(uv.x * 0.6 + 1.2, uv.y - 3.5));
-    waves += wave(vec2(uv.x + 1.4, uv.y - 4.0));
-    waves += wave(vec2(uv.x - 0.8 * 0.4, uv.y - 5.2));
+    waves += wave(vec2(uv.x, uv.y + 3.19)) / 1.5;
+    waves += wave(vec2(uv.x * 0.4, uv.y + 4.12)) / 2.0;
 
     vec3 base = vec3(0.0588, 0.0627, 0.0784);
 
-    gl_FragColor = vec4(waves * bg + base, 1.0) * min(iTime, 1.0);
+    gl_FragColor = vec4(waves * bg + base, 1.0) * min(iTime * 0.5, 1.0);
 }
