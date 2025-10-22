@@ -34,20 +34,22 @@ const readmes = await Promise.all(
 	}))
 );
 
-const scriptData = JSON.stringify(
-	Object.fromEntries(
-		entries.flatMap(([year, projects]) =>
-			projects.map(({ name, repo, url }) => [
-				name.replaceAll(".", ""),
-				{
-					name,
-					repo,
-					url,
-					year,
-				},
-			])
+const projectsWithoutReadmes = entries
+	.flatMap(([, projects]) => projects)
+	.filter((project) =>
+		readmes.every(
+			(readme) => readme.id !== project.name.replaceAll(".", "")
 		)
-	)
+	);
+
+const scriptData = entries.flatMap(([year, projects]) =>
+	projects.map(({ name, repo, url }) => ({
+		id: name.replaceAll(".", ""),
+		name,
+		repo,
+		url,
+		year,
+	}))
 );
 ---
 
@@ -152,7 +154,7 @@ const scriptData = JSON.stringify(
 	<div
 		id="project-info-container"
 		class="info-transition-options fixed left-0 top-0 flex h-full w-full translate-y-full items-end justify-center"
-		data-projects={scriptData}
+		data-projects={JSON.stringify(scriptData)}
 	>
 		<div
 			style="scrollbar-width: thin;"
@@ -164,10 +166,8 @@ const scriptData = JSON.stringify(
 				>
 					<div>
 						<h1 id="project-info-title" class="text-2xl font-light">
-							microwave
 						</h1>
 						<h2 id="project-info-date" class="text-moonlightText">
-							june 2024
 						</h2>
 					</div>
 					<button id="project-info-close">
@@ -214,6 +214,15 @@ const scriptData = JSON.stringify(
 									<md.Content />
 								</div>
 							))
+						}
+						{
+							projectsWithoutReadmes.map(
+								({ name, description }) => (
+									<div id={`project-${name}`} class="hidden">
+										{description}
+									</div>
+								)
+							)
 						}
 					</div>
 				</div>
@@ -309,25 +318,25 @@ const scriptData = JSON.stringify(
 	const projectInfoClose = document.getElementById("project-info-close")!;
 
 	const projectData = JSON.parse(projectInfoContainer.dataset.projects!) as {
-		[id: string]: {
-			name: string;
-			year: number;
-			repo?: string;
-			url?: string;
-		};
-	};
+		id: string;
+		name: string;
+		repo: string | undefined;
+		url: string | undefined;
+		year: number;
+	}[];
 
 	const projectReadmeRefs = Object.fromEntries(
-		Object.entries(projectData).map(([id]) => [
+		projectData.map(({ id }) => [
 			id,
-			document.getElementById(`project-${id}`)!,
+			document.getElementById(`project-${id}`),
 		])
 	);
 
 	projectOpeners.forEach((button) => {
 		button.addEventListener("click", (event) => {
-			// @ts-expect-error
-			if (event.target?.parentElement?.nodeName !== "A") {
+			if (
+				(event.target as HTMLElement)?.parentElement?.nodeName !== "A"
+			) {
 				die(button.dataset.id!);
 			}
 		});
@@ -343,15 +352,10 @@ const scriptData = JSON.stringify(
 		if (e.key === "Escape") revive();
 	});
 
-	// weird but i want a way to manage only the visibility of the content i need to
-	let state:
-		| { open: true; currentReadme: HTMLElement }
-		| { open: false; prevReadme?: HTMLElement } = {
-		open: false,
-	};
+	let open = false;
 
 	function die(id: string) {
-		if (state.open) return;
+		if (open) return;
 
 		oceanControls.stop();
 
@@ -360,12 +364,14 @@ const scriptData = JSON.stringify(
 
 		projectInfoContainer.classList.add("info-die");
 
-		state.prevReadme?.classList.add("hidden");
+		for (const readme of Object.values(projectReadmeRefs)) {
+			if (readme) readme.classList.add("hidden");
+		}
 
-		const currentReadme = projectReadmeRefs[id]!;
-		currentReadme.classList.remove("hidden");
+		const readme = projectReadmeRefs[id];
+		if (readme) readme.classList.remove("hidden");
 
-		const data = projectData[id]!;
+		const data = projectData.find((project) => project.id === id)!;
 
 		projectInfoImage.src = `/projects/${data.name}.png`;
 		projectInfoTitle.textContent = data.name;
@@ -385,11 +391,11 @@ const scriptData = JSON.stringify(
 			projectInfoUrl.classList.add("hidden");
 		}
 
-		state = { open: true, currentReadme };
+		open = true;
 	}
 
 	function revive() {
-		if (!state.open) return;
+		if (!open) return;
 
 		ocean.classList.remove("background-die");
 		waves.classList.remove("background-die");
@@ -398,6 +404,6 @@ const scriptData = JSON.stringify(
 
 		oceanControls.resume();
 
-		state = { open: false, prevReadme: state.currentReadme };
+		open = false;
 	}
 </script>
