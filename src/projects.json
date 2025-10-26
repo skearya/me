@@ -15,22 +15,62 @@
 		"vite": "https://vitejs.dev/",
 		"motion-canvas": "https://motioncanvas.io/",
 		"c": "https://en.wikipedia.org/wiki/C_(programming_language)",
-		"iced": "https://iced.rs/"
+		"c++": "https://en.wikipedia.org/wiki/C%2B%2B",
+		"iced": "https://iced.rs/",
+		"raylib": "https://www.raylib.com/"
 	},
 	"projects": {
-		"2024": [
-			{
-				"name": "microwave",
-				"description": "control your microphone anywhere in vr",
-				"stack": ["rust", "iced"],
-				"repo": "https://github.com/skearya/microwave"
-			},
+		"2025": [
 			{
 				"name": "wordplay",
 				"url": "https://wordplay.lol/",
 				"description": "multiplayer word games!",
 				"stack": ["rust", "typescript", "solidjs", "tailwind"],
 				"repo": "https://github.com/skearya/wordplay"
+			},
+			{
+				"name": "patchwork",
+				"description": "render images and gifs inside your terminal",
+				"repo": "https://github.com/skearya/patchwork",
+				"stack": ["rust"]
+			},
+			{
+				"name": "ratnest",
+				"description": "generate interesting art from arbitrary math expressions",
+				"repo": "https://github.com/skearya/ratnest",
+				"stack": ["rust"]
+			},
+			{
+				"name": "lox",
+				"description": "lox scripting language interpreter based on \"Crafting Interpreters\"",
+				"repo": "https://github.com/skearya/lox",
+				"stack": ["rust", "c"]
+			},
+			{
+				"name": "chip",
+				"repo": "https://github.com/skearya/chip",
+				"description": "CHIP-8 console emulator in C++23",
+				"stack": ["c++", "raylib"]
+			},
+			{
+				"name": "cranium",
+				"description": "C compiler targeting the 8 character \"brainfuck\" language",
+				"repo": "https://github.com/skearya/cranium",
+				"stack": ["rust"]
+			},
+			{
+				"name": "tltss",
+				"description": "tiny programming language implemented entirely in TypeScript's type system",
+				"repo": "https://github.com/skearya/tltss",
+				"stack": ["typescript"]
+			}
+		],
+		"2024": [
+			{
+				"name": "microwave",
+				"description": "control your microphone anywhere in vr",
+				"stack": ["rust", "iced"],
+				"repo": "https://github.com/skearya/microwave"
 			},
 			{
 				"name": "kristopherboyce.com",

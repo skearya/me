@@ -4,6 +4,18 @@ import { stack, projects } from "../projects.json";
 import Star from "../icons/Star.astro";
 import RightArrow from "../icons/RightArrow.astro";
 
+const projectImgExt = (name: string) => {
+	const overrides: Record<string, string> = { patchwork: "gif" };
+
+	return overrides[name] ?? "png";
+};
+
+const stackImgExt = (name: string) => {
+	const overrides: Record<string, string> = { raylib: "png" };
+
+	return overrides[name] ?? "svg";
+};
+
 const entries = Object.entries(projects)
 	.map(([year, projects]) => [parseInt(year), projects] as const)
 	.sort((a, b) => b[0] - a[0]) as Array<
@@ -38,7 +50,7 @@ const entries = Object.entries(projects)
 							<div class="flex flex-col overflow-hidden rounded-md border">
 								<img
 									class="object-cover"
-									src={`/projects/${project.name}.png`}
+									src={`/projects/${project.name}.${projectImgExt(project.name)}`}
 									alt={project.name}
 									width="1280px"
 									height="720px"
@@ -92,7 +104,7 @@ const entries = Object.entries(projects)
 												target="_blank"
 											>
 												<img
-													src={`/stack/${item}.svg`}
+													src={`/stack/${item}.${stackImgExt(item)}`}
 													alt={item}
 													title={item}
 													height="25px"

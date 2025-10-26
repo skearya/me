@@ -9,6 +9,18 @@ import { render } from "astro:content";
 import { getCollection } from "astro:content";
 import GitHub from "../icons/GitHub.astro";
 
+const projectImgExt = (name: string) => {
+	const overrides: Record<string, string> = { patchwork: "gif" };
+
+	return overrides[name] ?? "png";
+};
+
+const stackImgExt = (name: string) => {
+	const overrides: Record<string, string> = { raylib: "png" };
+
+	return overrides[name] ?? "svg";
+};
+
 const entries = Object.entries(projects)
 	.map(([year, projects]) => [parseInt(year), projects] as const)
 	.sort(([a], [b]) => b - a) as Array<
@@ -49,6 +61,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 		repo,
 		url,
 		year,
+		imgExt: projectImgExt(name),
 	}))
 );
 ---
@@ -89,7 +102,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 								>
 									<img
 										class="object-cover"
-										src={`/projects/${project.name}.png`}
+										src={`/projects/${project.name}.${projectImgExt(project.name)}`}
 										alt={project.name}
 										width="1280px"
 										height="720px"
@@ -118,7 +131,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 													target="_blank"
 												>
 													<img
-														src={`/stack/${item}.svg`}
+														src={`/stack/${item}.${stackImgExt(item)}`}
 														alt={item}
 														title={item}
 														height="25px"
@@ -220,6 +233,8 @@ const scriptData = entries.flatMap(([year, projects]) =>
 								({ name, description }) => (
 									<div id={`project-${name}`} class="hidden">
 										{description}
+										<hr />
+										<p>[write-up coming soon]</p>
 									</div>
 								)
 							)
@@ -323,6 +338,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 		repo: string | undefined;
 		url: string | undefined;
 		year: number;
+		imgExt: string;
 	}[];
 
 	const projectReadmeRefs = Object.fromEntries(
@@ -373,7 +389,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 
 		const data = projectData.find((project) => project.id === id)!;
 
-		projectInfoImage.src = `/projects/${data.name}.png`;
+		projectInfoImage.src = `/projects/${data.name}.${data.imgExt}`;
 		projectInfoTitle.textContent = data.name;
 		projectInfoDate.textContent = `${data.year}`;
 
