@@ -35,22 +35,28 @@
 				"stack": ["rust"]
 			},
 			{
-				"name": "ratnest",
-				"description": "generate interesting art from arbitrary math expressions",
-				"repo": "https://github.com/skearya/ratnest",
-				"stack": ["rust"]
-			},
-			{
-				"name": "lox",
-				"description": "lox scripting language interpreter based on \"Crafting Interpreters\"",
-				"repo": "https://github.com/skearya/lox",
-				"stack": ["rust", "c"]
-			},
-			{
 				"name": "chip",
 				"repo": "https://github.com/skearya/chip",
 				"description": "CHIP-8 console emulator in C++23",
 				"stack": ["c++", "raylib"]
+			},
+			{
+				"name": "lox",
+				"description": "lox programming language interpreter based on \"Crafting Interpreters\"",
+				"repo": "https://github.com/skearya/lox",
+				"stack": ["rust", "c"]
+			},
+			{
+				"name": "tltss",
+				"description": "tiny programming language implemented entirely in TypeScript's type system",
+				"repo": "https://github.com/skearya/tltss",
+				"stack": ["typescript"]
+			},
+			{
+				"name": "ratnest",
+				"description": "generate interesting art from arbitrary math expressions",
+				"repo": "https://github.com/skearya/ratnest",
+				"stack": ["rust"]
 			},
 			{
 				"name": "cranium",
@@ -59,10 +65,10 @@
 				"stack": ["rust"]
 			},
 			{
-				"name": "tltss",
-				"description": "tiny programming language implemented entirely in TypeScript's type system",
-				"repo": "https://github.com/skearya/tltss",
-				"stack": ["typescript"]
+				"name": "derivatizer",
+				"description": "derivative calculator written in C from scratch",
+				"repo": "https://github.com/1anatus/derivatizer",
+				"stack": ["c"]
 			}
 		],
 		"2024": [

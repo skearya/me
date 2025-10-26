@@ -238,6 +238,10 @@ export function oceanScript() {
 		requestAnimationFrameId = requestAnimationFrame(animate);
 	}
 
+	// start off with 10 fish
+	const scrollHeight = oceanComponent.scrollHeight;
+	for (let i = 0; i < 10; i++) spawnFish(scrollHeight);
+
 	return {
 		stop: () => {
 			if (requestAnimationFrameId !== undefined) {
