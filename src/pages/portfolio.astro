@@ -47,12 +47,13 @@ const readmes = await Promise.all(
 );
 
 const projectsWithoutReadmes = entries
-	.flatMap(([, projects]) => projects)
-	.filter((project) =>
-		readmes.every(
-			(readme) => readme.id !== project.name.replaceAll(".", "")
-		)
-	);
+	.flatMap(([, projects]) =>
+		projects.map((project) => ({
+			id: project.name.replaceAll(".", ""),
+			...project,
+		}))
+	)
+	.filter((project) => readmes.every((readme) => readme.id !== project.id));
 
 const scriptData = entries.flatMap(([year, projects]) =>
 	projects.map(({ name, repo, url }) => ({
@@ -230,8 +231,8 @@ const scriptData = entries.flatMap(([year, projects]) =>
 						}
 						{
 							projectsWithoutReadmes.map(
-								({ name, description }) => (
-									<div id={`project-${name}`} class="hidden">
+								({ id, description }) => (
+									<div id={`project-${id}`} class="hidden">
 										{description}
 										<hr />
 										<p>[write-up coming soon]</p>
