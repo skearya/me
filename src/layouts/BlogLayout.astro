@@ -8,10 +8,10 @@ const { title, date, description, image } = Astro.props;
 
 const og = {
 	title,
-	description,
 	type: "article",
 	url: Astro.url.href,
-	image,
+	...(description ? { description } : {}),
+	...(image ? { image } : {}),
 };
 ---
 

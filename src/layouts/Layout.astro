@@ -5,13 +5,13 @@ import "@fontsource-variable/inter";
 interface Props {
 	title: string;
 	disableNav?: boolean;
-	og?: Partial<{
-		title: string;
-		description: string;
-		type: string;
-		url: string;
-		image: string;
-	}>;
+	og?: {
+		title?: string;
+		description?: string;
+		type?: string;
+		url?: string;
+		image?: string;
+	};
 }
 
 const { title, disableNav } = Astro.props;
