@@ -55,10 +55,37 @@ const scriptData = entries.flatMap(([year, projects]) =>
 					hello, i'm skeary
 				</h1>
 				<h1 id="time" class="mb-1.5 text-monochromeCat"></h1>
-				<div class="flex gap-x-2.5 text-monochromeCat underline">
+				<div class="mb-4 flex gap-x-2.5 text-monochromeCat underline">
 					<a href="#intro">about</a>
 					<a href="#projects">projects</a>
 					<a href="https://skeary.me/blog">blog</a>
+				</div>
+				<div class="flex gap-x-2.5">
+					{
+						[
+							{
+								icon: "github",
+								link: "https://github.com/skearya",
+							},
+							{
+								icon: "email",
+								link: "mailto:bradleycrasto@icloud.com",
+							},
+							{
+								icon: "discord",
+								link: "https://discord.com/users/681208628350418977",
+							},
+						].map(({ icon, link }) => (
+							<a href={link} target="_blank">
+								<img
+									src={`/hello-icons/${icon}.svg`}
+									height="32"
+									width="32"
+									alt={icon.toUpperCase()}
+								/>
+							</a>
+						))
+					}
 				</div>
 			</div>
 			<img
@@ -88,8 +115,13 @@ const scriptData = entries.flatMap(([year, projects]) =>
 						programming among other topics.
 					</p>
 					<p>
-						i used to be ranked top 100 globally in Beat Saber after
-						4 years of playing.
+						i used to be <a
+							href="https://scoresaber.com/u/76561198365846923"
+							target="_blank">ranked top 100</a
+						> globally in <a
+							href="https://store.steampowered.com/app/620980/Beat_Saber/"
+							target="_blank">Beat Saber</a
+						> after 4 years of playing.
 					</p>
 					<p>
 						in my free time i enjoy playing games, watching anime,
@@ -266,6 +298,10 @@ const scriptData = entries.flatMap(([year, projects]) =>
 </Layout>
 
 <style>
+	#intro a {
+		@apply text-moonlightBlue underline;
+	}
+
 	.appear {
 		animation: fade-in 1s cubic-bezier(0.45, 0.02, 0.09, 0.98) forwards;
 	}
