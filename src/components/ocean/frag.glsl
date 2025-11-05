@@ -43,8 +43,12 @@ void main() {
     waves += wave(vec2(uv.x * 0.4 + 8.0 + iTime * 0.2, uv.y + 1.47));
     waves += wave(vec2(uv.x + 9.0 + iTime * 0.2, uv.y + 2.19));
 
-    waves += wave(vec2(uv.x, uv.y + 3.19)) / 1.5;
-    waves += wave(vec2(uv.x * 0.4, uv.y + 4.12)) / 2.0;
+    waves += wave(vec2(uv.x, uv.y + 3.19)) / 1.3;
+    waves += wave(vec2(uv.x * 0.4, uv.y + 4.12));
+
+    waves += wave(vec2(uv.x * 0.484 + 82.0 + iTime * 0.2, uv.y + 5.1));
+    waves += wave(vec2(uv.x * 0.7 + 9.0 + iTime * 0.2, uv.y + 6.0));
+    waves += wave(vec2(uv.x * 0.4 + 2.2, uv.y + 7.4));
 
     vec3 base = vec3(0.0588, 0.0627, 0.0784);
 
