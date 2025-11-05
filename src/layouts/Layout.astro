@@ -5,19 +5,19 @@ import "@fontsource-variable/inter";
 interface Props {
 	title: string;
 	disableNav?: boolean;
-	og?: {
+	og?: Partial<{
 		title: string;
-		description: string | undefined;
+		description: string;
 		type: string;
 		url: string;
-		image: string | undefined;
-	};
+		image: string;
+	}>;
 }
 
 const { title, disableNav } = Astro.props;
 
 const og = {
-	title: "skeary's ocean",
+	title: `skeary.me - ${title}`,
 	description: "><>",
 	type: "website",
 	url: "https://skeary.me",
