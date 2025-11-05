@@ -1,11 +1,11 @@
 ---
 interface Props {
-	lockedHeight?: boolean;
 	oceanClass?: string;
 	wavesClass?: string;
+	scrollable?: boolean;
 }
 
-const { lockedHeight, oceanClass, wavesClass } = Astro.props;
+const { oceanClass, wavesClass, scrollable } = Astro.props;
 ---
 
 {
@@ -21,16 +21,13 @@ const { lockedHeight, oceanClass, wavesClass } = Astro.props;
 <section
 	id="ocean-component"
 	style="will-change: transform, filter;"
-	class:list={[
-		lockedHeight ? "h-screen" : "h-[265rem]",
-		"relative w-screen max-w-full overflow-y-auto overflow-x-hidden",
-		oceanClass,
-	]}
-	data-locked-height={lockedHeight}
+	class:list={["overflow-x-hidden", oceanClass]}
+	data-scrollable={scrollable}
 >
 	<slot />
 	<div id="fish-container"></div>
 </section>
+
 
 <button
 	id="settings-toggle"

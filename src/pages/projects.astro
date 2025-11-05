@@ -1,35 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { stack, projects } from "../projects.json";
 import Star from "../icons/Star.astro";
 import RightArrow from "../icons/RightArrow.astro";
+import { getProjects } from "../utils";
 
-const projectImgExt = (name: string) => {
-	const overrides: Record<string, string> = { patchwork: "gif" };
-
-	return overrides[name] ?? "png";
-};
-
-const stackImgExt = (name: string) => {
-	const overrides: Record<string, string> = { raylib: "png" };
-
-	return overrides[name] ?? "svg";
-};
-
-const entries = Object.entries(projects)
-	.map(([year, projects]) => [parseInt(year), projects] as const)
-	.sort((a, b) => b[0] - a[0]) as Array<
-	[
-		year: number,
-		Array<{
-			name: string;
-			description: string;
-			stack: Array<string>;
-			repo?: string;
-			url?: string;
-		}>,
-	]
->;
+const entries = getProjects();
 ---
 
 <Layout title="projects">
@@ -50,7 +25,7 @@ const entries = Object.entries(projects)
 							<div class="flex flex-col overflow-hidden rounded-md border">
 								<img
 									class="object-cover"
-									src={`/projects/${project.name}.${projectImgExt(project.name)}`}
+									src={project.thumbnail}
 									alt={project.name}
 									width="1280px"
 									height="720px"
@@ -96,17 +71,13 @@ const entries = Object.entries(projects)
 										{project.stack.map((item) => (
 											<a
 												class="transition-transform hover:-translate-y-1"
-												href={
-													stack[
-														item as keyof typeof stack
-													]
-												}
+												href={item.url}
 												target="_blank"
 											>
 												<img
-													src={`/stack/${item}.${stackImgExt(item)}`}
-													alt={item}
-													title={item}
+													src={item.icon}
+													alt={item.name}
+													title={item.name}
 													height="25px"
 													width="25px"
 												/>
@@ -116,7 +87,7 @@ const entries = Object.entries(projects)
 								</div>
 							</div>
 						))}
-						{i !== projects.length && (
+						{i !== entries.length - 1 && (
 							<div class="col-span-1 my-8 flex items-center gap-x-2 sm:col-span-2">
 								<Star
 									width={25}

@@ -10,7 +10,7 @@ export function oceanScript() {
 		document.querySelectorAll<HTMLInputElement>("input.setting")!;
 	const fishContainer = document.getElementById("fish-container")!;
 
-	const lockedHeight = oceanComponent.dataset.lockedHeight === "true";
+	const oceanScrollable = oceanComponent.dataset.scrollable === "true";
 
 	const regl = REGL({
 		container: "#waves-container",
@@ -52,7 +52,7 @@ export function oceanScript() {
 			scrollPos: () =>
 				(scrollY = lerp(
 					scrollY,
-					lockedHeight ? oceanComponent.scrollTop : window.scrollY,
+					oceanScrollable ? oceanComponent.scrollTop : window.scrollY,
 					0.1,
 				)),
 			scrollHeight: oceanComponent.scrollHeight,
@@ -148,17 +148,17 @@ export function oceanScript() {
 		}
 
 		const x = ltr ? 0 : window.innerWidth;
-		const y = randomIntFromInterval(10, scrollHeight - 10);
+		const y = randomIntFromInterval(50, scrollHeight - 50);
 
 		Object.assign(span.style, {
 			position: "absolute",
-			top: `${y}px`,
+			top: "0px",
 			left: "0px",
 			whiteSpace: "nowrap",
 			opacity: "0%",
 			pointerEvents: "none",
 			fontSize: `${randomIntFromInterval(12, 32)}px`,
-			transform: `translateX(${x}px)`,
+			transform: `translate(${x}px, ${y}px)`,
 			zIndex: `-40`,
 		});
 
@@ -207,7 +207,6 @@ export function oceanScript() {
 
 		const windowWidth = window.innerWidth;
 
-		// TODO: doesn't actually remove hidden fish
 		fish = fish.filter((f) => {
 			if (f.x < -10 || f.x > windowWidth || f.y > scrollHeight) {
 				f.ref.remove();
@@ -224,7 +223,7 @@ export function oceanScript() {
 					(variableSpeed ? f.speed : 1) *
 					(f.ltr ? 1 : -1);
 
-			f.ref.style.transform = `translateX(${f.x}px)`;
+			f.ref.style.transform = `translate(${f.x}px, ${f.y}px)`;
 
 			f.opacity = f.opacity + (elapsed / windowWidth) * 100;
 

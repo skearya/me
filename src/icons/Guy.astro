@@ -1,0 +1,121 @@
+---
+interface Props {
+	width: number;
+	height: number;
+	class?: string;
+}
+
+const { width, height, class: className } = Astro.props;
+---
+
+<svg
+	width={`${width}px`}
+	height={`${height}px`}
+	class={className}
+	viewBox="0 0 120 120"
+	fill="none"
+	xmlns="http://www.w3.org/2000/svg"
+	filter="url(#noise-filter)"
+>
+	<g>
+		<path
+			transform="rotate(0 75.3671 100.908)"
+			d="M103.456 19.0259L75.3671 100.908L68.0203 100.411L96.1091 18.5291L103.456 19.0259Z"
+			fill="url(#logo-gradient)"
+		>
+			<animateTransform
+				attributeName="transform"
+				attributeType="XML"
+				type="rotate"
+				values="0 75.3671 100.908;5 75.3671 100.908"
+				dur="2s"
+				repeatCount="5"
+				calcMode="discrete"></animateTransform>
+		</path>
+		<path
+			d="M40.3636 100.091C35.8409 100.091 31.8409 98.9432 28.3636 96.6477C24.9091 94.3523 22.2045 91.1818 20.25 87.1364C18.2955 83.0682 17.3182 78.375 17.3182 73.0568C17.3182 67.6932 18.2955 62.9773 20.25 58.9091C22.2045 54.8182 24.9091 51.6364 28.3636 49.3636C31.8409 47.0682 35.8409 45.9205 40.3636 45.9205C44.8864 45.9205 48.875 47.0682 52.3295 49.3636C55.7841 51.6591 58.4886 54.8409 60.4432 58.9091C62.4205 62.9773 63.4091 67.6932 63.4091 73.0568C63.4091 78.375 62.4318 83.0682 60.4773 87.1364C58.5227 91.1818 55.8068 94.3523 52.3295 96.6477C48.875 98.9432 44.8864 100.091 40.3636 100.091ZM40.3636 94.5341C44 94.5341 47.0795 93.5568 49.6023 91.6023C52.125 89.6477 54.0341 87.0455 55.3295 83.7955C56.6477 80.5455 57.3068 76.9659 57.3068 73.0568C57.3068 69.1477 56.6477 65.5568 55.3295 62.2841C54.0341 59.0114 52.125 56.3864 49.6023 54.4091C47.0795 52.4318 44 51.4432 40.3636 51.4432C36.75 51.4432 33.6705 52.4318 31.125 54.4091C28.6023 56.3864 26.6818 59.0114 25.3636 62.2841C24.0682 65.5568 23.4205 69.1477 23.4205 73.0568C23.4205 76.9659 24.0682 80.5455 25.3636 83.7955C26.6818 87.0455 28.6023 89.6477 31.125 91.6023C33.6477 93.5568 36.7273 94.5341 40.3636 94.5341Z"
+			fill="url(#logo-gradient)"
+		>
+		</path>
+		<rect
+			x="34"
+			y="62"
+			width="4"
+			height="8"
+			opacity="0.6"
+			fill="url(#logo-gradient)"></rect>
+		<rect
+			x="43"
+			y="62"
+			width="4"
+			height="8"
+			opacity="0.6"
+			fill="url(#logo-gradient)"></rect>
+		<rect
+			x="30"
+			y="78"
+			width="4"
+			height="4"
+			opacity="0.6"
+			fill="url(#logo-gradient)"></rect>
+		<rect
+			x="34"
+			y="82"
+			width="13"
+			height="4"
+			opacity="0.6"
+			fill="url(#logo-gradient)"></rect>
+		<rect
+			x="47"
+			y="78"
+			width="4"
+			height="4"
+			opacity="0.6"
+			fill="url(#logo-gradient)"></rect>
+	</g>
+	<defs>
+		<linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+			<stop offset="0%" stop-color="#ff5f5f">
+				<animate
+					attributeName="stop-color"
+					values="#ff5f5f; #ffcf5f; #acff5f; #5fff9c; #5fcfff; #5f6aff; #d45fff; #ff5fcc; #ff5f5f;"
+					dur="12s"
+					repeatCount="indefinite"></animate>
+			</stop>
+			<stop offset="100%" stop-color="#ffcf5f">
+				<animate
+					attributeName="stop-color"
+					values="#ffcf5f; #acff5f; #5fff9c; #5fcfff; #5f6aff; #d45fff; #ff5fcc; #ff5f5f; #ffcf5f;"
+					dur="12s"
+					repeatCount="indefinite"></animate>
+			</stop>
+		</linearGradient>
+		<filter id="noise-filter">
+			<feTurbulence
+				type="turbulence"
+				baseFrequency="0.2"
+				numOctaves="1"
+				seed="1"
+				result="turbulence"
+			>
+				<animate
+					attributeName="seed"
+					values="1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;"
+					dur="2000ms"
+					repeatCount="indefinite"></animate>
+			</feTurbulence>
+			<feComposite
+				operator="in"
+				in="turbulence"
+				in2="SourceAlpha"
+				result="composite"></feComposite>
+			<feBlend
+				in="SourceGraphic"
+				in2="composite"
+				mode="normal"
+				result="blended"></feBlend>
+			<feDisplacementMap in="blended" in2="turbulence" scale="3"
+			></feDisplacementMap>
+		</filter>
+	</defs>
+</svg>

@@ -1,46 +1,21 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Ocean from "../components/ocean/Ocean.astro";
-import { stack, projects } from "../projects.json";
 import Star from "../icons/Star.astro";
 import RightArrow from "../icons/RightArrow.astro";
 import Close from "../icons/Close.astro";
 import { render } from "astro:content";
 import { getCollection } from "astro:content";
 import GitHub from "../icons/GitHub.astro";
+import { getProjects } from "../utils";
+import Guy from "../icons/Guy.astro";
 
-const projectImgExt = (name: string) => {
-	const overrides: Record<string, string> = { patchwork: "gif" };
+const entries = getProjects();
 
-	return overrides[name] ?? "png";
-};
+const projectsReadmesCollection = await getCollection("projects");
 
-const stackImgExt = (name: string) => {
-	const overrides: Record<string, string> = { raylib: "png" };
-
-	return overrides[name] ?? "svg";
-};
-
-const entries = Object.entries(projects)
-	.map(([year, projects]) => [parseInt(year), projects] as const)
-	.sort(([a], [b]) => b - a) as Array<
-	[
-		year: number,
-		Array<{
-			name: string;
-			description: string;
-			stack: Array<keyof typeof stack>;
-			repo?: string;
-			url?: string;
-		}>,
-	]
->;
-
-const projectsCollection = await getCollection("projects");
-
-const readmes = await Promise.all(
-	projectsCollection.map(async (project) => ({
-		...project,
+const projectReadmes = await Promise.all(
+	projectsReadmesCollection.map(async (project) => ({
 		id: project.id.replaceAll(".", ""),
 		md: await render(project),
 	}))
@@ -50,35 +25,41 @@ const projectsWithoutReadmes = entries
 	.flatMap(([, projects]) =>
 		projects.map((project) => ({
 			id: project.name.replaceAll(".", ""),
-			...project,
+			description: project.description,
 		}))
 	)
-	.filter((project) => readmes.every((readme) => readme.id !== project.id));
+	.filter((project) =>
+		projectReadmes.every((readme) => readme.id !== project.id)
+	);
 
 const scriptData = entries.flatMap(([year, projects]) =>
-	projects.map(({ name, repo, url }) => ({
-		id: name.replaceAll(".", ""),
-		name,
-		repo,
-		url,
+	projects.map((project) => ({
+		...project,
+		id: project.name.replaceAll(".", ""),
 		year,
-		imgExt: projectImgExt(name),
 	}))
 );
 ---
 
 <Layout title="skeary's portfolio" disableNav>
 	<Ocean
-		lockedHeight
-		oceanClass="background-transition-options"
+		oceanClass="background-transition-options h-screen w-screen overflow-y-scroll"
 		wavesClass="background-transition-options"
+		scrollable
 	>
 		<div
 			class="appear relative mx-auto mt-20 flex w-full items-center justify-between p-6 font-mono md:max-w-lg"
 		>
-			<div class="flex flex-col justify-start gap-[2px]">
-				<h1 class="whitespace-nowrap text-xl">hello, i'm skeary</h1>
-				<h1 id="time" class="text-monochromeCat"></h1>
+			<div>
+				<h1 class="mb-0.5 whitespace-nowrap text-xl">
+					hello, i'm skeary
+				</h1>
+				<h1 id="time" class="mb-1.5 text-monochromeCat"></h1>
+				<div class="flex gap-x-2.5 text-monochromeCat underline">
+					<a href="#intro">about</a>
+					<a href="#projects">projects</a>
+					<a href="https://skeary.me/blog">blog</a>
+				</div>
 			</div>
 			<img
 				class="bounce"
@@ -88,8 +69,44 @@ const scriptData = entries.flatMap(([year, projects]) =>
 				alt="cat"
 			/>
 		</div>
-		<div class="mx-auto my-20 w-full max-w-5xl px-4">
-			<div class="grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2">
+		<div id="intro" class="mx-auto mt-16 w-full max-w-3xl">
+			<div
+				class="relative mx-4 flex min-h-80 flex-col items-start justify-stretch overflow-hidden rounded-lg md:flex-row"
+			>
+				<p
+					class="flex-1 self-stretch bg-gradient-to-b from-moonlightFocusLow/50 to-moonlightFocusLow p-8 text-4xl md:bg-gradient-to-r"
+				>
+					hello!
+				</p>
+				<div
+					class="space-y-4 self-stretch bg-moonlightFocusLow p-8 pt-0 md:max-w-md md:pt-8"
+				>
+					<p>
+						i love building cool things and understanding how
+						computers do the unreasonable things we ask for. i'm
+						interested in compilers, web development, and low-level
+						programming among other topics.
+					</p>
+					<p>
+						i used to be ranked top 100 globally in Beat Saber after
+						4 years of playing.
+					</p>
+					<p>
+						in my free time i enjoy playing games, watching anime,
+						and music production.
+					</p>
+				</div>
+				<Guy
+					width={320}
+					height={320}
+					class="absolute -bottom-14 -left-14 opacity-5 md:opacity-100"
+				/>
+			</div>
+		</div>
+		<div id="projects" class="mx-auto mt-20 w-full max-w-5xl">
+			<div
+				class="mx-4 grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2"
+			>
 				{
 					entries.map(([year, projects], i) => (
 						<>
@@ -103,7 +120,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 								>
 									<img
 										class="object-cover"
-										src={`/projects/${project.name}.${projectImgExt(project.name)}`}
+										src={project.thumbnail}
 										alt={project.name}
 										width="1280px"
 										height="720px"
@@ -128,13 +145,13 @@ const scriptData = entries.flatMap(([year, projects]) =>
 											{project.stack.map((item) => (
 												<a
 													class="transition-transform hover:-translate-y-1"
-													href={stack[item]}
+													href={item.url}
 													target="_blank"
 												>
 													<img
-														src={`/stack/${item}.${stackImgExt(item)}`}
-														alt={item}
-														title={item}
+														src={item.icon}
+														alt={item.name}
+														title={item.name}
 														height="25px"
 														width="25px"
 													/>
@@ -144,7 +161,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 									</div>
 								</button>
 							))}
-							{i !== projects.length && (
+							{i !== entries.length - 1 && (
 								<div class="col-span-1 my-8 flex items-center gap-x-2 sm:col-span-2">
 									<Star
 										width={25}
@@ -164,6 +181,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 				}
 			</div>
 		</div>
+		<div class="mt-20"></div>
 	</Ocean>
 	<div
 		id="project-info-container"
@@ -223,7 +241,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 						class="prose prose-invert prose-img:mt-0 prose-img:rounded-md prose-video:mt-0 prose-video:rounded-md [&_lite-youtube]:mb-8"
 					>
 						{
-							readmes.map(({ id, md }) => (
+							projectReadmes.map(({ id, md }) => (
 								<div id={`project-${id}`} class="hidden">
 									<md.Content />
 								</div>
@@ -288,19 +306,20 @@ const scriptData = entries.flatMap(([year, projects]) =>
 
 <style is:global>
 	.background-transition-options {
-		transition-property: transform, filter;
+		transition-property: transform, filter, border;
 		transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 		transition-duration: 1250ms;
 	}
 
 	.background-die {
-		transform: rotate(2deg) scale(0.75);
-		filter: saturate(25%);
+		transform: rotate(1.5deg) scale(0.75);
+		filter: saturate(50%);
 	}
 </style>
 
 <script>
 	import { oceanScript } from "../components/ocean/ocean";
+	import type { Project } from "../utils";
 
 	document.getElementById("time")!.textContent =
 		new Date().toLocaleString("en-US", {
@@ -333,14 +352,9 @@ const scriptData = entries.flatMap(([year, projects]) =>
 	)! as HTMLLinkElement;
 	const projectInfoClose = document.getElementById("project-info-close")!;
 
-	const projectData = JSON.parse(projectInfoContainer.dataset.projects!) as {
-		id: string;
-		name: string;
-		repo: string | undefined;
-		url: string | undefined;
-		year: number;
-		imgExt: string;
-	}[];
+	const projectData = JSON.parse(
+		projectInfoContainer.dataset.projects!
+	) as (Project & { id: string; year: number })[];
 
 	const projectReadmeRefs = Object.fromEntries(
 		projectData.map(({ id }) => [
@@ -390,7 +404,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 
 		const data = projectData.find((project) => project.id === id)!;
 
-		projectInfoImage.src = `/projects/${data.name}.${data.imgExt}`;
+		projectInfoImage.src = data.thumbnail;
 		projectInfoTitle.textContent = data.name;
 		projectInfoDate.textContent = `${data.year}`;
 

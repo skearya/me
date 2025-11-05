@@ -11,6 +11,9 @@ export default defineConfig({
 	integrations: [tailwind(), mdx()],
 	output: "static",
 	adapter: cloudflare(),
+	redirects: {
+		"/portfolio": "/hello",
+	},
 	image: {
 		service: passthroughImageService(),
 	},
