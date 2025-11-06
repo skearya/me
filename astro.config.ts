@@ -12,7 +12,7 @@ export default defineConfig({
 	output: "static",
 	adapter: cloudflare(),
 	redirects: {
-		"/portfolio": "/hello",
+		"/portfolio/*": "/hello",
 	},
 	image: {
 		service: passthroughImageService(),
