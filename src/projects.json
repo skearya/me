@@ -23,7 +23,7 @@
 		"2025": [
 			{
 				"name": "wordplay",
-				"url": "https://wordplay.lol/",
+				"url": "https://wordplay.zip/",
 				"description": "multiplayer word games!",
 				"stack": ["rust", "typescript", "solidjs", "tailwind"],
 				"repo": "https://github.com/skearya/wordplay"
