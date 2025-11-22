@@ -12,7 +12,6 @@ export default defineConfig({
 	output: "static",
 	adapter: cloudflare(),
 	redirects: {
-		"/projects": "/hello",
 		"/portfolio": "/hello",
 		"/portfolio/*": "/hello",
 	},
