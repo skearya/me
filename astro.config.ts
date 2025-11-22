@@ -13,7 +13,6 @@ export default defineConfig({
 	adapter: cloudflare(),
 	redirects: {
 		"/projects": "/hello",
-		"/projects/*": "/hello",
 		"/portfolio": "/hello",
 		"/portfolio/*": "/hello",
 	},
