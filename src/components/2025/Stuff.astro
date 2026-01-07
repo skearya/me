@@ -1,0 +1,212 @@
+---
+import topAlbums from "../../data/2025-albums.json";
+
+const dealWithImage = (images: any) =>
+	images.find((img: any) => img.size === "extralarge")?.["#text"] ||
+	images.find((img: any) => img.size === "large")?.["#text"];
+
+const dealWithTags = (tags: (typeof topAlbums)[number]["tags"]) =>
+	(tags
+		? typeof tags === "string"
+			? [tags]
+			: "tag" in tags
+				? tags.tag.map(({ name }) => name)
+				: tags
+		: []
+	).filter((t) => !t.startsWith("20"));
+
+export type AlbumData = (typeof topAlbums)[number] & {
+	image: string;
+	tags: string[];
+	ranking: number;
+};
+
+const albums = topAlbums.map((album, i) => ({
+	...album,
+	image: dealWithImage(album.image),
+	tags: dealWithTags(album.tags),
+	ranking: i + 1,
+}));
+
+const tagFrequency = albums
+	.flatMap(({ tags }) => tags)
+	.reduce(
+		(map, tag) => map.set(tag, (map.get(tag) ?? 0) + 1),
+		new Map<string, number>()
+	);
+
+const mostUsedTags = [...tagFrequency.entries()]
+	.sort((a, b) => b[1] - a[1])
+	.map((t) => t[0]);
+---
+
+<div class="not-prose">
+	<div
+		id="album-info"
+		class="pointer-events-none fixed left-0 top-0 z-10 max-w-sm origin-top-left bg-cover opacity-0 transition-all duration-200"
+		style={`background-image: url("${dealWithImage(topAlbums[0]?.image)}");`}
+	>
+		<div class="p-2 backdrop-blur-2xl backdrop-brightness-[0.35]">
+			<p class="title text-xl font-semibold leading-tight">
+				{topAlbums[0]?.name}
+			</p>
+			<p class="artist mb-0.5">
+				{topAlbums[0]?.artist.name}
+			</p>
+			<div class="mb-2 flex items-center gap-x-2">
+				<div class="flex items-center gap-x-0.5">
+					<img
+						width="24"
+						height="24"
+						src="/hashtag.svg"
+						alt="controls"
+						class="inline scale-75 grayscale invert"
+					/>
+					<span class="ranking">
+						{topAlbums[0]?.playcount}
+					</span>
+				</div>
+				<div class="flex items-center gap-x-0.5">
+					<img
+						width="24"
+						height="24"
+						src="/player/play.svg"
+						alt="controls"
+						class="inline grayscale"
+					/>
+					<span class="plays">
+						{topAlbums[0]?.playcount}
+					</span>
+				</div>
+			</div>
+			<div class="tags mb-2 flex flex-wrap gap-1.5">
+				{
+					dealWithTags(topAlbums[0]?.tags).map((tag) => (
+						<span class="tag">{tag}</span>
+					))
+				}
+			</div>
+			<p class="desc text-xs" set:html={topAlbums[0]?.summary} />
+		</div>
+	</div>
+	<div id="top-albums" class="mb-4 grid grid-cols-5 grid-rows-5">
+		{
+			albums.slice(0, 25).map((album) => (
+				<a
+					data-album={JSON.stringify(album)}
+					href={album.url}
+					target="_blank"
+					class="top-album relative origin-bottom-right transition-all duration-200 hover:scale-125"
+				>
+					<img src={album.image} />
+					<p class="absolute bottom-0 left-0 w-full overflow-hidden text-ellipsis whitespace-nowrap bg-black/75 px-0.5 text-[8px]">
+						{album.name}
+					</p>
+				</a>
+			))
+		}
+	</div>
+	<div>
+		<div
+			class="relative grid h-96 grid-cols-5 items-center justify-items-center"
+		>
+			{
+				mostUsedTags.map((tag, i) => (
+					<div
+						class="text-nowrap bg-moonlightIndigo/20 px-1.5 font-light"
+						style={
+							`translate: ${(Math.random() - 0.5) * 10}px ${(Math.random() - 0.5) * 10}px;` +
+							`scale: ${Math.pow((mostUsedTags.length - i) / mostUsedTags.length, 1 / 2)};` +
+							`rotate: ${(Math.random() - 0.5) * i}deg;` +
+							`filter: hue-rotate(${i * (180 / mostUsedTags.length)}deg);`
+						}
+					>
+						{tag}
+					</div>
+				))
+			}
+		</div>
+	</div>
+</div>
+
+<style is:global>
+	.tag {
+		@apply bg-moonlightIndigo px-1.5 font-light text-black;
+	}
+
+	div:has(#top-albums:hover) > #album-info {
+		opacity: 1;
+	}
+
+	#top-albums:has(:hover) > :not(:hover) {
+		opacity: 0.5;
+	}
+</style>
+
+<script>
+	import type { AlbumData } from "./Stuff.astro";
+
+	const albums = document.querySelector<HTMLElement>("#top-albums")!;
+	const albumInfo = document.querySelector<HTMLElement>("#album-info")!;
+
+	const albumInfoTitle = albumInfo.querySelector<HTMLElement>(".title")!;
+	const albumInfoArtist = albumInfo.querySelector<HTMLElement>(".artist")!;
+	const albumInfoRanking = albumInfo.querySelector<HTMLElement>(".ranking")!;
+	const albumInfoPlays = albumInfo.querySelector<HTMLElement>(".plays")!;
+	const albumInfoTags = albumInfo.querySelector<HTMLElement>(".tags")!;
+	const albumInfoDesc = albumInfo.querySelector<HTMLElement>(".desc")!;
+
+	let ran = false;
+
+	for (let i = 0; i < albums.children.length; i++) {
+		const album = albums.children[i] as HTMLElement;
+		const albumData = JSON.parse(album.dataset.album!) as AlbumData;
+
+		album.addEventListener("pointerenter", () => {
+			const { top, left, width, height } = album.getBoundingClientRect();
+
+			albumInfo.style.translate = `${left + width}px ${top + height}px`;
+
+			if (!ran) albumInfo.getAnimations().forEach((a) => a.finish());
+
+			albumInfo.style.backgroundImage = `url("${albumData.image}")`;
+			albumInfoTitle.textContent = albumData.name;
+			albumInfoArtist.textContent = albumData.artist.name;
+			albumInfoRanking.textContent = `${albumData.ranking}`;
+			albumInfoPlays.textContent = `${albumData.playcount}`;
+			albumInfoDesc.innerHTML = `${albumData.summary ?? "..."}`;
+
+			const tags = albumData.tags.map((tag, i) => {
+				const span = document.createElement("span");
+
+				span.textContent = tag;
+				span.style.rotate = `${(Math.random() - 0.5) * 5}deg`;
+				span.style.scale = `${Math.random() * -0.05 + 1}`;
+				span.style.opacity = "0";
+				span.classList.add("tag");
+
+				span.animate(
+					{ opacity: "100%", translate: ["3px 3px", "0px, 0px"] },
+					{ fill: "forwards", duration: 100, delay: (i + 1) * 100 }
+				);
+
+				return span;
+			});
+
+			albumInfoTags.replaceChildren(...tags);
+
+			albumInfo.animate(
+				{
+					filter: ["brightness(0%)", "brightness(100%)"],
+					rotate: ["3deg", "0deg"],
+				},
+				{
+					easing: "ease-out",
+					duration: 300,
+				}
+			);
+
+			ran = true;
+		});
+	}
+</script>
