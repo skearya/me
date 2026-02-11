@@ -65,3 +65,65 @@ const og = {
 		</form>
 	</section>
 </Layout>
+
+<style is:global>
+	main img,
+	main video,
+	main canvas {
+		border-radius: 0.375rem;
+	}
+
+	pre .line.highlighted {
+		background-color: rgba(101, 117, 133, 0.16);
+		margin: 0 -16px;
+		padding: 0 16px;
+		width: calc(100% + 32px);
+		display: inline-block;
+	}
+
+	pre .line.diff {
+		margin: 0 -16px;
+		padding: 0 16px;
+		width: calc(100% + 32px);
+		display: inline-block;
+	}
+
+	pre .line.diff.remove {
+		background-color: rgba(227, 109, 109, 0.05);
+		opacity: 0.7;
+	}
+
+	pre .line.diff.remove::before {
+		content: "- ";
+		color: rgba(227, 109, 109, 1);
+	}
+
+	pre .line.diff.add {
+		background-color: rgba(97, 214, 126, 0.05);
+	}
+
+	pre .line.diff.add::before {
+		content: "+ ";
+		color: rgba(97, 214, 126, 1);
+	}
+
+	pre.has-focused .line:not(.focused) {
+		opacity: 0.7;
+		transition:
+			filter 0.35s,
+			opacity 0.35s;
+	}
+
+	pre.has-focused .line:not(.focused) {
+		filter: blur(0.095rem);
+		opacity: 0.4;
+		transition:
+			filter 0.35s,
+			opacity 0.35s;
+	}
+
+	pre:hover.has-focused .line:not(.focused) {
+		filter: blur(0);
+		opacity: 1;
+	}
+</style>
