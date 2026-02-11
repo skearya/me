@@ -11,6 +11,7 @@ interface Props {
 		type?: string;
 		url?: string;
 		image?: string;
+		video?: string;
 	};
 }
 
@@ -36,13 +37,32 @@ const og = {
 		<meta property="og:description" content={og.description} />
 		<meta property="og:type" content={og.type} />
 		<meta property="og:url" content={og.url} />
+		<meta property="og:site_name" content="skeary's ocean" />
 		{
 			og.image && (
 				<>
 					<meta property="og:image" content={og.image} />
 					<meta name="twitter:title" content={og.title} />
-					<meta name="twitter:card" content="summary_large_image" />
 					<meta name="twitter:image:src" content={og.image} />
+					<meta name="twitter:card" content="summary_large_image" />
+				</>
+			)
+		}
+		{
+			og.video && (
+				<>
+					<meta property="og:video" content={og.video} />
+					<meta property="og:video:width" content="1920" />
+					<meta property="og:video:height" content="1080" />
+					<meta name="twitter:title" content={og.title} />
+					<meta property="twitter:player:height" content="1080" />
+					<meta property="twitter:player:width" content="1920" />
+					<meta name="twitter:player:stream" content={og.video} />
+					<meta
+						property="twitter:player:stream:content_type"
+						content="video/mp4"
+					/>
+					<meta name="twitter:card" content="player" />
 				</>
 			)
 		}

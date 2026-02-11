@@ -4,7 +4,7 @@ import Layout from "./Layout.astro";
 
 type Props = CollectionEntry<"blog">["data"];
 
-const { title, date, description, image } = Astro.props;
+const { title, date, description, image, video } = Astro.props;
 
 const og = {
 	title,
@@ -12,6 +12,7 @@ const og = {
 	url: Astro.url.href,
 	...(description ? { description } : {}),
 	...(image ? { image } : {}),
+	...(video ? { video } : {}),
 };
 ---
 
