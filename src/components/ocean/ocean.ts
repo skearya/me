@@ -1,4 +1,5 @@
 import REGL from "regl";
+import { imageDitheringFragmentShader } from "./dither";
 import frag from "./frag.glsl?raw";
 import vert from "./vert.glsl?raw";
 
@@ -9,46 +10,73 @@ export function oceanScript() {
 	const settings =
 		document.querySelectorAll<HTMLInputElement>("input.setting")!;
 	const fishContainer = document.getElementById("fish-container")!;
+	const wavesContainer = document.getElementById("waves-container")!;
 
 	const oceanScrollable = oceanComponent.dataset.scrollable === "true";
 
-	const regl = REGL({
-		container: "#waves-container",
+	const canvas = document.createElement("canvas");
+	canvas.style.display = "block";
+	canvas.style.width = "100%";
+	canvas.style.height = "100%";
+
+	wavesContainer.appendChild(canvas);
+
+	const dpr = window.devicePixelRatio || 1;
+	canvas.width = canvas.clientWidth * dpr;
+	canvas.height = canvas.clientHeight * dpr;
+
+	const gl = canvas.getContext("webgl2")!;
+	const regl = REGL({ gl });
+
+	const framebuffer = regl.framebuffer({
+		color: regl.texture({
+			width: canvas.clientWidth * dpr,
+			height: canvas.clientHeight * dpr,
+		}),
 	});
 
-	const drawWaves = regl<
-		{
-			iTime: number;
-			iResolution: REGL.Vec2;
-			scrollPos: number;
-			scrollHeight: number;
-		},
-		{},
-		{
-			time: number;
-		}
-	>({
+	const fullscreenQuad = regl.buffer([
+		[1, 1],
+		[-1, 1],
+		[-1, -1],
+		[-1, -1],
+		[1, -1],
+		[1, 1],
+	]);
+
+	const drawWaves = regl({
+		framebuffer,
 		vert,
 		frag,
-		attributes: {
-			position: regl.buffer([
-				[1, 1],
-				[-1, 1],
-				[-1, -1],
-				[-1, -1],
-				[1, -1],
-				[1, 1],
-			]),
-		},
+		attributes: { position: fullscreenQuad },
 		uniforms: {
-			iTime: (_context, props) => props.time / 1000,
-			iResolution: (context) => [
-				context.drawingBufferWidth,
-				context.drawingBufferHeight,
+			iTime: ({ time }) => time,
+			iResolution: ({ drawingBufferWidth, drawingBufferHeight }) => [
+				drawingBufferWidth,
+				drawingBufferHeight,
 			],
 			scrollPos: () =>
 				oceanScrollable ? oceanComponent.scrollTop : window.scrollY,
 			scrollHeight: oceanComponent.scrollHeight,
+		},
+		count: 6,
+	});
+
+	const drawDither = regl({
+		frag: imageDitheringFragmentShader,
+		vert,
+		attributes: { position: fullscreenQuad },
+		uniforms: {
+			u_resolution: ({ viewportWidth, viewportHeight }) => [
+				viewportWidth,
+				viewportHeight,
+			],
+			u_pixelRatio: () => window.devicePixelRatio || 1,
+			u_image: framebuffer,
+			u_type: 4,
+			u_pxSize: 2,
+			u_inverted: false,
+			u_colorSteps: 4,
 		},
 		count: 6,
 	});
@@ -177,14 +205,11 @@ export function oceanScript() {
 
 		regl.poll();
 
-		regl.clear({
-			color: [0, 0, 0, 0],
-			depth: 1,
-		});
-
+		regl.clear({ color: [0, 0, 0, 0], depth: 1, framebuffer });
 		drawWaves({ time });
 
-		regl._gl.flush();
+		regl.clear({ color: [0, 0, 0, 0], depth: 1 });
+		drawDither();
 
 		const scrollHeight = oceanComponent.scrollHeight;
 
