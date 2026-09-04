@@ -18,7 +18,7 @@ const projectReadmes = await Promise.all(
 	projectsReadmesCollection.map(async (project) => ({
 		id: project.id.replaceAll(".", ""),
 		md: await render(project),
-	}))
+	})),
 );
 
 const projectsWithoutReadmes = entries
@@ -26,10 +26,10 @@ const projectsWithoutReadmes = entries
 		projects.map((project) => ({
 			id: project.name.replaceAll(".", ""),
 			description: project.description,
-		}))
+		})),
 	)
 	.filter((project) =>
-		projectReadmes.every((readme) => readme.id !== project.id)
+		projectReadmes.every((readme) => readme.id !== project.id),
 	);
 
 const scriptData = entries.flatMap(([year, projects]) =>
@@ -37,7 +37,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 		...project,
 		id: project.name.replaceAll(".", ""),
 		year,
-	}))
+	})),
 );
 ---
 
@@ -54,7 +54,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 				<h1 class="mb-0.5 whitespace-nowrap text-xl">
 					hello, i'm skeary
 				</h1>
-				<h1 id="time" class="mb-1.5 text-monochromeCat"></h1>
+				<h1 id="time" class="mb-4 text-monochromeCat">0:00 PM EDT</h1>
 				<div class="mb-4 flex gap-x-2.5 text-monochromeCat underline">
 					<a href="#intro">about</a>
 					<a href="#projects">projects</a>
@@ -88,13 +88,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 					}
 				</div>
 			</div>
-			<img
-				class="bounce"
-				height="125"
-				width="125"
-				src="/cat.svg"
-				alt="cat"
-			/>
+			<img height="125" width="125" src="/cat.svg" alt="cat" />
 		</div>
 		<div id="intro" class="mx-auto mt-16 w-full max-w-3xl">
 			<div
@@ -287,7 +281,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 										<hr />
 										<p>[write-up coming soon]</p>
 									</div>
-								)
+								),
 							)
 						}
 					</div>
@@ -298,10 +292,6 @@ const scriptData = entries.flatMap(([year, projects]) =>
 </Layout>
 
 <style>
-	#intro a {
-		@apply text-moonlightBlue underline;
-	}
-
 	.appear {
 		animation: fade-in 1s cubic-bezier(0.45, 0.02, 0.09, 0.98) forwards;
 	}
@@ -312,19 +302,6 @@ const scriptData = entries.flatMap(([year, projects]) =>
 		}
 		100% {
 			opacity: 100%;
-		}
-	}
-
-	.bounce {
-		animation: bounce 0.4s ease 1s;
-	}
-
-	@keyframes bounce {
-		75% {
-			transform: translateY(-10%);
-		}
-		100% {
-			transform: translateY(0%);
 		}
 	}
 
@@ -348,8 +325,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 	}
 
 	.background-die {
-		transform: rotate(1.5deg) scale(0.75);
-		filter: saturate(50%);
+		filter: brightness(20%);
 	}
 </style>
 
@@ -370,33 +346,33 @@ const scriptData = entries.flatMap(([year, projects]) =>
 	const ocean = document.getElementById("ocean-component")!;
 	const waves = document.getElementById("waves-container")!;
 	const projectOpeners = document.querySelectorAll<HTMLButtonElement>(
-		".project-open-button"
+		".project-open-button",
 	);
 	const projectInfoContainer = document.getElementById(
-		"project-info-container"
+		"project-info-container",
 	)!;
 	const projectInfoTitle = document.getElementById("project-info-title")!;
 	const projectInfoDate = document.getElementById("project-info-date")!;
 	const projectInfoImage = document.getElementById(
-		"project-info-image"
+		"project-info-image",
 	)! as HTMLImageElement;
 	const projectInfoGithub = document.getElementById(
-		"project-info-github"
+		"project-info-github",
 	)! as HTMLLinkElement;
 	const projectInfoUrl = document.getElementById(
-		"project-info-url"
+		"project-info-url",
 	)! as HTMLLinkElement;
 	const projectInfoClose = document.getElementById("project-info-close")!;
 
 	const projectData = JSON.parse(
-		projectInfoContainer.dataset.projects!
+		projectInfoContainer.dataset.projects!,
 	) as (Project & { id: string; year: number })[];
 
 	const projectReadmeRefs = Object.fromEntries(
 		projectData.map(({ id }) => [
 			id,
 			document.getElementById(`project-${id}`),
-		])
+		]),
 	);
 
 	projectOpeners.forEach((button) => {

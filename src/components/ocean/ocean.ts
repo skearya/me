@@ -14,10 +14,7 @@ export function oceanScript() {
 
 	const regl = REGL({
 		container: "#waves-container",
-		pixelRatio: 1,
 	});
-
-	let scrollY = -400;
 
 	const drawWaves = regl<
 		{
@@ -50,11 +47,7 @@ export function oceanScript() {
 				context.drawingBufferHeight,
 			],
 			scrollPos: () =>
-				(scrollY = lerp(
-					scrollY,
-					oceanScrollable ? oceanComponent.scrollTop : window.scrollY,
-					0.1,
-				)),
+				oceanScrollable ? oceanComponent.scrollTop : window.scrollY,
 			scrollHeight: oceanComponent.scrollHeight,
 		},
 		count: 6,
@@ -223,13 +216,10 @@ export function oceanScript() {
 					(variableSpeed ? f.speed : 1) *
 					(f.ltr ? 1 : -1);
 
-			f.ref.style.transform = `translate(${f.x}px, ${f.y}px)`;
-
 			f.opacity = f.opacity + (elapsed / windowWidth) * 100;
 
-			if (f.opacity < 100) {
-				f.ref.style.opacity = `${f.opacity}%`;
-			}
+			f.ref.style.transform = `translate(${f.x}px, ${f.y}px)`;
+			if (f.opacity < 100) f.ref.style.opacity = `${f.opacity}%`;
 		}
 
 		frameCount++;
@@ -237,7 +227,6 @@ export function oceanScript() {
 		requestAnimationFrameId = requestAnimationFrame(animate);
 	}
 
-	// start off with 10 fish
 	const scrollHeight = oceanComponent.scrollHeight;
 	for (let i = 0; i < 10; i++) spawnFish(scrollHeight);
 
@@ -259,8 +248,4 @@ export function oceanScript() {
 
 function randomIntFromInterval(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-function lerp(start: number, end: number, amount: number) {
-	return (1 - amount) * start + amount * end;
 }
