@@ -141,7 +141,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 							</div>
 							{projects.map((project) => (
 								<button
-									class="project-open-button group flex flex-col overflow-hidden rounded-md border bg-moonlightBase/50 text-left transition-colors hover:border-moonlightPink hover:bg-moonlightBase/85"
+									class="project-open-button group flex flex-col overflow-hidden rounded-md border bg-moonlightBase text-left transition-colors hover:border-moonlightPink hover:bg-moonlightBase/85"
 									data-id={project.name.replaceAll(".", "")}
 								>
 									<img
@@ -345,7 +345,7 @@ const scriptData = entries.flatMap(([year, projects]) =>
 			hour12: true,
 		}) + " EDT";
 
-	const oceanControls = oceanScript();
+	oceanScript();
 
 	const ocean = document.getElementById("ocean-component")!;
 	const waves = document.getElementById("waves-container")!;
@@ -404,8 +404,6 @@ const scriptData = entries.flatMap(([year, projects]) =>
 	function die(id: string) {
 		if (open) return;
 
-		oceanControls.stop();
-
 		ocean.classList.add("background-die");
 		waves.classList.add("background-die");
 
@@ -448,8 +446,6 @@ const scriptData = entries.flatMap(([year, projects]) =>
 		waves.classList.remove("background-die");
 
 		projectInfoContainer.classList.remove("info-die");
-
-		oceanControls.resume();
 
 		open = false;
 	}

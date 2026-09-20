@@ -101,7 +101,6 @@ export function oceanScript() {
 	let lastTime = performance.now();
 	let totalElapsed = 0;
 	let frameCount = 0;
-	let pausedTime = 0;
 
 	let fishSpawned = 0;
 	let lastSpawnedTime = performance.now();
@@ -130,7 +129,7 @@ export function oceanScript() {
 					variableSpeed = Boolean(setting.checked);
 					break;
 				case "crash browser":
-					if (Boolean(setting.checked)) {
+					if (setting.checked) {
 						if (window.confirm("are you sure you want this")) {
 							crashBrowserProbably = true;
 						} else {
@@ -183,6 +182,8 @@ export function oceanScript() {
 			zIndex: `-40`,
 		});
 
+		fishContainer.appendChild(span);
+
 		fish.push({
 			ltr,
 			opacity: 0,
@@ -192,14 +193,10 @@ export function oceanScript() {
 			ref: span,
 		});
 
-		fishContainer.appendChild(span);
-
-		lastSpawnedTime = performance.now() - pausedTime;
+		lastSpawnedTime = performance.now();
 	}
 
 	function animate(time: number) {
-		time -= pausedTime;
-
 		const elapsed = time - lastTime;
 		totalElapsed += elapsed;
 
@@ -254,21 +251,6 @@ export function oceanScript() {
 
 	const scrollHeight = oceanComponent.scrollHeight;
 	for (let i = 0; i < 10; i++) spawnFish(scrollHeight);
-
-	return {
-		stop: () => {
-			if (requestAnimationFrameId !== undefined) {
-				cancelAnimationFrame(requestAnimationFrameId);
-				requestAnimationFrameId = undefined;
-			}
-		},
-		resume: () => {
-			if (requestAnimationFrameId === undefined) {
-				pausedTime = performance.now() - lastTime;
-				requestAnimationFrameId = requestAnimationFrame(animate);
-			}
-		},
-	};
 }
 
 function randomIntFromInterval(min: number, max: number) {

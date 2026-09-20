@@ -22,11 +22,9 @@ vec3 wave(vec2 uv) {
 }
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / iResolution * 2.0 - 1.0;
+    vec2 uv = (gl_FragCoord.xy - vec2(0.0, scrollPos)) / iResolution * 2.0 - 1.0;
     uv.x *= iResolution.x / iResolution.y;
-
     uv += sin(iTime) * 0.03 + 0.03;
-    uv.y -= scrollPos * 0.001;
 
     vec3 waves = vec3(0);
     waves = max(waves, wave(vec2(uv.x, uv.y - 0.1)));
@@ -45,5 +43,5 @@ void main() {
 
     vec3 bg = vec3(0.15, mix(0.001, 0.3, progress) + x * 0.25, mix(0.42, 0.8, progress) + x * 0.2);
 
-    fragColor = vec4(waves * bg, 1.0) * min(iTime * 0.5, 1.0);
+    fragColor = vec4(waves * bg, 1.0);
 }
